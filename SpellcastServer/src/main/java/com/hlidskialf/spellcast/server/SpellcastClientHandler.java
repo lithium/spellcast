@@ -14,12 +14,11 @@ public class SpellcastClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-//            ByteBuf bytes = (ByteBuf)msg;
+            String message = (String)msg;
 
-            ctx.writeAndFlush(msg);
-
+            ctx.writeAndFlush(message+"\r\n");
         } finally {
-//            ReferenceCountUtil.release(msg);
+            ReferenceCountUtil.release(msg);
         }
 
     }
