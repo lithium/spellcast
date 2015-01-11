@@ -1,17 +1,12 @@
 package com.hlidskialf.spellcast.server;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -19,12 +14,10 @@ import io.netty.util.CharsetUtil;
 public class SpellcastServer {
 
 
-    private int maxFrameLength;
     private int port;
 
     public SpellcastServer(int port) {
         this.port = port;
-        this.maxFrameLength = 512;
     }
 
     public void run() throws Exception {
@@ -38,21 +31,15 @@ public class SpellcastServer {
                      .channel(NioServerSocketChannel.class)
                      .option(ChannelOption.SO_BACKLOG, 128)
                      .childOption(ChannelOption.SO_KEEPALIVE, true)
-                     .childHandler(new ChannelInitializer<SocketChannel>() {
-                         @Override
-                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                             socketChannel.pipeline().addLast(new LineBasedFrameDecoder(maxFrameLength))
-                                                     .addLast(new StringDecoder(CharsetUtil.UTF_8))
-                                                     .addLast(new StringEncoder(CharsetUtil.UTF_8))
-                                                     .addLast(new SpellcastClientHandler());
-                         }
-                     });
+                     .childHandler(new SpellcastServerInitializer());
 
             //bind to the port and accept connections
             ChannelFuture channelFuture = bootstrap.bind(port).sync();
 
+            Channel serverChannel = channelFuture.sync().channel();
+
             //wait until the socket is closed
-            channelFuture.channel().closeFuture().sync();
+            serverChannel.closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
