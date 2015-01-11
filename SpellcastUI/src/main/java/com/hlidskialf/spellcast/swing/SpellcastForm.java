@@ -1,4 +1,4 @@
-package com.hlidskialf.swing.spellcast;
+package com.hlidskialf.spellcast.swing;
 
 import javax.swing.*;
 

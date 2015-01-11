@@ -1,6 +1,4 @@
-package com.hlidskialf.swing.spellcast;
-
-import javax.swing.*;
+package com.hlidskialf.spellcast.swing;
 
 /**
  * Created by wiggins on 1/11/15.
