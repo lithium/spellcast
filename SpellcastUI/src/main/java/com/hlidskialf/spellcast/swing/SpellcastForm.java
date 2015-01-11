@@ -42,45 +42,46 @@ public class SpellcastForm {
 
         JMenu file = new JMenu("File");
         JMenuItem joinAction = new JMenuItem("Join Game");
-        joinAction.addActionListener(joinGameListener);
+        joinAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onJoinGame();
+            }
+        });
         file.add(joinAction);
 
         JMenuItem disconnectAction = new JMenuItem("Disconnect");
-        disconnectAction.addActionListener(disconnectListener);
+        disconnectAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onDisconnect();
+            }
+        });
         file.add(disconnectAction);
 
         JMenuItem saveAction = new JMenuItem("Save log...");
-        saveAction.addActionListener(saveLogListener);
+        saveAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onSaveLog();
+            }
+        });
         file.add(saveAction);
         menuBar.add(file);
 
         return menuBar;
     }
 
+    private void onJoinGame() {
+        JoinGameDialog joinGameDialog = new JoinGameDialog();
+        joinGameDialog.pack();
+        joinGameDialog.setVisible(true);
+    }
 
-    /*
-     * Menu Action Listeners
-     */
-    ActionListener joinGameListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            System.out.println("join");
+    private void onDisconnect() {
 
-        }
-    };
-    ActionListener disconnectListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            System.out.println("disco");
+    }
+    private void onSaveLog() {
 
-        }
-    };
-    ActionListener saveLogListener = new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            System.out.println("save");
-
-        }
-    };
-
+    }
 }
