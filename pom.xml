@@ -12,6 +12,7 @@
 
     <modules>
         <module>SpellcastUI</module>
+        <module>SpellcastServer</module>
     </modules>
 
 
