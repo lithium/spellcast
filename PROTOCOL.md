@@ -60,6 +60,8 @@ Chat
 
     201 <nickname> :Hello everyone!
 
+*server notifies all clients when a wizard quits*
+   303 <nick> :Quits
 
 
 *client wants to start playing the next match*

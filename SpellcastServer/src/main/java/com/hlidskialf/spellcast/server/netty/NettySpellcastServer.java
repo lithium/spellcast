@@ -19,8 +19,6 @@ public class NettySpellcastServer extends SpellcastServer<Channel> {
 
 
     private int port;
-    private String serverName;
-    private String versionString;
 
     @Override
     public void sendToClient(SpellcastClient client, String message) {
@@ -28,10 +26,15 @@ public class NettySpellcastServer extends SpellcastServer<Channel> {
         channel.writeAndFlush(message+"\r\n");
     }
 
-    public NettySpellcastServer(String serverName, int port, String versionString) {
-        this.serverName = serverName;
+    @Override
+    public void closeClient(SpellcastClient client) {
+        Channel channel = (Channel) client.getChannel();
+        channel.close();
+    }
+
+    public NettySpellcastServer(String serverName, String versionString, int port) {
+        super(serverName, versionString);
         this.port = port;
-        this.versionString = versionString;
     }
 
     public void run() throws Exception {
