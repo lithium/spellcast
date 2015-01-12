@@ -1,6 +1,8 @@
 package com.hlidskialf.spellcast.server;
 
 
+import java.util.ArrayList;
+
 /**
  * Created by wiggins on 1/11/15.
  */
@@ -22,12 +24,17 @@ public class SpellcastClient {
     private String visibleName;
     private String gender;
     private int hitpoints;
-    private boolean readyToPlay;
+    private boolean ready;
+    private String leftGesture, rightGesture;
+    private ArrayList<String> leftGestures, rightGestures;
+
 
     public SpellcastClient(Object channel) {
         this.channel = channel;
         this.state = ClientState.WaitingForName;
-        this.readyToPlay = false;
+        this.ready = false;
+        this.leftGestures = new ArrayList<String>();
+        this.rightGestures = new ArrayList<String>();
     }
 
 
@@ -73,12 +80,12 @@ public class SpellcastClient {
 
     }
 
-    public boolean isReadyToPlay() {
-        return readyToPlay;
+    public boolean isReady() {
+        return ready;
     }
 
-    public void setReadyToPlay(boolean readyToPlay) {
-        this.readyToPlay = readyToPlay;
+    public void setReady(boolean ready) {
+        this.ready = ready;
     }
 
     public int getHitpoints() {
@@ -101,7 +108,7 @@ public class SpellcastClient {
         if (state == ClientState.Playing) {
             return String.valueOf(hitpoints);
         }
-        if (state == ClientState.Identified && readyToPlay) {
+        if (state == ClientState.Identified && ready) {
             return "+";
         }
         return "-";
@@ -114,5 +121,28 @@ public class SpellcastClient {
     public boolean canGestureThisRound(int roundNumber) {
         // TODO: return false if under some effect, or if roundNumber is even and this user is not hasted
         return true;
+    }
+
+    public void readyGestures(String left, String right) {
+        leftGesture = left;
+        rightGesture = right;
+        ready = true;
+    }
+
+    public String getRightGesture() {
+        return rightGesture;
+    }
+    public String getLeftGesture() {
+        return leftGesture;
+    }
+
+    public void performGestures() {
+        if (leftGesture == null || rightGesture == null) {
+            return;
+        }
+        leftGestures.add(leftGesture);
+        rightGestures.add(rightGesture);
+        leftGesture = null;
+        rightGesture = null;
     }
 }
