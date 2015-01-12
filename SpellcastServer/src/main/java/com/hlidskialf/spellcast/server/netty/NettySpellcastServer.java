@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server.netty;
 
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -13,19 +15,23 @@ import io.netty.util.CharsetUtil;
 /**
  * Created by wiggins on 1/11/15.
  */
-public class SpellcastServer {
+public class NettySpellcastServer extends SpellcastServer<Channel> {
 
 
     private int port;
-    private NettySpellcastGameState gameState;
     private String serverName;
     private String versionString;
 
-    public SpellcastServer(String serverName, int port, String versionString) {
+    @Override
+    public void sendToClient(SpellcastClient client, String message) {
+        Channel channel = (Channel) client.getChannel();
+        channel.writeAndFlush(message+"\r\n");
+    }
+
+    public NettySpellcastServer(String serverName, int port, String versionString) {
         this.serverName = serverName;
         this.port = port;
         this.versionString = versionString;
-        this.gameState = new NettySpellcastGameState(serverName, versionString);
     }
 
     public void run() throws Exception {
@@ -46,7 +52,7 @@ public class SpellcastServer {
                                                                   .addLast(new StringDecoder(CharsetUtil.UTF_8))
                                                                   .addLast(new StringEncoder(CharsetUtil.UTF_8))
 
-                                                                  .addLast(new SpellcastClientHandler(gameState));
+                                                                  .addLast(new NettySpellcastClientHandler(NettySpellcastServer.this));
                                       }
                                   });
 

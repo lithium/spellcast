@@ -1,10 +1,10 @@
-package com.hlidskialf.spellcast.server.base;
+package com.hlidskialf.spellcast.server;
 
 
 /**
  * Created by wiggins on 1/11/15.
  */
-public abstract class SpellcastClient {
+public class SpellcastClient {
 
     public enum ClientState {
         WaitingForName,
@@ -12,22 +12,27 @@ public abstract class SpellcastClient {
         Playing
     };
 
+    private Object channel;
     private ClientState state;
     private String nickname;
     private String visibleName;
     private String gender;
 
-    public SpellcastClient() {
+    public SpellcastClient(Object channel) {
+        this.channel = channel;
         this.state = ClientState.WaitingForName;
     }
-
-    abstract public void send(String message);
-
 
 
     /*
      * Getters/setters
      */
+    public Object getChannel() {
+        return channel;
+    }
+    public void setChannel(Object channel) {
+        this.channel = channel;
+    }
     public ClientState getState() {
         return state;
     }

@@ -20,7 +20,7 @@ public class Main {
         }
 
         try {
-            SpellcastServer server = new SpellcastServer(serverName, port, versionString);
+            NettySpellcastServer server = new NettySpellcastServer(serverName, port, versionString);
             server.run();
         } catch (Exception e) {
             e.printStackTrace();

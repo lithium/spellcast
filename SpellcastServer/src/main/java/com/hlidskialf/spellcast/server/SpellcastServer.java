@@ -1,27 +1,32 @@
-package com.hlidskialf.spellcast.server.base;
+package com.hlidskialf.spellcast.server;
 
+
+import com.hlidskialf.spellcast.server.SpellcastClient;
 
 import java.util.HashMap;
 
 /**
  * Created by wiggins on 1/11/15.
  */
-public abstract class SpellcastGameState<ChannelType> {
+public abstract class SpellcastServer<ChannelType> {
     private HashMap<ChannelType, SpellcastClient> clients;
     private String serverName;
     private String serverVersion;
 
+    /* abstract methods */
+    abstract public void sendToClient(SpellcastClient client, String message);
 
-    public SpellcastGameState(String serverName, String serverVersion) {
+    public SpellcastServer() {}
+
+    public SpellcastServer(String serverName, String serverVersion) {
         this.serverName = serverName;
         this.serverVersion = serverVersion;
         clients = new HashMap<ChannelType, SpellcastClient>();
     }
 
-    abstract public SpellcastClient newClientForChannel(ChannelType channel);
 
     public void addChannel(ChannelType channel) {
-        SpellcastClient newClient = newClientForChannel(channel);
+        SpellcastClient newClient = new SpellcastClient(channel);
         clients.put(channel, newClient);
         hello(newClient);
     }
@@ -30,17 +35,12 @@ public abstract class SpellcastGameState<ChannelType> {
     }
 
 
-    public void broadcast(String message) {
-        for (SpellcastClient client : clients.values()) {
-            client.send(message);
-        }
-    }
 
     public void processChannelMessage(ChannelType channel, String message) {
-
         SpellcastClient client = clients.get(channel);
+        String[] parts = message.split(" ");
+
         if (client.getState() == SpellcastClient.ClientState.WaitingForName) {
-            String[] parts = message.split(" ");
             if (parts[0].equals("NAME") && parts.length > 2) {
                 client.setNickname(parts[1]);
                 client.setGender(parts[2]);
@@ -61,20 +61,26 @@ public abstract class SpellcastGameState<ChannelType> {
     }
 
 
+    public void broadcast(String message) {
+        for (SpellcastClient client : clients.values()) {
+            sendToClient(client, message);
+        }
+    }
+
     public void pubmsg(SpellcastClient sender, String message) {
         for (SpellcastClient client : clients.values()) {
             if (client.getState() != SpellcastClient.ClientState.WaitingForName) {
-                client.send("201 " + sender.getNickname() + " :" + message);
+                sendToClient(client, "201 " + sender.getNickname() + " :" + message);
             }
         }
     }
 
     public void hello(SpellcastClient client) {
-        client.send("222 SPELLCAST " + serverName + " " + serverVersion);
+        sendToClient(client, "222 SPELLCAST " + serverName + " " + serverVersion);
     }
 
     public void welcome(SpellcastClient client) {
-        client.send("200 Hello "+client.getNickname());
+        sendToClient(client, "200 Hello " + client.getNickname());
 
     }
 
