@@ -30,7 +30,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.hlidskialf.spellcast.server.SpellcastServer</mainClass>
+                            <mainClass>com.hlidskialf.spellcast.server.netty.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -48,7 +48,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>com.hlidskialf.spellcast.server.SpellcastServer</mainClass>
+                    <mainClass>com.hlidskialf.spellcast.server.netty.Main</mainClass>
                 </configuration>
             </plugin>
 

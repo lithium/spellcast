@@ -11,11 +11,11 @@ Authentication
 
 *server welcomes a new client*
 
-    222 Spellcast <servername> <version>
+    222 SPELLCAST <servername> <version>
 
 *client identifies itself*
 
-    NAME nickname [male | female | none] :visible name
+    NAME nickname <male | female | none> :visible name
 
 *server replies to identity*
 
