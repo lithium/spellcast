@@ -61,12 +61,23 @@ Chat
     201 <nickname> :Hello everyone!
 
 *server notifies all clients when a wizard quits*
-   303 <nick> :Quits
+
+    303 <nick> :Quits
 
 
 *client wants to start playing the next match*
 
     READY
+    YIELD
+    WATCHING
+
+*server broadcasts 301 to indicate readiness*
+
+    301 <nick> "+" <gender> :visible name
+    301 <nick> "-" <gender> :visible name
+    301 <nick> "*" <gender> :visible name
+
+
 
 *when all players have indicated ready, server broadcasts*
 
@@ -78,26 +89,26 @@ Round
 ----
 *round starts, server asks each client who can move this round for gestures*
 
-    251 <match-id> <roundNumber> :Round start
-    320 <match-id> <roundNumber> <nickname> :What are your gestures
+    251 <match-id>.<roundNumber> :Round start
+    320 <match-id>.<roundNumber> <nickname> :What are your gestures
 
 *client submits their moves for the round*
 
     GESTURE <left hand gesture> <right hand gesture>
 
-*server notifies other clients wizard is ready*
+*server notifies other clients wizard has gestures ready*
 
-    321 <match-id> <roundNumber> <nickname> READY
+    321 <match-id>.<roundNumber> <nickname> :Gestures ready
 
 *once all wizards are ready, server reveals gestures for the round to everyone*
 
     330 Gestures for round:
-    331 <match-id> <roundNumber> <nickname> <left gesture> <right gesture>
+    331 <match-id>.<roundNumber> <nickname> <left gesture> <right gesture>
     332 End of gestures
 
 *server then asks questions to each client*
 
-    340 <match-id> <roundNumber> Questions:
+    340 <match-id>.<roundNumber> Questions:
 
     341 <left | right> :Which spell to cast with hand
     342 <spell> :Spell Name
@@ -113,9 +124,13 @@ Round
 
     ANSWER <left | right> <spell | target>
 
+*server broadcasts that wizard has answered questions*
+
+    348 <match-id>.<roundNumber> <nickname> :Finished answering
+
 *after all wizards have answered all their questions the round is resolved*
 
-    350 <match-id> <roundNumber> ENDS
+    350 <match-id>.<roundNumber> :Round complete
 
     351 <nickname> CASTS <spell> AT <target> WITH <left | right>
     352 <nickname> STABS <target> WITH <left | right>

@@ -22,10 +22,12 @@ public class SpellcastClient {
     private String visibleName;
     private String gender;
     private int hitpoints;
+    private boolean readyToPlay;
 
     public SpellcastClient(Object channel) {
         this.channel = channel;
         this.state = ClientState.WaitingForName;
+        this.readyToPlay = false;
     }
 
 
@@ -57,7 +59,7 @@ public class SpellcastClient {
         this.visibleName = visibleName;
     }
     public String getGender() {
-        return gender;
+        return gender != null ? gender : GenderNone;
     }
     public void setGender(String gender) {
         if (gender.toLowerCase().equals(GenderFemale)) {
@@ -69,6 +71,14 @@ public class SpellcastClient {
             this.gender = GenderNone;
         }
 
+    }
+
+    public boolean isReadyToPlay() {
+        return readyToPlay;
+    }
+
+    public void setReadyToPlay(boolean readyToPlay) {
+        this.readyToPlay = readyToPlay;
     }
 
     public int getHitpoints() {
@@ -91,10 +101,18 @@ public class SpellcastClient {
         if (state == ClientState.Playing) {
             return String.valueOf(hitpoints);
         }
+        if (state == ClientState.Identified && readyToPlay) {
+            return "+";
+        }
         return "-";
     }
 
     public String get301() {
-        return "301 "+nickname+" "+getHitpointString()+" "+gender+" :"+getVisibleName();
+        return "301 "+nickname+" "+getHitpointString()+" "+getGender()+" :"+getVisibleName();
+    }
+
+    public boolean canGestureThisRound(int roundNumber) {
+        // TODO: return false if under some effect, or if roundNumber is even and this user is not hasted
+        return true;
     }
 }

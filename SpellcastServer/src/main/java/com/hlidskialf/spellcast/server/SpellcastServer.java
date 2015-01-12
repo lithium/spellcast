@@ -4,6 +4,7 @@ package com.hlidskialf.spellcast.server;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -13,6 +14,23 @@ public abstract class SpellcastServer<ChannelType> {
     private HashMap<ChannelType, SpellcastClient> clients;
     private String serverName;
     private String serverVersion;
+
+    private int matchIdSeed;
+    private String currentMatchId;
+    private int currentRoundNumber;
+    private MatchState currentMatchState;
+    private RoundState currentRoundState;
+
+
+    private enum MatchState {
+        WaitingForPlayers,
+        Playing
+    }
+    private enum RoundState {
+        WaitingForGestures,
+        WaitingForAnswers,
+        NotPlaying
+    }
 
 
     private final static Pattern validNicknamePattern = Pattern.compile("^\\w+$");
@@ -27,6 +45,9 @@ public abstract class SpellcastServer<ChannelType> {
         this.serverName = serverName;
         this.serverVersion = serverVersion;
         clients = new HashMap<ChannelType, SpellcastClient>();
+        matchIdSeed = 1000;
+        currentMatchState = MatchState.WaitingForPlayers;
+        currentRoundState = RoundState.NotPlaying;
     }
 
 
@@ -90,9 +111,22 @@ public abstract class SpellcastServer<ChannelType> {
             } else if (command.equals("SAY")) {
                 String txt = message.substring(4);
                 broadcast("201 " + client.getNickname() + " :" + txt, null);
-            } else if (command.equals("WIZARDS")) {
+            } else if (command.equals("READY")) {
+                if (client.getState() == SpellcastClient.ClientState.Identified) {
+                    client.setReadyToPlay(true);
+                    broadcast(client.get301(), null);
+                    checkForMatchStart();
+                }
+            } else if (command.equals("YIELD")) {
+                if (client.getState() == SpellcastClient.ClientState.Identified) {
+                    client.setReadyToPlay(false);
+                    broadcast(client.get301(), null);
+                }
+                else if (client.getState() == SpellcastClient.ClientState.Playing) {
+                    // TODO: client loses
+                }
+            } else if (command.equals("WHO")) {
                 wizards(client);
-            } else if (command.equals("MONSTERS")) {
                 monsters(client);
             }
         }
@@ -119,6 +153,56 @@ public abstract class SpellcastServer<ChannelType> {
                 validNicknamePattern.matcher(nickname).matches());
     }
 
+
+    private boolean isAllClientsReady() {
+        if (clients.size() < 2) {
+            return false;
+        }
+        for (SpellcastClient c : clients.values()) {
+            if (!c.isReadyToPlay()) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private void checkForMatchStart() {
+        if (currentMatchState == MatchState.WaitingForPlayers && isAllClientsReady()) {
+            startNewMatch();
+        }
+    }
+
+    private String generateMatchId() {
+        matchIdSeed += 1;
+        return "m"+(matchIdSeed);
+    }
+
+    private void startNewMatch() {
+        if (currentMatchState == MatchState.Playing) {
+            return;
+        }
+
+        currentMatchState = MatchState.Playing;
+        currentMatchId = generateMatchId();
+        currentRoundNumber = 0;
+        broadcast("250 "+currentMatchId+ " :Match start");
+        startNewRound();
+    }
+
+    private void startNewRound() {
+        currentRoundNumber += 1;
+        currentRoundState = RoundState.WaitingForGestures;
+        broadcast("251 "+currentMatchId+"."+currentRoundNumber+" :Round start");
+        for (SpellcastClient client : clients.values()) {
+            if (client.canGestureThisRound(currentRoundNumber)) {
+                broadcast("320 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :What are your gestures");
+            }
+        }
+    }
+
+
+    public void broadcast(String message) {
+        broadcast(message, null);
+    }
     public void broadcast(String message, SpellcastClient except) {
         for (SpellcastClient client : clients.values()) {
             if (except == null || !except.equals(client)) {
