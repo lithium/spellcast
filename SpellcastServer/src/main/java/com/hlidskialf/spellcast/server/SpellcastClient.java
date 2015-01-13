@@ -124,6 +124,13 @@ public class SpellcastClient {
     }
 
     public void readyGestures(String left, String right) {
+        //lowercase the gesture if its done by both hands simultaneously
+        left = left.toUpperCase();
+        right = right.toUpperCase();
+        if (left.equals(right)) {
+            left = left.toLowerCase();
+            right = left;
+        }
         leftGesture = left;
         rightGesture = right;
         ready = true;
@@ -140,9 +147,75 @@ public class SpellcastClient {
         if (leftGesture == null || rightGesture == null) {
             return;
         }
+
+
         leftGestures.add(leftGesture);
         rightGestures.add(rightGesture);
         leftGesture = null;
         rightGesture = null;
+
+
+        String leftHistory = gestureHistory(leftGestures);
+        String rightHistory = gestureHistory(rightGestures);
+
+        ArrayList<Spell> leftSpells = findMatchingSpells(leftHistory);
+        ArrayList<Spell> rightSpells = findMatchingSpells(rightHistory);
+
+    }
+
+    private ArrayList<Spell> findMatchingSpells(String history) {
+        ArrayList<Spell> ret = new ArrayList<Spell>();
+
+        for (Spell spell : SpellList.AllSpells) {
+            if (spellMatches(history, spell)) {
+                ret.add(spell);
+            }
+        }
+
+        return ret;
+    }
+
+    private boolean spellMatches(String history, Spell spell) {
+        String reverse = spell.getReverseGestures();
+        int l = reverse.length();
+        int i;
+        if (history.length() < l)
+            return false;
+        for (i = 0; i < l; i++) {
+            char h = history.charAt(i);
+            char s = reverse.charAt(i);
+
+            // if spell has a lowercase character it must match a lowercase character in history
+            // an uppercase character in a spell matches upper or lower in history
+
+            boolean matches = false;
+            if (Character.isLowerCase(s)) {
+                matches = (h == s);
+            } else {
+                matches = (Character.toUpperCase(h) == s);
+            }
+            if (!matches) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String gestureHistory(ArrayList<String> gestures ) {
+        // max spell length is 8
+        return gestureHistory(gestures, 8);
+    }
+    private String gestureHistory(ArrayList<String> gestures, int howMany) {
+        howMany = Math.min(gestures.size(), howMany);
+        StringBuffer sb = new StringBuffer(howMany);
+        int i=0;
+        for (String g : gestures) {
+            sb.append(g.charAt(0));
+            i += 1;
+            if (i > howMany) {
+                break;
+            }
+        }
+        return sb.toString();
     }
 }
