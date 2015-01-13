@@ -325,14 +325,6 @@ public abstract class SpellcastServer<ChannelType> {
         }
     }
 
-    public void pubmsg(SpellcastClient sender, String message) {
-        for (SpellcastClient client : clients.values()) {
-            if (client.getState() != SpellcastClient.ClientState.WaitingForName) {
-                sendToClient(client, "201 " + sender.getNickname() + " :" + message);
-            }
-        }
-    }
-
     public void hello(SpellcastClient client) {
         sendToClient(client, "222 SPELLCAST " + serverName + " " + serverVersion);
     }
