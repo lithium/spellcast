@@ -238,4 +238,42 @@ public class SpellcastClient {
         }
         return sb.toString();
     }
+
+
+    private SpellQuestion chooseSpell(ArrayList<SpellQuestion> questions, Spell spell) {
+        for (SpellQuestion q : questions) {
+            if (q.getSpell().equals(spell)) {
+                return q;
+            }
+        }
+        return null;
+    }
+
+    public void answerQuestion(String hand, String answer) {
+        ArrayList<SpellQuestion> questions = hand.toLowerCase().equals("left") ? leftSpellQuestions : rightSpellQuestions;
+
+        if (questions.size() > 1) { // should be specifying which spell
+            Spell s = SpellList.lookupSpellBySlug(answer);
+            if (s != null) {
+                SpellQuestion chosen = chooseSpell(questions, s);
+                if (chosen != null) { // chose a valid option
+                    questions.clear();
+                    questions.add(chosen);
+                }
+            }
+        } else if (questions.size() == 1) { // should be specifiying a target
+            SpellQuestion q = questions.get(0);
+            q.setTarget(answer);
+        }
+    }
+
+    public boolean hasUnansweredQuestions() {
+        int nLeft = leftSpellQuestions.size();
+        int nRight = rightSpellQuestions.size();
+
+        return (nLeft > 1 ||  nRight > 1 ||
+               (nLeft == 1 && !leftSpellQuestions.get(0).hasTarget()) ||
+               (nRight == 1 && !rightSpellQuestions.get(0).hasTarget()));
+
+    }
 }

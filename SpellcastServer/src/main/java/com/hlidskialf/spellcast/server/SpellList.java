@@ -106,4 +106,16 @@ public class SpellList {
             RemoveEnchantment,
             Shield
     };
+
+    public static Spell lookupSpellBySlug(String slug) {
+        if (slug == null || slug.isEmpty()) {
+            return null;
+        }
+        for (Spell s : SpellList.AllSpells) {
+            if (s.getSlug().equals(slug)) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

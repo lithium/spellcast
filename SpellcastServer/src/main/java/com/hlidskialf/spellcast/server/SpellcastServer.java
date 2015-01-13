@@ -3,7 +3,6 @@ package com.hlidskialf.spellcast.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Pattern;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -31,8 +30,6 @@ public abstract class SpellcastServer<ChannelType> {
     }
 
 
-    private final static Pattern validNicknamePattern = Pattern.compile("^\\w+$");
-    private final static String validGestureCharacters = "FPSWDCK_";
 
     /* abstract methods */
     abstract public void sendToClient(SpellcastClient client, String message);
@@ -76,7 +73,7 @@ public abstract class SpellcastServer<ChannelType> {
             if (command.equals("NAME") && parts.length > 1) {
                 if (isNicknameTaken(parts[1], client)) {
                     error_nickname_used(client);
-                } else if (!isNicknameValid(parts[1])) {
+                } else if (!ValidationHelper.isNicknameValid(parts[1])) {
                     error_invalid_nickname(client);
                 } else {
 
@@ -110,7 +107,7 @@ public abstract class SpellcastServer<ChannelType> {
             } else if (command.equals("SAY")) {
                 String txt = message.substring(4);
                 broadcast("201 " + client.getNickname() + " :" + txt, null);
-            } else if (command.equals("READY")) {
+            } else if (currentRoundState == RoundState.NotPlaying && command.equals("READY")) {
                 if (client.getState() == SpellcastClient.ClientState.Identified) {
                     client.setReady(true);
                     broadcast(client.get301(), null);
@@ -125,7 +122,7 @@ public abstract class SpellcastServer<ChannelType> {
                     // TODO: client loses
                 }
             } else if (currentRoundState == RoundState.WaitingForGestures && command.equals("GESTURE") && parts.length > 2) {
-                if (isGestureValid(parts[1]) && isGestureValid(parts[2])) {
+                if (ValidationHelper.isGestureValid(parts[1]) && ValidationHelper.isGestureValid(parts[2])) {
                     client.readyGestures(parts[1], parts[2]);
                     broadcast("321 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :Gestures ready");
                     if (isAllClientsReady()) {
@@ -133,6 +130,25 @@ public abstract class SpellcastServer<ChannelType> {
                     }
                 } else {
                     error_invalid_gesture(client);
+                }
+            } else if (currentRoundState == RoundState.WaitingForAnswers &&
+                       command.equals("ANSWER") &&
+                       parts.length > 2 &&
+                       client.hasUnansweredQuestions()) {
+                if (ValidationHelper.isHandValid(parts[1]) && (isTargetValid(parts[2]) || ValidationHelper.isSpellValid(parts[2]))) {
+                    client.answerQuestion(parts[1], parts[2]);
+                    if (client.hasUnansweredQuestions()) {
+                        askClientQuestions(client);
+                    } else {
+                        //answered their last question
+                        broadcast("348 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :Finished answering");
+
+                        if (isAllClientsAnswered()) {
+                            resolveRound();
+                        }
+                    }
+                } else {
+                    error_invalid_answer(client);
                 }
             } else if (command.equals("WHO")) {
                 wizards(client);
@@ -156,21 +172,29 @@ public abstract class SpellcastServer<ChannelType> {
         }
         return false;
     }
-    private boolean isNicknameValid(String nickname) {
-        return (nickname.length() > 0 &&
-                nickname.length() <= 32 &&
-                validNicknamePattern.matcher(nickname).matches());
-    }
-
-    private boolean isGestureValid(String gesture) {
-        if (gesture.length() != 1) {
+    public boolean isTargetValid(String target) {
+        if (target == null || target.isEmpty()) {
             return false;
         }
-        char c = gesture.toUpperCase().charAt(0);
-        return validGestureCharacters.indexOf(c) != -1;
+        for (SpellcastClient c : clients.values()) {
+            if (target.equals(c.getNickname())) {
+                return true;
+            }
+            // TODO: check monsters
+        }
+        return false;
     }
 
 
+
+    private boolean isAllClientsAnswered() {
+        for (SpellcastClient c : clients.values()) {
+            if (c.hasUnansweredQuestions()) {
+                return false;
+            }
+        }
+        return true;
+    }
     private boolean isAllClientsReady() {
         if (clients.size() < 2) {
             return false;
@@ -218,6 +242,7 @@ public abstract class SpellcastServer<ChannelType> {
         broadcast("251 "+currentMatchId+"."+currentRoundNumber+" :Round start");
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
+            client.resetQuestions();
             if (client.canGestureThisRound(currentRoundNumber)) {
                 broadcast("320 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :What are your gestures");
             }
@@ -237,33 +262,34 @@ public abstract class SpellcastServer<ChannelType> {
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.performGestures();
-
-            // there are some spells so there will be questions
-            int nLeft = client.getLeftSpellQuestions().size();
-            int nRight = client.getRightSpellQuestions().size();
-
-            boolean hasQuestions = (nLeft > 1 ||  nRight > 1 ||
-                                   (nLeft == 1 && !client.getLeftSpellQuestions().get(0).hasTarget()) ||
-                                   (nRight == 1 && !client.getRightSpellQuestions().get(0).hasTarget()));
-            if (hasQuestions) {
+            if (askClientQuestions(client)) {
                 anyQuestions = true;
-                sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
-
-                questions(client, client.getLeftSpellQuestions(), "left");
-                questions(client, client.getRightSpellQuestions(), "right");
-
-                sendToClient(client, "349 :End of Questions");
             }
         }
 
         if (anyQuestions) {
             currentRoundState = RoundState.WaitingForAnswers;
         } else {
-            // no questions so there is nothing to resolve...
-            startNewRound();
+            resolveRound();
         }
     }
 
+    private void resolveRound() {
+        // TODO: DO ME
+
+        startNewRound();
+    }
+
+    private boolean askClientQuestions(SpellcastClient client) {
+        if (client.hasUnansweredQuestions()) {
+            sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
+            questions(client, client.getLeftSpellQuestions(), "left");
+            questions(client, client.getRightSpellQuestions(), "right");
+            sendToClient(client, "349 :End of Questions");
+            return true;
+        }
+        return false;
+    }
 
     public void questions(SpellcastClient client, ArrayList<SpellQuestion> spellQuestions, String hand) {
         int left = spellQuestions.size();
@@ -280,6 +306,7 @@ public abstract class SpellcastServer<ChannelType> {
         }
 
         //TODO: ask for targets of monsters
+
     }
 
 
@@ -337,5 +364,8 @@ public abstract class SpellcastServer<ChannelType> {
     }
     public void error_invalid_gesture(SpellcastClient client) {
         sendToClient(client, "402 Invalid gesture");
+    }
+    public void error_invalid_answer(SpellcastClient client) {
+        sendToClient(client, "403 Invalid answer");
     }
 }
