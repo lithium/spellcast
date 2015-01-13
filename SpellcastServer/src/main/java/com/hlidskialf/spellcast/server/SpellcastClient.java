@@ -28,6 +28,8 @@ public class SpellcastClient {
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
 
+    private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
+
 
     public SpellcastClient(Object channel) {
         this.channel = channel;
@@ -35,6 +37,8 @@ public class SpellcastClient {
         this.ready = false;
         this.leftGestures = new ArrayList<String>();
         this.rightGestures = new ArrayList<String>();
+        leftSpellQuestions = new ArrayList<SpellQuestion>();
+        rightSpellQuestions = new ArrayList<SpellQuestion>();
     }
 
 
@@ -143,23 +147,39 @@ public class SpellcastClient {
         return leftGesture;
     }
 
+    public ArrayList<SpellQuestion> getLeftSpellQuestions() {
+        return leftSpellQuestions;
+    }
+
+    public ArrayList<SpellQuestion> getRightSpellQuestions() {
+        return rightSpellQuestions;
+    }
+
+    public void resetHistory() {
+        leftGestures.clear();
+        rightGestures.clear();
+    }
+    public void resetQuestions() {
+        leftSpellQuestions.clear();
+        rightSpellQuestions.clear();
+    }
+
     public void performGestures() {
         if (leftGesture == null || rightGesture == null) {
             return;
         }
-
 
         leftGestures.add(leftGesture);
         rightGestures.add(rightGesture);
         leftGesture = null;
         rightGesture = null;
 
-
-        String leftHistory = gestureHistory(leftGestures);
-        String rightHistory = gestureHistory(rightGestures);
-
-        ArrayList<Spell> leftSpells = findMatchingSpells(leftHistory);
-        ArrayList<Spell> rightSpells = findMatchingSpells(rightHistory);
+        for(Spell s : findMatchingSpells(gestureHistory(leftGestures))) {
+            leftSpellQuestions.add(new SpellQuestion(s));
+        }
+        for(Spell s : findMatchingSpells(gestureHistory(rightGestures))) {
+            rightSpellQuestions.add(new SpellQuestion(s));
+        }
 
     }
 

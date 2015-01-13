@@ -150,7 +150,7 @@ public abstract class SpellcastServer<ChannelType> {
     }
     private boolean isNicknameTaken(String nickname, SpellcastClient client) {
         for (SpellcastClient c : clients.values()) {
-            if ((client == null || !client.equals(c)) && c.getNickname().equals(nickname)) {
+            if ((client == null || !client.equals(c)) && (c.getNickname() != null && c.getNickname().equals(nickname))) {
                 return true;
             }
         }
@@ -224,7 +224,6 @@ public abstract class SpellcastServer<ChannelType> {
         }
     }
     private void startRoundQuestions() {
-        currentRoundState = RoundState.WaitingForAnswers;
 
         broadcast("330 Gestures:");
         for (SpellcastClient client : clients.values()) {
@@ -232,15 +231,55 @@ public abstract class SpellcastServer<ChannelType> {
         }
         broadcast("332 End of Gestures");
 
+        boolean anyQuestions = false;
+
         // ask each client their questions
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.performGestures();
-            sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
-            //for question in questions {
-            //}
-            sendToClient(client, "349 :End of Questions");
+
+            // there are some spells so there will be questions
+            int nLeft = client.getLeftSpellQuestions().size();
+            int nRight = client.getRightSpellQuestions().size();
+
+            boolean hasQuestions = (nLeft > 1 ||  nRight > 1 ||
+                                   (nLeft == 1 && !client.getLeftSpellQuestions().get(0).hasTarget()) ||
+                                   (nRight == 1 && !client.getRightSpellQuestions().get(0).hasTarget()));
+            if (hasQuestions) {
+                anyQuestions = true;
+                sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
+
+                questions(client, client.getLeftSpellQuestions(), "left");
+                questions(client, client.getRightSpellQuestions(), "right");
+
+                sendToClient(client, "349 :End of Questions");
+            }
         }
+
+        if (anyQuestions) {
+            currentRoundState = RoundState.WaitingForAnswers;
+        } else {
+            // no questions so there is nothing to resolve...
+            startNewRound();
+        }
+    }
+
+
+    public void questions(SpellcastClient client, ArrayList<SpellQuestion> spellQuestions, String hand) {
+        int left = spellQuestions.size();
+        if (left > 1) {
+            sendToClient(client, "341 "+hand+" :Cast which spell with "+hand+" hand");
+            for (SpellQuestion q : spellQuestions) {
+                sendToClient(client, "342 " + q.getSpell().getSlug() + " :" + q.getSpell().getName());
+            }
+        } else if (left > 0) { // one spell to resolve, needs a target
+            SpellQuestion q = spellQuestions.get(0);
+            if (!q.hasTarget()) {
+                sendToClient(client, "345 "+hand+" "+ q.getSpell().getSlug() + " :Which target for "+hand+" hand");
+            }
+        }
+
+        //TODO: ask for targets of monsters
     }
 
 
