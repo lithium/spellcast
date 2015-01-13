@@ -13,8 +13,21 @@
     <groupId>com.hlidskialf.spellcast.swing</groupId>
     <artifactId>SpellcastUI</artifactId>
 
+    <!-- include the intellij forms runtime jar for compiling *.forms -->
+    <dependencies>
+        <dependency>
+            <groupId>com.jetbrains.idea</groupId>
+            <artifactId>intellij-forms-runtime</artifactId>
+            <scope>system</scope>
+            <version>7.0.3</version>
+            <systemPath>${project.basedir}/lib/forms_rt-7.0.3.jar</systemPath>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
+
+            <!-- create an executable jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -28,6 +41,7 @@
                 </configuration>
             </plugin>
 
+            <!-- provide an exec:exec target to run the app -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
