@@ -230,7 +230,7 @@ public class SpellcastClient {
         StringBuffer sb = new StringBuffer(howMany);
         int i=0;
         for (String g : gestures) {
-            sb.append(g.charAt(0));
+            sb.insert(0,g.charAt(0));
             i += 1;
             if (i > howMany) {
                 break;
@@ -261,7 +261,7 @@ public class SpellcastClient {
                     questions.add(chosen);
                 }
             }
-        } else if (questions.size() == 1) { // should be specifiying a target
+        } else if (questions.size() == 1) { // should be specifying a target
             SpellQuestion q = questions.get(0);
             q.setTarget(answer);
         }
