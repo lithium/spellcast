@@ -227,12 +227,11 @@ public abstract class SpellcastServer<ChannelType> {
         currentRoundNumber = 0;
         broadcast("250 "+currentMatchId+ " :Match start");
         for (SpellcastClient c : clients.values()) {
+            c.resetHistory();
             c.setHitpoints(15);
             c.setState(SpellcastClient.ClientState.Playing);
         }
-        for (SpellcastClient c : clients.values()) {
-            wizards(c);
-        }
+        broadcast_stats();
         startNewRound();
     }
 
@@ -275,7 +274,12 @@ public abstract class SpellcastServer<ChannelType> {
     }
 
     private void resolveRound() {
-        // TODO: DO ME
+
+        broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
+
+        // TODO: resolve spells and attacks
+
+        broadcast_stats();
 
         startNewRound();
     }
@@ -315,7 +319,7 @@ public abstract class SpellcastServer<ChannelType> {
     }
     public void broadcast(String message, SpellcastClient except) {
         for (SpellcastClient client : clients.values()) {
-            if (except == null || !except.equals(client)) {
+            if (client.getState() != SpellcastClient.ClientState.WaitingForName && (except == null || !except.equals(client))) {
                 sendToClient(client, message);
             }
         }
@@ -339,6 +343,13 @@ public abstract class SpellcastServer<ChannelType> {
         monsters(client);
     }
 
+
+    public void broadcast_stats() {
+        for (SpellcastClient c : clients.values()) {
+            wizards(c);
+            monsters(c);
+        }
+    }
     public void wizards(SpellcastClient client) {
         sendToClient(client, "300 Wizards:");
         for (SpellcastClient c : clients.values()) {
