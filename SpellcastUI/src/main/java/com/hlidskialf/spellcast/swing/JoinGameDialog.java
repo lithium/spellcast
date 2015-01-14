@@ -4,7 +4,8 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class JoinGameDialog extends JDialog {
-    private JPanel contentPane;
+	private final SpellcastForm parentForm;
+	private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField wizardName;
@@ -19,8 +20,9 @@ public class JoinGameDialog extends JDialog {
     private final static String GenderFemale = "female";
     private final static String GenderUnspecified = "none";
 
-    public JoinGameDialog() {
-        setContentPane(contentPane);
+    public JoinGameDialog(SpellcastForm parentForm) {
+	    this.parentForm = parentForm;
+	    setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
@@ -60,6 +62,8 @@ public class JoinGameDialog extends JDialog {
         }
         String gender = selectedGender();
 
+		parentForm.connectToServer(hostname, port);
+
         dispose();
     }
 
@@ -77,5 +81,4 @@ public class JoinGameDialog extends JDialog {
         return GenderUnspecified;
 
     }
-
 }

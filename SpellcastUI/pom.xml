@@ -13,6 +13,14 @@
     <groupId>com.hlidskialf.spellcast.swing</groupId>
     <artifactId>SpellcastUI</artifactId>
 
+    <dependencies>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-all</artifactId>
+        <version>4.0.25.Final</version>
+      </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
