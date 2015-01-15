@@ -1,5 +1,8 @@
 package com.hlidskialf.spellcast.swing;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -27,31 +30,29 @@ import java.awt.event.KeyEvent;
  */
 public class SpellcastForm {
     private JPanel contentPanel;
-    private JSplitPane splitPane;
-    private JPanel leftPane;
-    private JPanel rightPane;
     private JTextField chatInput;
     private JTextArea gameLog;
-	private Channel channel;
+    private JButton sendButton;
+    private Channel channel;
 
-	public SpellcastForm() {
-		chatInput.addKeyListener(
-			new KeyAdapter() {
-				@Override
-				public void keyTyped(final KeyEvent keyEvent) {
-					if (keyEvent.getKeyChar() == KeyEvent.VK_ENTER) {
-						String txt = chatInput.getText().trim();
-						if (!txt.isEmpty()) {
-							say(txt);
-							chatInput.setText("");
-						}
-					}
-				}
-			}
-		);
-	}
+    public SpellcastForm() {
+        chatInput.addKeyListener(
+                new KeyAdapter() {
+                    @Override
+                    public void keyTyped(final KeyEvent keyEvent) {
+                        if (keyEvent.getKeyChar() == KeyEvent.VK_ENTER) {
+                            String txt = chatInput.getText().trim();
+                            if (!txt.isEmpty()) {
+                                say(txt);
+                                chatInput.setText("");
+                            }
+                        }
+                    }
+                }
+        );
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
         String appName = System.getProperty("appName");
         if (appName == null) {
@@ -156,18 +157,14 @@ public class SpellcastForm {
 
 
     public void appendToLog(String line) {
-        gameLog.append(line+"\n");
+        gameLog.append(line + "\n");
     }
 
     public void say(String message) {
         if (channel != null) {
-            channel.writeAndFlush(message+"\r\n");
+            channel.writeAndFlush(message + "\r\n");
         }
     }
-
-
-
-
 
 
     {
@@ -186,20 +183,15 @@ public class SpellcastForm {
      */
     private void $$$setupUI$$$() {
         contentPanel = new JPanel();
-        contentPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane = new JSplitPane();
-        contentPanel.add(splitPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0, false));
-        leftPane = new JPanel();
-        leftPane.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane.setLeftComponent(leftPane);
-        chatInput = new JTextField();
-        leftPane.add(chatInput, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        contentPanel.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
         gameLog = new JTextArea();
         gameLog.setEditable(false);
-        leftPane.add(gameLog, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
-        rightPane = new JPanel();
-        rightPane.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        splitPane.setRightComponent(rightPane);
+        contentPanel.add(gameLog, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        chatInput = new JTextField();
+        contentPanel.add(chatInput, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        sendButton = new JButton();
+        sendButton.setText("Send");
+        contentPanel.add(sendButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -208,6 +200,4 @@ public class SpellcastForm {
     public JComponent $$$getRootComponent$$$() {
         return contentPanel;
     }
-
-
 }
