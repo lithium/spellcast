@@ -2,6 +2,10 @@ package com.hlidskialf.spellcast.swing;
 
 import com.hlidskialf.spellcast.swing.components.GestureComboBoxRenderer;
 import com.hlidskialf.spellcast.swing.components.WizardPanel;
+import com.hlidskialf.spellcast.swing.dialogs.JoinGameDialog;
+import com.hlidskialf.spellcast.swing.dialogs.ReferenceDialog;
+import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
+import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -19,16 +23,17 @@ import io.netty.util.CharsetUtil;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.synth.SynthLookAndFeel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * Created by wiggins on 1/11/15.
  */
 public class SpellcastForm {
+    private static JFrame frame;
+
     private JPanel contentPanel;
     private JTextField chatInput;
     private JTextArea gameLog;
@@ -90,23 +95,28 @@ public class SpellcastForm {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
         System.setProperty("com.apple.mrj.application.apple.menu.about.name", appName);
 
+        try {
+            UIManager.setLookAndFeel(new MetalLookAndFeel());
+        } catch (Exception E) {
+
+        }
+
         SpellcastForm form = new SpellcastForm();
 
-        JFrame frame = new JFrame(appName);
+        frame = new JFrame(appName);
         frame.setContentPane(form.contentPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setJMenuBar(form.buildMenuBar());
 
 
         Container container = frame.getContentPane();
-        container.setPreferredSize(new Dimension(800, 600));
-        container.setMinimumSize(new Dimension(500, 500));
+        container.setPreferredSize(new Dimension(800, 700));
         frame.pack();
         frame.setVisible(true);
     }
 
 
-    private JMenuBar buildMenuBar() {
+    public JMenuBar buildMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu file = new JMenu("File");
@@ -126,6 +136,7 @@ public class SpellcastForm {
                 onDisconnect();
             }
         });
+        disconnectAction.setEnabled(false);
         file.add(disconnectAction);
 
         JMenuItem saveAction = new JMenuItem("Save log...");
@@ -136,17 +147,47 @@ public class SpellcastForm {
             }
         });
         file.add(saveAction);
+
+        file.addSeparator();
+        JMenuItem quitAction = new JMenuItem("Quit");
+        quitAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onQuit();
+            }
+        });
+        file.add(quitAction);
         menuBar.add(file);
 
+
+
+        JMenu spells = new JMenu("Spells");
+        JMenuItem referenceAction = new JMenuItem("Show Spells");
+        referenceAction.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onShowSpells();
+            }
+        });
+        spells.add(referenceAction);
+        menuBar.add(spells);
+
+
         return menuBar;
+    }
+
+    private void onQuit() {
+        frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
     private void onJoinGame() {
         JoinGameDialog joinGameDialog = new JoinGameDialog(this);
         joinGameDialog.pack();
         joinGameDialog.setVisible(true);
+    }
 
-
+    private void onShowSpells() {
+        ReferenceDialog.buildAndShow();
     }
 
     private void onDisconnect() {

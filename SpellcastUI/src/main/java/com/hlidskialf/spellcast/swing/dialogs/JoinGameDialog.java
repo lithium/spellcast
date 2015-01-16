@@ -1,5 +1,6 @@
-package com.hlidskialf.spellcast.swing;
+package com.hlidskialf.spellcast.swing.dialogs;
 
+import com.hlidskialf.spellcast.swing.SpellcastForm;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;

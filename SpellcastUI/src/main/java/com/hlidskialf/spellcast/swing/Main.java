@@ -1,5 +1,8 @@
 package com.hlidskialf.spellcast.swing;
 
+import javax.swing.*;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+
 /**
  * Created by wiggins on 1/11/15.
  */
