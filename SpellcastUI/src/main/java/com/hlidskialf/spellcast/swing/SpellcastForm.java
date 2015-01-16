@@ -19,6 +19,7 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,9 +34,31 @@ public class SpellcastForm {
     private JTextField chatInput;
     private JTextArea gameLog;
     private JButton sendButton;
+    private JPanel playPanel;
     private Channel channel;
+    private GestureHistoryPanel myGestures;
 
     public SpellcastForm() {
+
+        myGestures = new GestureHistoryPanel();
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        playPanel.add(myGestures, gbc);
+
+
+        Dimension dimension = new Dimension(100, 400);
+        myGestures.setMaximumSize(dimension);
+        myGestures.setMinimumSize(dimension);
+        myGestures.setPreferredSize(dimension);
+        myGestures.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        playPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+
+
         chatInput.addKeyListener(
                 new KeyAdapter() {
                     @Override
@@ -69,6 +92,11 @@ public class SpellcastForm {
         frame.setContentPane(form.contentPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setJMenuBar(form.buildMenuBar());
+
+
+        Container container = frame.getContentPane();
+        container.setPreferredSize(new Dimension(800, 600));
+        container.setMinimumSize(new Dimension(500, 500));
         frame.pack();
         frame.setVisible(true);
     }
@@ -183,15 +211,46 @@ public class SpellcastForm {
      */
     private void $$$setupUI$$$() {
         contentPanel = new JPanel();
-        contentPanel.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        contentPanel.setLayout(new GridBagLayout());
         gameLog = new JTextArea();
         gameLog.setEditable(false);
-        contentPanel.add(gameLog, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0, false));
+        gameLog.setLineWrap(true);
+        gameLog.setRows(0);
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(gameLog, gbc);
         chatInput = new JTextField();
-        contentPanel.add(chatInput, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPanel.add(chatInput, gbc);
         sendButton = new JButton();
         sendButton.setText("Send");
-        contentPanel.add(sendButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        contentPanel.add(sendButton, gbc);
+        playPanel = new JPanel();
+        playPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.25;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(playPanel, gbc);
     }
 
     /**
