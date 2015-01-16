@@ -43,6 +43,7 @@ public class SpellcastForm {
 
         player = new Player("Player1", 30);
         player.setCurrentHP(8);
+        player.addMonster(new Player("muglalook the goblin", 25));
         playerForm = new PlayerForm(player);
 
 

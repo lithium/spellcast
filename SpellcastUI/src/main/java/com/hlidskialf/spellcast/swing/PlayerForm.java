@@ -1,9 +1,15 @@
 package com.hlidskialf.spellcast.swing;
 
 import com.hlidskialf.spellcast.swing.components.GestureHistoryPanel;
+import com.hlidskialf.spellcast.swing.components.PlayerStatusPanel;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by wiggins on 1/15/15.
@@ -13,14 +19,19 @@ public class PlayerForm {
     private JLabel playerName;
     private JProgressBar hitPoints;
     private JPanel gesturePanel;
+    private JPanel monsterPanel;
     private Player player;
     private GestureHistoryPanel gestureHistoryPanel;
 
+    private Map<Player, PlayerStatusPanel> monsterStatuses;
+
     public PlayerForm(Player player) {
-        setPlayer(player);
+        monsterStatuses = new HashMap<Player, PlayerStatusPanel>();
 
         gestureHistoryPanel = new GestureHistoryPanel();
         gesturePanel.add(gestureHistoryPanel);
+
+        setPlayer(player);
     }
 
     public JPanel getContentPanel() {
@@ -31,12 +42,27 @@ public class PlayerForm {
         this.player = player;
         playerName.setText(player.getName());
         updateHitpoints();
+        updateMonsters();
     }
 
     public void updateHitpoints() {
         hitPoints.setMaximum(player.getMaxHP());
         hitPoints.setValue(player.getCurrentHP());
+        hitPoints.setToolTipText(String.format("%s: %s/%s", player.getName(), player.getCurrentHP(), player.getMaxHP()));
+    }
 
+    public void updateMonsters() {
+        for (Player monster : player.getMonsters().values()) {
+            PlayerStatusPanel playerStatusPanel;
+            if (monsterStatuses.containsKey(monster)) {
+                playerStatusPanel = monsterStatuses.get(monster);
+            } else {
+                playerStatusPanel = new PlayerStatusPanel(monster);
+                playerStatusPanel.setFontSize(10);
+                monsterPanel.add(playerStatusPanel);
+            }
+            playerStatusPanel.sync();
+        }
     }
 
     {
@@ -62,14 +88,15 @@ public class PlayerForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.weightx = 1.0;
+        gbc.weightx = 0.7;
         gbc.anchor = GridBagConstraints.WEST;
         contentPanel.add(playerName, gbc);
         hitPoints = new JProgressBar();
+        hitPoints.setPreferredSize(new Dimension(80, 20));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.weightx = 1.0;
+        gbc.weightx = 0.7;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         contentPanel.add(hitPoints, gbc);
         gesturePanel = new JPanel();
@@ -81,6 +108,17 @@ public class PlayerForm {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         contentPanel.add(gesturePanel, gbc);
+        monsterPanel = new JPanel();
+        monsterPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        monsterPanel.setPreferredSize(new Dimension(96, -1));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.gridheight = 3;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(monsterPanel, gbc);
     }
 
     /**

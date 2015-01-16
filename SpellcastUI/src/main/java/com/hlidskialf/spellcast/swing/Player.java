@@ -25,6 +25,13 @@ public class Player {
         monsters = new HashMap<String, Player>();
     }
 
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     public String getName() {
         return visibleName;
@@ -56,5 +63,16 @@ public class Player {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public Map<String, Player> getMonsters() {
+        return monsters;
+    }
+
+    public void addMonster(Player monster) {
+        monsters.put(monster.getNickname(), monster);
+    }
+    public void removeMonster(Player monster) {
+        monsters.remove(monster.getNickname());
     }
 }
