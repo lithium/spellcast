@@ -51,8 +51,6 @@ public class SpellcastForm {
         playPanel.add(new WizardPanel(new Player("Player2")));
 
 
-
-
         leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
         leftComboBox.setRenderer(new GestureComboBoxRenderer());
         leftComboBox.setUI(new MetalComboBoxUI());
@@ -230,6 +228,7 @@ public class SpellcastForm {
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipady = 10;
         contentPanel.add(gameLog, gbc);
         playPanel = new JPanel();
         playPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -238,7 +237,6 @@ public class SpellcastForm {
         gbc.gridy = 0;
         gbc.gridwidth = 5;
         gbc.weightx = 1.0;
-        gbc.weighty = 0.25;
         gbc.fill = GridBagConstraints.BOTH;
         contentPanel.add(playPanel, gbc);
         rightComboBox = new JComboBox();

@@ -12,7 +12,7 @@
           <grid row="2" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
-          <gridbag weightx="1.0" weighty="1.0"/>
+          <gridbag weightx="1.0" weighty="1.0" ipady="10"/>
         </constraints>
         <properties>
           <editable value="false"/>
@@ -23,7 +23,7 @@
       <grid id="267eb" binding="playPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="0">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="5" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-          <gridbag weightx="1.0" weighty="0.25"/>
+          <gridbag weightx="1.0" weighty="0.0"/>
         </constraints>
         <properties/>
         <border type="none"/>
