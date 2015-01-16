@@ -14,20 +14,23 @@ public class PlayerStatusPanel extends JPanel {
     private JProgressBar hpProgress;
 
     public PlayerStatusPanel(Player player) {
-        super();
-        this.player = player;
+        this();
+        setPlayer(player);
+    }
+    public PlayerStatusPanel() {
+        super(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.weightx = 1.0; gbc.weighty = 1.0;
 
         Dimension d = new Dimension(80, 16);
 
-        nameLabel = new JLabel(player.getName());
+        nameLabel = new JLabel();
         nameLabel.setPreferredSize(d);
         gbc.gridx = 0; gbc.gridy = 0;
         add(nameLabel, gbc);
 
-        hpProgress = new JProgressBar(0, player.getMaxHP());
+        hpProgress = new JProgressBar();
         hpProgress.setPreferredSize(d);
         gbc.gridx = 0; gbc.gridy = 1;
         add(hpProgress, gbc);
@@ -46,5 +49,8 @@ public class PlayerStatusPanel extends JPanel {
         nameLabel.setFont(new Font(f.getName(), f.getStyle(), size));
     }
 
-
+    public void setPlayer(Player player) {
+        this.player = player;
+        sync();
+    }
 }

@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.swing;
 
 import com.hlidskialf.spellcast.swing.components.GestureComboBoxRenderer;
+import com.hlidskialf.spellcast.swing.components.WizardPanel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -36,21 +37,20 @@ public class SpellcastForm {
     private JComboBox rightComboBox;
     private JComboBox leftComboBox;
     private Channel channel;
-    private Player player;
-    private PlayerForm playerForm;
+    private Player wizard;
+    private WizardPanel wizardPanel;
 
     public SpellcastForm() {
 
-        player = new Player("Player1", 30);
-        player.setCurrentHP(8);
-        player.addMonster(new Player("muglalook the goblin", 25));
-        playerForm = new PlayerForm(player);
+        wizard = new Player("Player1", 30);
+        wizard.setCurrentHP(8);
+        wizard.addMonster(new Player("muglalook the goblin", 25));
+        wizardPanel = new WizardPanel(wizard);
+
+        playPanel.add(wizardPanel);
+        playPanel.add(new WizardPanel(new Player("Player2")));
 
 
-        playPanel.add(playerForm.getContentPanel());
-
-        playPanel.add(new PlayerForm(new Player("Player2")).getContentPanel());
-//        playPanel.add(myGestures, gbc);
 
 
         leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
