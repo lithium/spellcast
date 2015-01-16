@@ -1,8 +1,6 @@
 package com.hlidskialf.spellcast.swing;
 
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-
+import com.hlidskialf.spellcast.swing.components.GestureComboBoxRenderer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -19,7 +17,8 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
 import javax.swing.*;
-import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +34,8 @@ public class SpellcastForm {
     private JTextArea gameLog;
     private JButton sendButton;
     private JPanel playPanel;
+    private JComboBox rightComboBox;
+    private JComboBox leftComboBox;
     private Channel channel;
     private GestureHistoryPanel myGestures;
 
@@ -48,6 +49,15 @@ public class SpellcastForm {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         playPanel.add(myGestures, gbc);
+
+
+        leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
+        leftComboBox.setRenderer(new GestureComboBoxRenderer());
+        leftComboBox.setUI(new MetalComboBoxUI());
+
+        rightComboBox.setModel(new Icons.IconComboBoxModel(Hand.Right));
+        rightComboBox.setRenderer(new GestureComboBoxRenderer());
+        rightComboBox.setUI(new MetalComboBoxUI());
 
 
         Dimension dimension = new Dimension(100, 400);
@@ -220,37 +230,49 @@ public class SpellcastForm {
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 3;
+        gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         contentPanel.add(gameLog, gbc);
-        chatInput = new JTextField();
+        playPanel = new JPanel();
+        playPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 5;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.25;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(playPanel, gbc);
+        rightComboBox = new JComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        contentPanel.add(rightComboBox, gbc);
+        sendButton = new JButton();
+        sendButton.setText("Send");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        contentPanel.add(sendButton, gbc);
+        chatInput = new JTextField();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
         gbc.gridy = 1;
         gbc.gridwidth = 2;
         gbc.weightx = 1.0;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         contentPanel.add(chatInput, gbc);
-        sendButton = new JButton();
-        sendButton.setText("Send");
+        leftComboBox = new JComboBox();
         gbc = new GridBagConstraints();
-        gbc.gridx = 2;
+        gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contentPanel.add(sendButton, gbc);
-        playPanel = new JPanel();
-        playPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.25;
-        gbc.fill = GridBagConstraints.BOTH;
-        contentPanel.add(playPanel, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
+        contentPanel.add(leftComboBox, gbc);
     }
 
     /**

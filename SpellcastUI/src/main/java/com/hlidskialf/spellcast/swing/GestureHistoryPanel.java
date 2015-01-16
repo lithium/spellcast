@@ -35,11 +35,9 @@ public class GestureHistoryPanel extends JPanel {
             add(r);
         }
 
-        ImageIcon foo = Icons.snap;
-
         for (int i=0; i <gestureHistorySize; i++) {
-            leftGestureLabels[i].setIcon(Icons.wave);
-            rightGestureLabels[i].setIcon(Icons.wave);
+            leftGestureLabels[i].setIcon(Icons.Left.clap);
+            rightGestureLabels[i].setIcon(Icons.Right.clap);
         }
     }
 
