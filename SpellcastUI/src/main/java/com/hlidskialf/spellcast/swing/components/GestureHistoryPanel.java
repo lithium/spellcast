@@ -1,4 +1,6 @@
-package com.hlidskialf.spellcast.swing;
+package com.hlidskialf.spellcast.swing.components;
+
+import com.hlidskialf.spellcast.swing.Icons;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,6 +15,7 @@ public class GestureHistoryPanel extends JPanel {
 
     private final static int gestureHistorySize=8;
     private final static Dimension iconDimension = new Dimension(48,48);
+    private static final Dimension preferredSize = new Dimension(100,400);
 
 
     /* initialize */
@@ -39,6 +42,11 @@ public class GestureHistoryPanel extends JPanel {
             leftGestureLabels[i].setIcon(Icons.Left.clap);
             rightGestureLabels[i].setIcon(Icons.Right.clap);
         }
+
     }
 
+    @Override
+    public Dimension getPreferredSize() {
+        return preferredSize;
+    }
 }

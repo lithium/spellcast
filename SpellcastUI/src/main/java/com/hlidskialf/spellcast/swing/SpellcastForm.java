@@ -17,7 +17,6 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
 
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -37,18 +36,20 @@ public class SpellcastForm {
     private JComboBox rightComboBox;
     private JComboBox leftComboBox;
     private Channel channel;
-    private GestureHistoryPanel myGestures;
+    private Player player;
+    private PlayerForm playerForm;
 
     public SpellcastForm() {
 
-        myGestures = new GestureHistoryPanel();
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        playPanel.add(myGestures, gbc);
+        player = new Player("Player1", 30);
+        player.setCurrentHP(8);
+        playerForm = new PlayerForm(player);
+
+
+        playPanel.add(playerForm.getContentPanel());
+
+        playPanel.add(new PlayerForm(new Player("Player2")).getContentPanel());
+//        playPanel.add(myGestures, gbc);
 
 
         leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
@@ -59,12 +60,6 @@ public class SpellcastForm {
         rightComboBox.setRenderer(new GestureComboBoxRenderer());
         rightComboBox.setUI(new MetalComboBoxUI());
 
-
-        Dimension dimension = new Dimension(100, 400);
-        myGestures.setMaximumSize(dimension);
-        myGestures.setMinimumSize(dimension);
-        myGestures.setPreferredSize(dimension);
-        myGestures.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         playPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
 
