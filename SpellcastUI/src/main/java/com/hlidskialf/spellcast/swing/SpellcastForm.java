@@ -264,9 +264,10 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         wizard.setName(name);
         wizard.setGender(gender);
         wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
-        if (channel != null) { // occured while connected
+        if (channel != null) { // connected so tell server our new visible name
             channel.writeAndFlush("NAME :" + wizard.getName() + "\r\n");
-
+        } else {
+            wizard.setNickname(name.toLowerCase().replace("\\W", "")); // disconnected so update nickname
         }
     }
 
@@ -283,8 +284,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     @Override
     public void onHello(SpellcastChannel channel, String[] message) {
-        wizard.setName(message[2]);
-        wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
+        wizard.setNickname(message[2]);
 
     }
 
@@ -304,7 +304,6 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         int idx = new Random().nextInt(nick.length());
         String newnick = nick.substring(idx) + nick.substring(0, idx) + idx;
         wizard.setNickname(newnick);
-        wizard.setName(newnick);
 
         //retry with new nickname
         onWelcome(channel, message);
