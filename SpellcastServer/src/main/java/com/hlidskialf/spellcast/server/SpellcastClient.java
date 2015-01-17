@@ -24,6 +24,7 @@ public class SpellcastClient {
     private String visibleName;
     private String gender;
     private int hitpoints;
+    private int maxHitpoints;
     private boolean ready;
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
@@ -100,6 +101,14 @@ public class SpellcastClient {
         this.hitpoints = hitpoints;
     }
 
+    public int getMaxHitpoints() {
+        return maxHitpoints;
+    }
+
+    public void setMaxHitpoints(int maxHitpoints) {
+        this.maxHitpoints = maxHitpoints;
+    }
+
     public int takeDamage(int damage) {
         hitpoints -= damage;
         return hitpoints;
@@ -110,7 +119,7 @@ public class SpellcastClient {
     }
     public String getHitpointString() {
         if (state == ClientState.Playing) {
-            return String.valueOf(hitpoints);
+            return hitpoints+"/"+maxHitpoints;
         }
         if (state == ClientState.Identified && ready) {
             return "+";

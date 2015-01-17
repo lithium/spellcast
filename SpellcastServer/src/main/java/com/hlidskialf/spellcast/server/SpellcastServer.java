@@ -229,6 +229,7 @@ public abstract class SpellcastServer<ChannelType> {
         for (SpellcastClient c : clients.values()) {
             c.resetHistory();
             c.setHitpoints(15);
+            c.setMaxHitpoints(15);
             c.setState(SpellcastClient.ClientState.Playing);
         }
         broadcast_stats();
