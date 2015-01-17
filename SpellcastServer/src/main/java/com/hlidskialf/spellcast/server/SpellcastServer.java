@@ -95,7 +95,7 @@ public abstract class SpellcastServer<ChannelType> {
             }
         }
         else {
-            if (command.equals("NAME") && parts.length > 2) {
+            if (command.equals("NAME") && parts.length >= 2) {
                 client.setGender(parts[1]);
                 int idx = message.lastIndexOf(':');
                 if (idx != -1) {

@@ -25,6 +25,7 @@ import javax.swing.plaf.metal.MetalComboBoxUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Random;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -47,13 +48,10 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     public SpellcastForm() {
 
-        wizard = new Player("Player1", 30);
-        wizard.setCurrentHP(8);
-        wizard.addMonster(new Player("muglalook the goblin", 25));
+        wizard = new Player("player1");
         wizardPanel = new WizardPanel(wizard);
 
         playPanel.add(wizardPanel);
-        playPanel.add(new WizardPanel(new Player("Player2")));
 
 
         leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
@@ -194,6 +192,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         changeNameDialog.pack();
         changeNameDialog.setPlayer(wizard);
         changeNameDialog.setVisible(true);
+
     }
 
     private void onJoinGame() {
@@ -264,16 +263,51 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     public void onNameChanged(String name, String gender) {
         wizard.setName(name);
         wizard.setGender(gender);
-        wizardPanel.onNameChanged(name, gender);
+        wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
+        if (channel != null) { // occured while connected
+            channel.writeAndFlush("NAME :" + wizard.getName() + "\r\n");
+
+        }
     }
+
 
 
     /*
      * Spellcast Message
      */
+
     @Override
     public void onWelcome(SpellcastChannel channel, String[] message) {
-        channel.writeMessage("NAME " + wizard.getName());
+        channel.writeMessage("NAME " + wizard.getNickname() + " " + wizard.getGender() + " :" + wizard.getName());
+    }
+
+    @Override
+    public void onHello(SpellcastChannel channel, String[] message) {
+        wizard.setName(message[2]);
+        wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
+
+    }
+
+    @Override
+    public void onWizardStatus(SpellcastChannel channel, String[] message) {
+
+    }
+
+    @Override
+    public void onMonsterStatus(SpellcastChannel channel, String[] message) {
+
+    }
+
+    @Override
+    public void errorNicknameInUse(SpellcastChannel channel, String[] message) {
+        String nick = wizard.getNickname();
+        int idx = new Random().nextInt(nick.length());
+        String newnick = nick.substring(idx) + nick.substring(0, idx) + idx;
+        wizard.setNickname(newnick);
+        wizard.setName(newnick);
+
+        //retry with new nickname
+        onWelcome(channel, message);
     }
 
 
