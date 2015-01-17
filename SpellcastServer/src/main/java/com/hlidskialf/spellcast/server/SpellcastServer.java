@@ -1,6 +1,8 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -160,9 +162,16 @@ public abstract class SpellcastServer<ChannelType> {
     private void disconnectClient(SpellcastClient client, boolean close) {
         broadcast("303 "+client.getNickname()+" :Quits", client);
         clients.remove(client.getChannel());
+        if (currentMatchState == MatchState.Playing) {
+            SpellcastClient winner = checkForWinner();
+            if (winner != null) {
+                declareWinner(winner);
+            }
+        }
         if (close) {
             closeClient(client);
         }
+
     }
     private boolean isNicknameTaken(String nickname, SpellcastClient client) {
         for (SpellcastClient c : clients.values()) {
@@ -187,6 +196,23 @@ public abstract class SpellcastServer<ChannelType> {
 
 
 
+    private SpellcastClient checkForWinner() {
+        SpellcastClient lastSeen=null;
+        if (currentMatchState == MatchState.Playing) {
+            for (SpellcastClient c : clients.values()) {
+                if (lastSeen != null) { // more than one client still playing
+                    return null;
+                }
+                if (c.getState() == SpellcastClient.ClientState.Playing) {
+                    lastSeen = c;
+                }
+            }
+        }
+        if (lastSeen != null) { //only one client left playing
+            return lastSeen;
+        }
+        return null;
+    }
     private boolean isAllClientsAnswered() {
         for (SpellcastClient c : clients.values()) {
             if (c.hasUnansweredQuestions()) {
@@ -284,6 +310,21 @@ public abstract class SpellcastServer<ChannelType> {
 
         startNewRound();
     }
+    private void declareWinner(SpellcastClient winner) {
+        broadcast("390 "+currentMatchId+" "+winner.getNickname()+" :Wins the match!");
+        currentMatchState = MatchState.WaitingForPlayers;
+        for (SpellcastClient client : clients.values()) {
+            if (client.getState() == SpellcastClient.ClientState.Playing) {
+                client.setReady(false);
+                client.setHitpoints(0);
+                client.setMaxHitpoints(0);
+                client.resetHistory();
+                client.resetQuestions();
+                client.setState(SpellcastClient.ClientState.Identified);
+            }
+        }
+        broadcast_stats();
+    }
 
     private boolean askClientQuestions(SpellcastClient client) {
         if (client.hasUnansweredQuestions()) {
@@ -355,7 +396,7 @@ public abstract class SpellcastServer<ChannelType> {
         sendToClient(client, "310 Monsters:");
 //        for (SpellcastClient c : clients.values()) {
 //        }
-        sendToClient(client, "302 End of Monsters");
+        sendToClient(client, "312 End of Monsters");
 
     }
 
