@@ -23,6 +23,8 @@ import io.netty.util.CharsetUtil;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Random;
@@ -61,6 +63,9 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         rightComboBox.setModel(new Icons.IconComboBoxModel(Hand.Right));
         rightComboBox.setRenderer(new GestureComboBoxRenderer());
         rightComboBox.setUI(new MetalComboBoxUI());
+
+        DefaultCaret caret = (DefaultCaret) gameLog.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 
         playPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -327,22 +332,9 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private void $$$setupUI$$$() {
         contentPanel = new JPanel();
         contentPanel.setLayout(new GridBagLayout());
-        gameLog = new JTextArea();
-        gameLog.setEditable(false);
-        gameLog.setLineWrap(true);
-        gameLog.setRows(0);
-        GridBagConstraints gbc;
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 5;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.ipady = 10;
-        contentPanel.add(gameLog, gbc);
         playPanel = new JPanel();
         playPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -378,6 +370,21 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.WEST;
         contentPanel.add(leftComboBox, gbc);
+        final JScrollPane scrollPane1 = new JScrollPane();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 5;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(scrollPane1, gbc);
+        gameLog = new JTextArea();
+        gameLog.setColumns(80);
+        gameLog.setEditable(false);
+        gameLog.setLineWrap(true);
+        gameLog.setRows(0);
+        scrollPane1.setViewportView(gameLog);
     }
 
     /**
