@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.swing.dialogs;
 
 import com.hlidskialf.spellcast.swing.Gender;
+import com.hlidskialf.spellcast.swing.NameChangeListener;
 import com.hlidskialf.spellcast.swing.Player;
 import com.hlidskialf.spellcast.swing.SpellcastForm;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -11,10 +12,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class JoinGameDialog extends JDialog {
-    private SpellcastForm parentForm;
-    private JTextField serverHostname;
-    private JTextField serverPort;
+public class ChangeNameDialog extends JDialog {
+
+    private final NameChangeListener nameChangeListener;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -23,11 +23,8 @@ public class JoinGameDialog extends JDialog {
     protected JRadioButton femaleRadioButton;
     protected JRadioButton maleRadioButton;
 
-
-   private ActionListener listener;
-
-    public JoinGameDialog(SpellcastForm parentForm) {
-        this.parentForm = parentForm;
+    public ChangeNameDialog(NameChangeListener nameChangeListener) {
+        this.nameChangeListener = nameChangeListener;
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -60,14 +57,10 @@ public class JoinGameDialog extends JDialog {
     }
 
     private void onOK() {
-        String hostname = serverHostname.getText();
-        int port = Integer.valueOf(serverPort.getText());
-
         String name = wizardName.getText();
         String gender = selectedGender();
-        if (!(name.trim().equals("") || hostname.trim().equals("") || port < 0 || port > 65535)) {
-            parentForm.onNameChanged(name, gender);
-            parentForm.connectToServer(hostname, port);
+        if (!name.trim().equals("")) {
+            nameChangeListener.onNameChanged(name, gender);
         }
 
         dispose();
@@ -134,10 +127,10 @@ public class JoinGameDialog extends JDialog {
         buttonCancel.setText("Cancel");
         panel2.add(buttonCancel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonOK = new JButton();
-        buttonOK.setText("Connect");
+        buttonOK.setText("Change Name");
         panel2.add(buttonOK, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -151,21 +144,9 @@ public class JoinGameDialog extends JDialog {
         final JLabel label2 = new JLabel();
         label2.setText("Wizard Gender");
         panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Server Hostname");
-        panel3.add(label3, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         wizardName = new JTextField();
         wizardName.setText("Player1");
         panel3.add(wizardName, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        serverHostname = new JTextField();
-        serverHostname.setText("localhost");
-        panel3.add(serverHostname, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        serverPort = new JTextField();
-        serverPort.setText("41075");
-        panel3.add(serverPort, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("Server Port");
-        panel3.add(label4, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         unspecifiedRadioButton = new JRadioButton();
         unspecifiedRadioButton.setSelected(true);
         unspecifiedRadioButton.setText("Unspecified");
@@ -176,8 +157,6 @@ public class JoinGameDialog extends JDialog {
         maleRadioButton = new JRadioButton();
         maleRadioButton.setText("Male");
         panel3.add(maleRadioButton, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JSeparator separator1 = new JSeparator();
-        panel3.add(separator1, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         ButtonGroup buttonGroup;
         buttonGroup = new ButtonGroup();
         buttonGroup.add(unspecifiedRadioButton);

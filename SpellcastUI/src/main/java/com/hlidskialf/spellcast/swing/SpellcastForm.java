@@ -2,10 +2,9 @@ package com.hlidskialf.spellcast.swing;
 
 import com.hlidskialf.spellcast.swing.components.GestureComboBoxRenderer;
 import com.hlidskialf.spellcast.swing.components.WizardPanel;
+import com.hlidskialf.spellcast.swing.dialogs.ChangeNameDialog;
 import com.hlidskialf.spellcast.swing.dialogs.JoinGameDialog;
 import com.hlidskialf.spellcast.swing.dialogs.ReferenceDialog;
-import com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel;
-import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -24,14 +23,13 @@ import io.netty.util.CharsetUtil;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.synth.SynthLookAndFeel;
 import java.awt.*;
 import java.awt.event.*;
 
 /**
  * Created by wiggins on 1/11/15.
  */
-public class SpellcastForm {
+public class SpellcastForm implements NameChangeListener {
     private static JFrame frame;
 
     private JPanel contentPanel;
@@ -44,6 +42,8 @@ public class SpellcastForm {
     private Channel channel;
     private Player wizard;
     private WizardPanel wizardPanel;
+    private JMenuItem joinMenuItem;
+    private JMenuItem disconnectMenuItem;
 
     public SpellcastForm() {
 
@@ -119,25 +119,35 @@ public class SpellcastForm {
     public JMenuBar buildMenuBar() {
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu file = new JMenu("File");
-        JMenuItem joinAction = new JMenuItem("Join Game");
-        joinAction.addActionListener(new ActionListener() {
+        JMenu file = new JMenu("Game");
+
+        JMenuItem changeNameItem = new JMenuItem("Change Name");
+        changeNameItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                onChangeName();
+            }
+        });
+        file.add(changeNameItem);
+
+        joinMenuItem = new JMenuItem("Join Game");
+        joinMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 onJoinGame();
             }
         });
-        file.add(joinAction);
+        file.add(joinMenuItem);
 
-        JMenuItem disconnectAction = new JMenuItem("Disconnect");
-        disconnectAction.addActionListener(new ActionListener() {
+        disconnectMenuItem = new JMenuItem("Disconnect");
+        disconnectMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 onDisconnect();
             }
         });
-        disconnectAction.setEnabled(false);
-        file.add(disconnectAction);
+        disconnectMenuItem.setEnabled(false);
+        file.add(disconnectMenuItem);
 
         JMenuItem saveAction = new JMenuItem("Save log...");
         saveAction.addActionListener(new ActionListener() {
@@ -160,9 +170,8 @@ public class SpellcastForm {
         menuBar.add(file);
 
 
-
         JMenu spells = new JMenu("Spells");
-        JMenuItem referenceAction = new JMenuItem("Show Spells");
+        JMenuItem referenceAction = new JMenuItem("Spell list");
         referenceAction.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -180,9 +189,16 @@ public class SpellcastForm {
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 
+    private void onChangeName() {
+        ChangeNameDialog changeNameDialog = new ChangeNameDialog(this);
+        changeNameDialog.pack();
+        changeNameDialog.setPlayer(wizard);
+        changeNameDialog.setVisible(true);
+    }
     private void onJoinGame() {
         JoinGameDialog joinGameDialog = new JoinGameDialog(this);
         joinGameDialog.pack();
+        joinGameDialog.setPlayer(wizard);
         joinGameDialog.setVisible(true);
     }
 
@@ -218,6 +234,9 @@ public class SpellcastForm {
             @Override
             public void operationComplete(final ChannelFuture channelFuture) throws Exception {
                 channel = channelFuture.channel();
+
+                joinMenuItem.setEnabled(false);
+                disconnectMenuItem.setEnabled(true);
                 channel.closeFuture().addListener(new ChannelFutureListener() {
                     @Override
                     public void operationComplete(final ChannelFuture channelFuture) throws Exception {
@@ -238,6 +257,17 @@ public class SpellcastForm {
             channel.writeAndFlush(message + "\r\n");
         }
     }
+
+
+    @Override
+    public void onNameChanged(String name, String gender) {
+        wizard.setName(name);
+        wizard.setGender(gender);
+        wizardPanel.onNameChanged(name, gender);
+    }
+
+
+
 
 
     {
@@ -272,7 +302,7 @@ public class SpellcastForm {
         gbc.ipady = 10;
         contentPanel.add(gameLog, gbc);
         playPanel = new JPanel();
-        playPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        playPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -316,4 +346,5 @@ public class SpellcastForm {
     public JComponent $$$getRootComponent$$$() {
         return contentPanel;
     }
+
 }

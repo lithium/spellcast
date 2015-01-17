@@ -1,5 +1,6 @@
 package com.hlidskialf.spellcast.swing.components;
 
+import com.hlidskialf.spellcast.swing.NameChangeListener;
 import com.hlidskialf.spellcast.swing.Player;
 import com.hlidskialf.spellcast.swing.components.GestureHistoryPanel;
 import com.hlidskialf.spellcast.swing.components.PlayerStatusPanel;
@@ -12,7 +13,7 @@ import java.util.Map;
 /**
  * Created by wiggins on 1/15/15.
  */
-public class WizardPanel extends JPanel {
+public class WizardPanel extends JPanel implements NameChangeListener {
     private JPanel monsterPanel;
     private PlayerStatusPanel statusPanel;
     private Player wizard;
@@ -30,6 +31,9 @@ public class WizardPanel extends JPanel {
 
     public void setWizard(Player wizard) {
         this.wizard = wizard;
+        sync();
+    }
+    private void sync() {
         statusPanel.setPlayer(wizard);
         updateMonsters();
     }
@@ -43,6 +47,7 @@ public class WizardPanel extends JPanel {
                 monsterStatusPanel = new PlayerStatusPanel(monster);
                 monsterStatusPanel.setFontSize(10);
                 monsterPanel.add(monsterStatusPanel);
+                monsterStatuses.put(monster, monsterStatusPanel);
             }
             monsterStatusPanel.sync();
         }
@@ -78,4 +83,10 @@ public class WizardPanel extends JPanel {
 
     }
 
+    @Override
+    public void onNameChanged(String name, String gender) {
+        wizard.setName(name);
+        wizard.setGender(gender);
+        sync();
+    }
 }
