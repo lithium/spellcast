@@ -109,7 +109,7 @@ public abstract class SpellcastServer<ChannelType> {
             } else if (command.equals("SAY")) {
                 String txt = message.substring(4);
                 broadcast("201 " + client.getNickname() + " :" + txt, null);
-            } else if (currentRoundState == RoundState.NotPlaying && command.equals("READY")) {
+            } else if (currentMatchState == MatchState.WaitingForPlayers && command.equals("READY")) {
                 if (client.getState() == SpellcastClient.ClientState.Identified) {
                     client.setReady(true);
                     broadcast(client.get301(), null);
@@ -117,6 +117,7 @@ public abstract class SpellcastServer<ChannelType> {
                 }
             } else if (command.equals("YIELD")) {
                 if (client.getState() == SpellcastClient.ClientState.Identified) {
+                    // client indicates they aren't ready for the match to start
                     client.setReady(false);
                     broadcast(client.get301(), null);
                 }
