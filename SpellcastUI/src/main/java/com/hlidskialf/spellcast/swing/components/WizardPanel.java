@@ -33,7 +33,7 @@ public class WizardPanel extends JPanel implements NameChangeListener {
         this.wizard = wizard;
         sync();
     }
-    private void sync() {
+    public void sync() {
         statusPanel.setPlayer(wizard);
         updateMonsters();
     }
@@ -89,4 +89,6 @@ public class WizardPanel extends JPanel implements NameChangeListener {
         wizard.setGender(gender);
         sync();
     }
+
+
 }

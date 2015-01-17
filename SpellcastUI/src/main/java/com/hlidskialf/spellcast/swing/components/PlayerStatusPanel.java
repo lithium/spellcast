@@ -40,7 +40,7 @@ public class PlayerStatusPanel extends JPanel {
         nameLabel.setText(player.getName());
         hpProgress.setMaximum(player.getMaxHP());
         hpProgress.setValue(player.getCurrentHP());
-        String tooltip = String.format("%s: %s/%s", player.getName(), player.getCurrentHP(), player.getMaxHP());
+        String tooltip = String.format("%s: %s/%s", player.getNickname(), player.getCurrentHP(), player.getMaxHP());
         setToolTipText(tooltip);
     }
 
@@ -53,4 +53,5 @@ public class PlayerStatusPanel extends JPanel {
         this.player = player;
         sync();
     }
+
 }

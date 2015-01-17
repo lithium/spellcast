@@ -27,7 +27,10 @@ import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -47,8 +50,13 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private WizardPanel wizardPanel;
     private JMenuItem joinMenuItem;
     private JMenuItem disconnectMenuItem;
+    private Map<Player, WizardPanel> opponentPanels;
+    private Map<String, Player> opponents;
 
     public SpellcastForm() {
+
+        opponentPanels = new HashMap<Player, WizardPanel>();
+        opponents = new HashMap<String, Player>();
 
         wizard = new Player("player1");
         wizardPanel = new WizardPanel(wizard);
@@ -113,7 +121,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
 
         Container container = frame.getContentPane();
-        container.setPreferredSize(new Dimension(800, 700));
+        container.setPreferredSize(new Dimension(900, 700));
         frame.pack();
         frame.setVisible(true);
     }
@@ -279,7 +287,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
 
     /*
-     * Spellcast Message
+     * Spellcast Messages
      */
 
     @Override
@@ -295,7 +303,59 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     @Override
     public void onWizardStatus(SpellcastChannel channel, String[] message) {
+        // 301 <nick> <hp | - | +> <gender> <real name>
 
+        Player player = playerByNickname(message[1]);
+        player.setGender(message[3]);
+        player.setName(message[4]);
+
+        if ("-".equals(message[2]) || "+".equals(message[2])) {
+            //observing
+
+        } else {
+            String[] hp = message[2].split("/");
+            player.setMaxHP(Integer.valueOf(hp[1]));
+            player.setCurrentHP(Integer.valueOf(hp[0]));
+        }
+        WizardPanel panel = wizardPanelForPlayer(player);
+        panel.sync();
+
+
+
+
+    }
+
+    private Player playerByNickname(String nickname) {
+        if (nickname == null) {
+            return null;
+        }
+        if (nickname.equals(wizard.getNickname())) {
+            return wizard;
+        }
+        if (opponents.containsKey(nickname)) {
+            return opponents.get(nickname);
+        }
+        Player newPlayer = new Player(nickname);
+        opponents.put(nickname, newPlayer);
+        return newPlayer;
+    }
+
+    private WizardPanel wizardPanelForPlayer(Player player) {
+        if (player == null) {
+            return null;
+        }
+        if (player.equals(wizard)) {
+            return wizardPanel;
+        }
+        if (opponentPanels.containsKey(player)) {
+            return opponentPanels.get(player);
+        }
+
+        //no panel yet
+        WizardPanel panel = new WizardPanel(player);
+        opponentPanels.put(player, panel);
+        playPanel.add(panel);
+        return panel;
     }
 
     @Override
@@ -309,6 +369,8 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         int idx = new Random().nextInt(nick.length());
         String newnick = nick.substring(idx) + nick.substring(0, idx) + idx;
         wizard.setNickname(newnick);
+        wizard.setName(newnick);
+        wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
 
         //retry with new nickname
         onWelcome(channel, message);
