@@ -49,7 +49,7 @@ Chat
 ----
 *client wants to change their visible name*
 
-    NAME :wizard name
+    NAME <gender> :wizard name
     -- server sends a new 301 to each other client
 
 *client greets the room*

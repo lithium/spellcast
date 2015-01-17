@@ -265,7 +265,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         wizard.setGender(gender);
         wizardPanel.onNameChanged(wizard.getName(), wizard.getGender());
         if (channel != null) { // connected so tell server our new visible name
-            channel.writeAndFlush("NAME :" + wizard.getName() + "\r\n");
+            channel.writeAndFlush("NAME " + wizard.getGender() + " :" + wizard.getName() + "\r\n");
         } else {
             wizard.setNickname(name.toLowerCase().replace("\\W", "")); // disconnected so update nickname
         }
