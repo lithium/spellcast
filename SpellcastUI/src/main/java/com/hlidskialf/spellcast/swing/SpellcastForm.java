@@ -29,7 +29,7 @@ import java.awt.event.*;
 /**
  * Created by wiggins on 1/11/15.
  */
-public class SpellcastForm implements NameChangeListener {
+public class SpellcastForm implements NameChangeListener, SpellcastMessage.MessageListener {
     private static JFrame frame;
 
     private JPanel contentPanel;
@@ -195,6 +195,7 @@ public class SpellcastForm implements NameChangeListener {
         changeNameDialog.setPlayer(wizard);
         changeNameDialog.setVisible(true);
     }
+
     private void onJoinGame() {
         JoinGameDialog joinGameDialog = new JoinGameDialog(this);
         joinGameDialog.pack();
@@ -267,7 +268,13 @@ public class SpellcastForm implements NameChangeListener {
     }
 
 
-
+    /*
+     * Spellcast Message
+     */
+    @Override
+    public void onWelcome(SpellcastChannel channel, String[] message) {
+        channel.writeMessage("NAME " + wizard.getName());
+    }
 
 
     {
@@ -346,5 +353,4 @@ public class SpellcastForm implements NameChangeListener {
     public JComponent $$$getRootComponent$$$() {
         return contentPanel;
     }
-
 }
