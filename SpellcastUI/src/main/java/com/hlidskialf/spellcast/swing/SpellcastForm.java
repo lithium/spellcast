@@ -45,6 +45,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private JPanel playPanel;
     private JComboBox rightComboBox;
     private JComboBox leftComboBox;
+    private JPanel inputPanel;
     private Channel channel;
     private Player wizard;
     private WizardPanel wizardPanel;
@@ -74,50 +75,23 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         contentPanel.setLayout(new GridBagLayout());
         playPanel = new JPanel();
         playPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        playPanel.setMinimumSize(new Dimension(10, 450));
+        playPanel.setPreferredSize(new Dimension(10, 450));
         GridBagConstraints gbc;
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         contentPanel.add(playPanel, gbc);
-        rightComboBox = new JComboBox();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        contentPanel.add(rightComboBox, gbc);
-        sendButton = new JButton();
-        sendButton.setText("Send");
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        contentPanel.add(sendButton, gbc);
-        chatInput = new JTextField();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 3;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        contentPanel.add(chatInput, gbc);
-        leftComboBox = new JComboBox();
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        contentPanel.add(leftComboBox, gbc);
         final JScrollPane scrollPane1 = new JScrollPane();
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
-        gbc.gridwidth = 5;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.ipadx = 10;
         contentPanel.add(scrollPane1, gbc);
         gameLog = new JTextArea();
         gameLog.setColumns(80);
@@ -125,6 +99,41 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         gameLog.setLineWrap(true);
         gameLog.setRows(0);
         scrollPane1.setViewportView(gameLog);
+        inputPanel = new JPanel();
+        inputPanel.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        contentPanel.add(inputPanel, gbc);
+        leftComboBox = new JComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        inputPanel.add(leftComboBox, gbc);
+        rightComboBox = new JComboBox();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        inputPanel.add(rightComboBox, gbc);
+        sendButton = new JButton();
+        sendButton.setText("Send");
+        gbc = new GridBagConstraints();
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        inputPanel.add(sendButton, gbc);
+        chatInput = new JTextField();
+        gbc = new GridBagConstraints();
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        inputPanel.add(chatInput, gbc);
     }
 
     /**
@@ -148,7 +157,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         opponentPanels = new HashMap<Player, WizardPanel>();
         opponents = new HashMap<String, Player>();
 
-        wizard = new Player("player1");
+        wizard = new Player("Wizard");
         wizardPanel = new WizardPanel(wizard);
 
         playPanel.add(wizardPanel);
@@ -166,7 +175,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
 
-        playPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
+//        playPanel.setBorder(BorderFactory.createLineBorder(Color.RED));
 
 
         chatInput.addKeyListener(
@@ -219,7 +228,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
 
         Container container = frame.getContentPane();
-        container.setPreferredSize(new Dimension(900, 700));
+        container.setPreferredSize(new Dimension(700, 700));
         frame.pack();
         frame.setVisible(true);
     }
@@ -426,6 +435,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private WizardPanel wizardPanelForNickname(String nickname) {
         return wizardPanelForPlayer(playerByNickname(nickname));
     }
+
     private WizardPanel wizardPanelForPlayer(Player player) {
         if (player == null) {
             return null;
