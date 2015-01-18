@@ -327,7 +327,9 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     }
 
     private void onDisconnect() {
-
+        if (channel != null) {
+            channel.close();
+        }
     }
 
     private void onSaveLog() {
@@ -402,6 +404,14 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
             sendButton.setText("Ready");
         } else if (gameState == GameState.ReadyAndWaitingForMatch) {
             sendButton.setText("Yield");
+        } else if (gameState == GameState.Disconnected && opponentPanels.size() > 0) {
+            for (WizardPanel p : opponentPanels.values()) {
+                playPanel.remove(p);
+                opponentPanels.remove(p);
+            }
+            playPanel.revalidate();
+            playPanel.repaint();
+            opponents.clear();
         }
 
     }
