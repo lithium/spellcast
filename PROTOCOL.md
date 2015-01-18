@@ -82,6 +82,8 @@ Chat
 *when all players have indicated ready, server broadcasts*
 
     250 <match-id> :Match start
+    252 <match-id> :Waiting for players
+    253 <match-id> :Match in-progress
 
 
 

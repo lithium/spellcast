@@ -18,6 +18,18 @@ public class SpellcastMessage {
     public static final String MonsterStatus = "311";
     public static final String MonsterStatusEnd = "312";
 
+    public static final String MatchStart = "250";
+    public static final String RoundStart = "251";
+    public static final String MatchWaitingForPlayers = "252";
+    public static final String MatchInProgress = "253";
+
+    public static final String AskForGestures = "320";
+    public static final String GesturesReady = "321";
+    public static final String GesturesForRoundBegin = "330";
+    public static final String GesturesForRound = "331";
+    public static final String GesturesForRoundEnd = "332";
+
+
     public static final String NicknameInUseError = "400";
 
     public static String[] splitMessage(String message) {
@@ -51,6 +63,24 @@ public class SpellcastMessage {
         else if (MonsterStatus.equals(parts[0])) {
             listener.onMonsterStatus(channel, parts);
         }
+        else if (MatchStart.equals(parts[0])) {
+            listener.onMatchStart(channel, parts);
+        }
+        else if (MatchInProgress.equals(parts[0])) {
+            listener.onMatchInProgress(channel, parts);
+        }
+        else if (RoundStart.equals(parts[0])) {
+            listener.onRoundStart(channel, parts);
+        }
+        else if (AskForGestures.equals(parts[0])) {
+            listener.onAskForGestures(channel, parts);
+        }
+        else if (GesturesReady.equals(parts[0])) {
+            listener.onGesturesReady(channel, parts);
+        }
+        else if (GesturesForRound.equals(parts[0])) {
+            listener.onGesturesForRound(channel, parts);
+        }
         else if (NicknameInUseError.equals(parts[0])) {
             listener.errorNicknameInUse(channel, parts);
         }
@@ -65,6 +95,15 @@ public class SpellcastMessage {
 
         public void onWizardStatus(SpellcastChannel channel, String[] message);
         public void onMonsterStatus(SpellcastChannel channel, String[] message);
+
+
+        public void onMatchStart(SpellcastChannel channel, String[] message);
+        public void onMatchInProgress(SpellcastChannel channel, String[] message);
+        public void onRoundStart(SpellcastChannel channel, String[] message);
+
+        public void onAskForGestures(SpellcastChannel channel, String[] message);
+        public void onGesturesReady(SpellcastChannel channel, String[] message);
+        public void onGesturesForRound(SpellcastChannel channel, String[] message);
 
         public void errorNicknameInUse(SpellcastChannel channel, String[] message);
     }
