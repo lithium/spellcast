@@ -423,6 +423,9 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         return newPlayer;
     }
 
+    private WizardPanel wizardPanelForNickname(String nickname) {
+        return wizardPanelForPlayer(playerByNickname(nickname));
+    }
     private WizardPanel wizardPanelForPlayer(Player player) {
         if (player == null) {
             return null;
@@ -532,6 +535,10 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     @Override
     public void onGesturesForRound(SpellcastChannel channel, String[] message) {
+        // 331 <round-id> <nickname> <left> <right>
+
+        WizardPanel panel = wizardPanelForNickname(message[2]);
+        panel.addGestures(message[3], message[4]);
 
     }
 

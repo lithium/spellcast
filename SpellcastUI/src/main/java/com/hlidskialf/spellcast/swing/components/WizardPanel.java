@@ -91,4 +91,7 @@ public class WizardPanel extends JPanel implements NameChangeListener {
     }
 
 
+    public void addGestures(String left, String right) {
+        gestureHistoryPanel.addGestures(left, right);
+    }
 }

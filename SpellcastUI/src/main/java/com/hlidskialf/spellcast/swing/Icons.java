@@ -71,19 +71,33 @@ public class Icons {
         }
     }
 
-//    private static ImageIcon gesture(char gesture) {
-//        switch (gesture) {
-//            case 'C': return clap;
-//            case 'W': return wave;
-//            case 'S': return snap;
-//            case 'F': return fingers;
-//            case 'P': return palm;
-//            case 'D': return digit;
-//            case 'K': return stab;
-//            case '_': return nothing;
-//        }
-//        return null;
-//    }
+    public static ImageIcon iconForGesture(Hand hand, char gesture) {
+        if (hand == Hand.Left) {
+            switch (gesture) {
+                case 'C': return Left.clap;
+                case 'W': return Left.wave;
+                case 'S': return Left.snap;
+                case 'F': return Left.fingers;
+                case 'P': return Left.palm;
+                case 'D': return Left.digit;
+                case 'K': return Left.stab;
+                case '_': return Left.nothing;
+            }
+        }
+        else if (hand == Hand.Right) {
+            switch (gesture) {
+                case 'C': return Right.clap;
+                case 'W': return Right.wave;
+                case 'S': return Right.snap;
+                case 'F': return Right.fingers;
+                case 'P': return Right.palm;
+                case 'D': return Right.digit;
+                case 'K': return Right.stab;
+                case '_': return Right.nothing;
+            }
+        }
+        return null;
+    }
 
 //    private static ImageIcon imageIcon(String path, String description) {
 //        URL url = Main.class.getClassLoader().getResource(path);
