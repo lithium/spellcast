@@ -1,7 +1,6 @@
 package com.hlidskialf.spellcast.swing.components;
 
 import com.hlidskialf.spellcast.swing.Hand;
-import com.hlidskialf.spellcast.swing.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +27,7 @@ public class GestureImageIcon extends ImageIcon {
 
     @Override
     public synchronized void paintIcon(Component component, Graphics graphics, int x, int y) {
-        if (hand == Hand.Left) {
+        if (hand == Hand.left) {
             Graphics2D g = (Graphics2D)graphics.create();
             g.translate(getIconWidth(), 0);
             g.scale(-1, 1);

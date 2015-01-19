@@ -73,8 +73,8 @@ public class GestureHistoryPanel extends JPanel {
         int l = leftGestures.size()-1;
         for (int i=0; i < gestureHistorySize; i++) {
             if (l >= 0) {
-                leftGestureLabels[i].setIcon(Icons.iconForGesture(Hand.Left, leftGestures.get(l).charAt(0)));
-                rightGestureLabels[i].setIcon(Icons.iconForGesture(Hand.Right, rightGestures.get(l).charAt(0)));
+                leftGestureLabels[i].setIcon(Icons.iconForGesture(Hand.left, leftGestures.get(l).charAt(0)));
+                rightGestureLabels[i].setIcon(Icons.iconForGesture(Hand.right, rightGestures.get(l).charAt(0)));
                 l -= 1;
             } else {
                 leftGestureLabels[i].setIcon(Icons.Left.nothing);

@@ -29,6 +29,15 @@ public class SpellcastMessage {
     public static final String GesturesForRound = "331";
     public static final String GesturesForRoundEnd = "332";
 
+    public static final String QuestionsBegin = "340";
+    public static final String AskForSpell = "341";
+    public static final String SpellAnswerOption = "342";
+    public static final String SpellOptionsEnd = "343";
+    public static final String AskForTarget = "345";
+    public static final String TargetAnswerOption = "346";
+    public static final String TargetOptionsEnd = "347";
+    public static final String QuestionsEnd = "349";
+
 
     public static final String NicknameInUseError = "400";
 
@@ -81,6 +90,26 @@ public class SpellcastMessage {
         else if (GesturesForRound.equals(parts[0])) {
             listener.onGesturesForRound(channel, parts);
         }
+
+        else if (AskForSpell.equals(parts[0])) {
+            listener.onAskForSpell(channel, parts);
+        }
+        else if (SpellAnswerOption.equals(parts[0])) {
+            listener.onSpellOption(channel, parts);
+        }
+        else if (SpellOptionsEnd.equals(parts[0])) {
+            listener.onSpellOptionsEnd(channel, parts);
+        }
+        else if (AskForTarget.equals(parts[0])) {
+            listener.onAskForTarget(channel, parts);
+        }
+        else if (TargetAnswerOption.equals(parts[0])) {
+            listener.onTargetOption(channel, parts);
+        }
+        else if (TargetOptionsEnd.equals(parts[0])) {
+            listener.onTargetOptionsEnd(channel, parts);
+        }
+
         else if (NicknameInUseError.equals(parts[0])) {
             listener.errorNicknameInUse(channel, parts);
         }
@@ -104,6 +133,13 @@ public class SpellcastMessage {
         public void onAskForGestures(SpellcastChannel channel, String[] message);
         public void onGesturesReady(SpellcastChannel channel, String[] message);
         public void onGesturesForRound(SpellcastChannel channel, String[] message);
+
+        public void onAskForSpell(SpellcastChannel channel, String[] message);
+        public void onSpellOption(SpellcastChannel channel, String[] message);
+        public void onSpellOptionsEnd(SpellcastChannel channel, String[] message);
+        public void onAskForTarget(SpellcastChannel channel, String[] message);
+        public void onTargetOption(SpellcastChannel channel, String[] message);
+        public void onTargetOptionsEnd(SpellcastChannel channel, String[] message);
 
         public void errorNicknameInUse(SpellcastChannel channel, String[] message);
     }

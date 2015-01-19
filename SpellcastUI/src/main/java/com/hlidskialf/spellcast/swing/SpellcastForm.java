@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.swing;
 
 import com.hlidskialf.spellcast.swing.components.GestureComboBoxRenderer;
+import com.hlidskialf.spellcast.swing.components.QuestionPanel;
 import com.hlidskialf.spellcast.swing.components.WizardPanel;
 import com.hlidskialf.spellcast.swing.dialogs.ChangeNameDialog;
 import com.hlidskialf.spellcast.swing.dialogs.JoinGameDialog;
@@ -23,14 +24,12 @@ import io.netty.util.CharsetUtil;
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalComboBoxUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -46,6 +45,7 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private JComboBox rightComboBox;
     private JComboBox leftComboBox;
     private JPanel inputPanel;
+    private JPanel answerPanel;
     private Channel channel;
     private Player wizard;
     private WizardPanel wizardPanel;
@@ -53,6 +53,8 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
     private JMenuItem disconnectMenuItem;
     private Map<Player, WizardPanel> opponentPanels;
     private Map<String, Player> opponents;
+
+    private Map<Hand, QuestionPanel> questionPanels;
 
     private GameState gameState;
 
@@ -134,6 +136,14 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(chatInput, gbc);
+        answerPanel = new JPanel();
+        answerPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        inputPanel.add(answerPanel, gbc);
     }
 
     /**
@@ -154,6 +164,8 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     public SpellcastForm() {
 
+        questionPanels = new HashMap<Hand, QuestionPanel>();
+
         opponentPanels = new HashMap<Player, WizardPanel>();
         opponents = new HashMap<String, Player>();
 
@@ -163,11 +175,11 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
         playPanel.add(wizardPanel);
 
 
-        leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.Left));
+        leftComboBox.setModel(new Icons.IconComboBoxModel(Hand.left));
         leftComboBox.setRenderer(new GestureComboBoxRenderer());
         leftComboBox.setUI(new MetalComboBoxUI());
 
-        rightComboBox.setModel(new Icons.IconComboBoxModel(Hand.Right));
+        rightComboBox.setModel(new Icons.IconComboBoxModel(Hand.right));
         rightComboBox.setRenderer(new GestureComboBoxRenderer());
         rightComboBox.setUI(new MetalComboBoxUI());
 
@@ -350,6 +362,12 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
             ImageIcon rightItem = (ImageIcon) rightComboBox.getSelectedItem();
 
             sendMessage("GESTURE " + leftItem.getDescription().charAt(0) + " " + rightItem.getDescription().charAt(0));
+        } else if (gameState == GameState.Answering) {
+            for (QuestionPanel qp : questionPanels.values()) {
+                sendMessage("ANSWER " + qp.getHand() + " " + qp.getAnswer());
+            }
+            questionPanels.clear();
+            answerPanel.removeAll();
         }
     }
 
@@ -412,8 +430,19 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
             playPanel.revalidate();
             playPanel.repaint();
             opponents.clear();
+            sendButton.setText("Connect");
         }
 
+    }
+
+    private void syncQuestionUI() {
+        if (gameState == GameState.Answering) {
+            sendButton.setText("Answer");
+        } else {
+            answerPanel.removeAll();
+            answerPanel.revalidate();
+            answerPanel.repaint();
+        }
     }
 
 
@@ -559,6 +588,59 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
         WizardPanel panel = wizardPanelForNickname(message[2]);
         panel.addGestures(message[3], message[4]);
+
+    }
+
+    @Override
+    public void onAskForSpell(SpellcastChannel channel, String[] message) {
+        //341 <hand> <spell>  :which spell to cast
+        Hand hand = Hand.valueOf(message[1]);
+        QuestionPanel qPanel = new QuestionPanel(hand, QuestionPanel.QuestionType.Spell, message[2]);
+        questionPanels.put(hand, qPanel);
+        answerPanel.add(qPanel);
+        gameState = GameState.Answering;
+        syncQuestionUI();
+    }
+
+    @Override
+    public void onSpellOption(SpellcastChannel channel, String[] message) {
+        //342 <hand> <spell>  :spell name
+        Hand hand = Hand.valueOf(message[1]);
+        QuestionPanel qPanel = questionPanels.get(hand);
+        if (qPanel != null) {
+            qPanel.addOption(message[2]);
+        }
+    }
+
+    @Override
+    public void onSpellOptionsEnd(SpellcastChannel channel, String[] message) {
+        //343 <hand>
+    }
+
+    @Override
+    public void onAskForTarget(SpellcastChannel channel, String[] message) {
+        //345 <hand> <spell>  :which target for spell
+        Hand hand = Hand.valueOf(message[1]);
+        QuestionPanel qPanel = new QuestionPanel(hand, QuestionPanel.QuestionType.Target, message[2]);
+        questionPanels.put(hand, qPanel);
+        answerPanel.add(qPanel);
+        gameState = GameState.Answering;
+        syncQuestionUI();
+    }
+
+    @Override
+    public void onTargetOption(SpellcastChannel channel, String[] message) {
+        //346 <hand> <nickname> :visible name
+        Hand hand = Hand.valueOf(message[1]);
+        QuestionPanel qPanel = questionPanels.get(hand);
+        if (qPanel != null) {
+            qPanel.addOption(message[2]);
+        }
+    }
+
+    @Override
+    public void onTargetOptionsEnd(SpellcastChannel channel, String[] message) {
+        //347 <hand> :end of targets
 
     }
 

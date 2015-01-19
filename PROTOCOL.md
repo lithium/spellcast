@@ -113,11 +113,11 @@ Round
     340 <match-id>.<roundNumber> Questions:
 
     341 <left | right> :Which spell to cast with hand
-    342 <spell> :Spell Name
+    342 <left | right> <spell> :Spell Name
     343 end of spell options
 
     345 <left | right> <spell | stab> :Which target to <stab | cast spell> at with hand
-    346 <target> :Visible Name
+    346 <left | right> <target> :Visible Name
     347 end of target options
 
     349 end of questions

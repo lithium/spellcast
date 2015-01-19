@@ -4,7 +4,6 @@ import com.hlidskialf.spellcast.swing.components.GestureImageIcon;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URL;
 
 /**
  * Created by wiggins on 1/15/15.
@@ -12,25 +11,25 @@ import java.net.URL;
 public class Icons {
 
     public static class Left {
-        public static final ImageIcon clap = GestureImageIcon.fromResource(Hand.Left, "icon/clap.png", "Clap");
-        public static final ImageIcon wave = GestureImageIcon.fromResource(Hand.Left, "icon/wave.png", "Wave");
-        public static final ImageIcon snap = GestureImageIcon.fromResource(Hand.Left, "icon/snap.png", "Snap");
-        public static final ImageIcon fingers = GestureImageIcon.fromResource(Hand.Left, "icon/fingers.png", "Fingers");
-        public static final ImageIcon palm = GestureImageIcon.fromResource(Hand.Left, "icon/palm.png", "Palm");
-        public static final ImageIcon digit = GestureImageIcon.fromResource(Hand.Left, "icon/digit.png", "Digit");
-        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.Left, "icon/stab.png", "Stab");
-        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.Left, "icon/nothing.png", "Nothing");
+        public static final ImageIcon clap = GestureImageIcon.fromResource(Hand.left, "icon/clap.png", "Clap");
+        public static final ImageIcon wave = GestureImageIcon.fromResource(Hand.left, "icon/wave.png", "Wave");
+        public static final ImageIcon snap = GestureImageIcon.fromResource(Hand.left, "icon/snap.png", "Snap");
+        public static final ImageIcon fingers = GestureImageIcon.fromResource(Hand.left, "icon/fingers.png", "Fingers");
+        public static final ImageIcon palm = GestureImageIcon.fromResource(Hand.left, "icon/palm.png", "Palm");
+        public static final ImageIcon digit = GestureImageIcon.fromResource(Hand.left, "icon/digit.png", "Digit");
+        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.left, "icon/stab.png", "Stab");
+        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.left, "icon/nothing.png", "Nothing");
         public static final Object[] all = { clap, wave, snap, fingers, palm, digit, stab, nothing };
     }
     public static class Right {
-        public static final ImageIcon clap = GestureImageIcon.fromResource(Hand.Right, "icon/clap.png", "Clap");
-        public static final ImageIcon wave = GestureImageIcon.fromResource(Hand.Right, "icon/wave.png", "Wave");
-        public static final ImageIcon snap = GestureImageIcon.fromResource(Hand.Right, "icon/snap.png", "Snap");
-        public static final ImageIcon fingers = GestureImageIcon.fromResource(Hand.Right, "icon/fingers.png", "Fingers");
-        public static final ImageIcon palm = GestureImageIcon.fromResource(Hand.Right, "icon/palm.png", "Palm");
-        public static final ImageIcon digit = GestureImageIcon.fromResource(Hand.Right, "icon/digit.png", "Digit");
-        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.Right, "icon/stab.png", "Knife");
-        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.Right, "icon/nothing.png", "_nothing");
+        public static final ImageIcon clap = GestureImageIcon.fromResource(Hand.right, "icon/clap.png", "Clap");
+        public static final ImageIcon wave = GestureImageIcon.fromResource(Hand.right, "icon/wave.png", "Wave");
+        public static final ImageIcon snap = GestureImageIcon.fromResource(Hand.right, "icon/snap.png", "Snap");
+        public static final ImageIcon fingers = GestureImageIcon.fromResource(Hand.right, "icon/fingers.png", "Fingers");
+        public static final ImageIcon palm = GestureImageIcon.fromResource(Hand.right, "icon/palm.png", "Palm");
+        public static final ImageIcon digit = GestureImageIcon.fromResource(Hand.right, "icon/digit.png", "Digit");
+        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.right, "icon/stab.png", "Knife");
+        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.right, "icon/nothing.png", "_nothing");
         public static final Object[] all = { clap, wave, snap, fingers, palm, digit, stab, nothing };
     }
 
@@ -67,12 +66,12 @@ public class Icons {
         }
 
         private Object[] icons() {
-            return hand == Hand.Left ? Icons.Left.all : Icons.Right.all;
+            return hand == Hand.left ? Icons.Left.all : Icons.Right.all;
         }
     }
 
     public static ImageIcon iconForGesture(Hand hand, char gesture) {
-        if (hand == Hand.Left) {
+        if (hand == Hand.left) {
             switch (gesture) {
                 case 'C': return Left.clap;
                 case 'W': return Left.wave;
@@ -84,7 +83,7 @@ public class Icons {
                 case '_': return Left.nothing;
             }
         }
-        else if (hand == Hand.Right) {
+        else if (hand == Hand.right) {
             switch (gesture) {
                 case 'C': return Right.clap;
                 case 'W': return Right.wave;

@@ -332,6 +332,7 @@ public abstract class SpellcastServer<ChannelType> {
             sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
             questions(client, client.getLeftSpellQuestions(), "left");
             questions(client, client.getRightSpellQuestions(), "right");
+            //TODO: ask for targets of monsters
             sendToClient(client, "349 :End of Questions");
             return true;
         }
@@ -343,16 +344,20 @@ public abstract class SpellcastServer<ChannelType> {
         if (left > 1) {
             sendToClient(client, "341 "+hand+" :Cast which spell with "+hand+" hand");
             for (SpellQuestion q : spellQuestions) {
-                sendToClient(client, "342 " + q.getSpell().getSlug() + " :" + q.getSpell().getName());
+                sendToClient(client, "342 "+hand+" " + q.getSpell().getSlug() + " :" + q.getSpell().getName());
             }
+            sendToClient(client, "343 End of spells");
         } else if (left > 0) { // one spell to resolve, needs a target
             SpellQuestion q = spellQuestions.get(0);
             if (!q.hasTarget()) {
                 sendToClient(client, "345 "+hand+" "+ q.getSpell().getSlug() + " :Which target for "+hand+" hand");
+                for (SpellcastClient t : clients.values()) {
+                   sendToClient(client, "346 "+hand+" "+t.getNickname()+" :"+t.getVisibleName());
+                }
+                sendToClient(client, "347 End of targets");
             }
         }
 
-        //TODO: ask for targets of monsters
 
     }
 
