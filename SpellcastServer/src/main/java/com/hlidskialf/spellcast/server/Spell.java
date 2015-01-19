@@ -31,4 +31,7 @@ public class Spell {
     public String getSlug() {
         return slug;
     }
+
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, SpellcastClient target) {
+    }
 }

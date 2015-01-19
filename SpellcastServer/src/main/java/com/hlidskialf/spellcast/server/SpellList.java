@@ -1,12 +1,14 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.ShieldSpell;
+
 /**
  * Created by wiggins on 1/11/15.
  */
 public class SpellList {
 
     // protection spells
-    public static final Spell Shield = new Spell("Shield", "P");
+    public static final Spell Shield = new ShieldSpell("Shield", "P");
     public static final Spell RemoveEnchantment = new Spell("Remove Enchantment", "PDWP");
     public static final Spell MagicMirror = new Spell("Magic Mirror", "cw");
     public static final Spell Counterspell = new Spell("Counterspell", "WPP");

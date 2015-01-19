@@ -2,6 +2,7 @@ package com.hlidskialf.spellcast.server;
 
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -28,8 +29,9 @@ public class SpellcastClient {
     private boolean ready;
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
-
     private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
+
+    private ArrayList<SpellEffect> effects;
 
 
     public SpellcastClient(Object channel) {
@@ -40,6 +42,7 @@ public class SpellcastClient {
         this.rightGestures = new ArrayList<String>();
         leftSpellQuestions = new ArrayList<SpellQuestion>();
         rightSpellQuestions = new ArrayList<SpellQuestion>();
+        effects = new ArrayList<SpellEffect>();
     }
 
 
@@ -125,6 +128,37 @@ public class SpellcastClient {
             return "+";
         }
         return "-";
+    }
+
+
+    public boolean hasEffect(String effectName) {
+        return getEffect(effectName) != null;
+    }
+    public SpellEffect getEffect(String effectName) {
+        for (SpellEffect se : effects) {
+            if (se.getName().equals(effectName)) {
+                return se;
+            }
+        }
+        return null;
+    }
+    public boolean addEffect(SpellEffect effect) {
+        if (!hasEffect(effect.getName())) {
+            effects.add(effect);
+            return true;
+        }
+        return false;
+    }
+    public void expireEffects(SpellcastMatchState matchState) {
+        String matchId = matchState.getCurrentMatchId();
+        int roundNumber = matchState.getCurrentRoundNumber();
+        Iterator<SpellEffect> iterator = effects.iterator();
+        while (iterator.hasNext()) {
+            SpellEffect se = iterator.next();
+            if (!matchId.equals(se.getMatchId()) || roundNumber >= se.getRoundCast()+se.getDuration()) {
+                iterator.remove();
+            }
+        }
     }
 
     public String get301() {

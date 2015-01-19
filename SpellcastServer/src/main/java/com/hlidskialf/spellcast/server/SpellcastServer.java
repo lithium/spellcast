@@ -1,15 +1,16 @@
 package com.hlidskialf.spellcast.server;
 
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
+import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
  * Created by wiggins on 1/11/15.
  */
-public abstract class SpellcastServer<ChannelType> {
+public abstract class SpellcastServer<ChannelType> implements SpellcastMatchState {
     private HashMap<ChannelType, SpellcastClient> clients;
     private String serverName;
     private String serverVersion;
@@ -211,7 +212,31 @@ public abstract class SpellcastServer<ChannelType> {
         return false;
     }
 
-    private SpellcastClient getClientByNickname(String nickname) {
+    public Collection<SpellcastClient> getAllClients() {
+        return clients.values();
+    }
+
+    public void setClients(HashMap<ChannelType, SpellcastClient> clients) {
+        this.clients = clients;
+    }
+
+    public String getCurrentMatchId() {
+        return currentMatchId;
+    }
+
+    public int getCurrentRoundNumber() {
+        return currentRoundNumber;
+    }
+
+    public MatchState getCurrentMatchState() {
+        return currentMatchState;
+    }
+
+    public RoundState getCurrentRoundState() {
+        return currentRoundState;
+    }
+
+    public SpellcastClient getClientByNickname(String nickname) {
         for (SpellcastClient c : clients.values()) {
             if (c.getNickname() != null && c.getNickname().equals(nickname)) {
                 return c;
@@ -219,7 +244,6 @@ public abstract class SpellcastServer<ChannelType> {
         }
         return null;
     }
-
 
     private SpellcastClient checkForWinner() {
         SpellcastClient lastSeen=null;
@@ -294,6 +318,7 @@ public abstract class SpellcastServer<ChannelType> {
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.resetQuestions();
+            client.expireEffects(this);
             if (client.canGestureThisRound(currentRoundNumber)) {
                 broadcast("320 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :What are your gestures");
             }
@@ -348,7 +373,7 @@ public abstract class SpellcastServer<ChannelType> {
             SpellcastClient target = getClientByNickname(q.getTarget());
             if (!spell.getSlug().equals("stab")) {
                 broadcast("351 "+client.getNickname()+" CASTS "+spell.getSlug()+" AT "+target.getNickname()+" WITH "+hand);
-                //TODO: spell effects
+                spell.fireSpell(this, client, target);
             }
         }
     }
@@ -360,7 +385,11 @@ public abstract class SpellcastServer<ChannelType> {
                 broadcast("352 " + client.getNickname() + " STABS " + target.getNickname() + " WITH " + hand);
 
                 //TODO: dont take damage if target has shield effect
-                target.takeDamage(1);
+                if (target.hasEffect(ShieldEffect.name)) {
+                    broadcast("353 "+target.getNickname()+" BLOCKS "+client.getNickname()+" :the attack is blocked by a shield around "+target.getVisibleName());
+                } else {
+                    target.takeDamage(1);
+                }
             }
         }
 
