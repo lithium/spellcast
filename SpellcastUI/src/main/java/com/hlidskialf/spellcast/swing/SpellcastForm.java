@@ -365,9 +365,11 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
             sendMessage("GESTURE " + leftItem.getDescription().charAt(0) + " " + rightItem.getDescription().charAt(0));
         } else if (gameState == GameState.Answering) {
+            StringBuilder sb = new StringBuilder("ANSWER ");
             for (QuestionPanel qp : questionPanels.values()) {
-                sendMessage("ANSWER " + qp.getHand() + " " + qp.getAnswer());
+                sb.append(qp.getHand() + " " + qp.getAnswer() + " ");
             }
+            sendMessage(sb.toString());
             questionPanels.clear();
             answerPanel.removeAll();
             answerPanel.revalidate();

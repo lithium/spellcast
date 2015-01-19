@@ -125,6 +125,7 @@ Round
 *client answers questions*
 
     ANSWER <left | right> <spell | target>
+    ANSWER left <answer> right <answer>
 
 *server broadcasts that wizard has answered questions*
 

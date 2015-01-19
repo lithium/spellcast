@@ -138,26 +138,42 @@ public abstract class SpellcastServer<ChannelType> {
                        command.equals("ANSWER") &&
                        parts.length > 2 &&
                        client.hasUnansweredQuestions()) {
-                if (ValidationHelper.isHandValid(parts[1]) && (isTargetValid(parts[2]) || ValidationHelper.isSpellValid(parts[2]))) {
-                    client.answerQuestion(parts[1], parts[2]);
-                    if (client.hasUnansweredQuestions()) {
-                        askClientQuestions(client);
-                    } else {
-                        //answered their last question
-                        broadcast("348 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :Finished answering");
+                // ANSWER <hand> <answer>
+                // ANSWER <hand> <answer> <hand> <answer>
 
-                        if (isAllClientsAnswered()) {
-                            resolveRound();
-                        }
-                    }
-                } else {
+                if (!answer_question(client, parts[1], parts[2])) {
                     error_invalid_answer(client);
                 }
+                if (parts.length == 5) {
+                    if (!answer_question(client, parts[3], parts[4])) {
+                        error_invalid_answer(client);
+                    }
+                }
+
+                if (client.hasUnansweredQuestions()) {
+                    askClientQuestions(client);
+                } else {
+                    //answered their last question
+                    broadcast("348 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :Finished answering");
+
+                    if (isAllClientsAnswered()) {
+                        resolveRound();
+                    }
+                }
+
             } else if (command.equals("WHO")) {
                 wizards(client);
                 monsters(client);
             }
         }
+    }
+
+    private boolean answer_question(SpellcastClient client, String hand, String answer) {
+        if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) || ValidationHelper.isSpellValid(answer))) {
+            client.answerQuestion(hand, answer);
+            return true;
+        }
+        return false;
     }
 
     private void disconnectClient(SpellcastClient client, boolean close) {
