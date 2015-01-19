@@ -211,6 +211,14 @@ public abstract class SpellcastServer<ChannelType> {
         return false;
     }
 
+    private SpellcastClient getClientByNickname(String nickname) {
+        for (SpellcastClient c : clients.values()) {
+            if (c.getNickname() != null && c.getNickname().equals(nickname)) {
+                return c;
+            }
+        }
+        return null;
+    }
 
 
     private SpellcastClient checkForWinner() {
@@ -319,14 +327,46 @@ public abstract class SpellcastServer<ChannelType> {
 
     private void resolveRound() {
 
+        for (SpellcastClient client : clients.values()) {
+            resolveSpells(client, client.getLeftSpellQuestions(), "left");
+            resolveSpells(client, client.getRightSpellQuestions(), "right");
+        }
+        for (SpellcastClient client : clients.values()) {
+            resolveStabs(client, client.getLeftSpellQuestions(), "left");
+            resolveStabs(client, client.getRightSpellQuestions(), "right");
+        }
+
         broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
-
-        // TODO: resolve spells and attacks
-
         broadcast_stats();
 
         startNewRound();
     }
+
+    private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
+        for (SpellQuestion q : questions) {
+            Spell spell = q.getSpell();
+            SpellcastClient target = getClientByNickname(q.getTarget());
+            if (!spell.getSlug().equals("stab")) {
+                broadcast("351 "+client.getNickname()+" CASTS "+spell.getSlug()+" AT "+target.getNickname()+" WITH "+hand);
+                //TODO: spell effects
+            }
+        }
+    }
+    private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
+        for (SpellQuestion q : questions) {
+            Spell spell = q.getSpell();
+            SpellcastClient target = getClientByNickname(q.getTarget());
+            if (spell.getSlug().equals("stab")) {
+                broadcast("352 " + client.getNickname() + " STABS " + target.getNickname() + " WITH " + hand);
+
+                //TODO: dont take damage if target has shield effect
+                target.takeDamage(1);
+            }
+        }
+
+    }
+
+
     private void declareWinner(SpellcastClient winner) {
         broadcast("390 "+currentMatchId+" "+winner.getNickname()+" :Wins the match!");
         currentMatchState = MatchState.WaitingForPlayers;
