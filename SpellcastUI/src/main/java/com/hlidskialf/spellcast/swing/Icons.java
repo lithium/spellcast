@@ -17,8 +17,8 @@ public class Icons {
         public static final ImageIcon fingers = GestureImageIcon.fromResource(Hand.left, "icon/fingers.png", "Fingers");
         public static final ImageIcon palm = GestureImageIcon.fromResource(Hand.left, "icon/palm.png", "Palm");
         public static final ImageIcon digit = GestureImageIcon.fromResource(Hand.left, "icon/digit.png", "Digit");
-        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.left, "icon/stab.png", "Stab");
-        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.left, "icon/nothing.png", "Nothing");
+        public static final ImageIcon stab = GestureImageIcon.fromResource(Hand.left, "icon/stab.png", "Knife");
+        public static final ImageIcon nothing = GestureImageIcon.fromResource(Hand.left, "icon/nothing.png", "_nothing");
         public static final Object[] all = { clap, wave, snap, fingers, palm, digit, stab, nothing };
     }
     public static class Right {

@@ -38,6 +38,13 @@ public class WizardPanel extends JPanel implements NameChangeListener {
         updateMonsters();
     }
 
+    public void reset() {
+        gestureHistoryPanel.resetHistory();
+        monsterPanel.removeAll();
+        monsterPanel.revalidate();
+        monsterPanel.repaint();
+    }
+
     public void updateMonsters() {
         for (Player monster : wizard.getMonsters().values()) {
             PlayerStatusPanel monsterStatusPanel;

@@ -166,6 +166,8 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
         questionPanels = new HashMap<Hand, QuestionPanel>();
 
+        answerPanel.setLayout(new BoxLayout(answerPanel, BoxLayout.Y_AXIS));
+
         opponentPanels = new HashMap<Player, WizardPanel>();
         opponents = new HashMap<String, Player>();
 
@@ -368,6 +370,8 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
             }
             questionPanels.clear();
             answerPanel.removeAll();
+            answerPanel.revalidate();
+            answerPanel.repaint();
         }
     }
 
@@ -431,12 +435,13 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
             playPanel.repaint();
             opponents.clear();
             sendButton.setText("Connect");
+            wizardPanel.reset();
         }
 
     }
 
     private void syncQuestionUI() {
-        if (gameState == GameState.Answering) {
+        if (gameState == GameState.Answering && questionPanels.size() > 0) {
             sendButton.setText("Answer");
         } else {
             answerPanel.removeAll();
@@ -562,7 +567,12 @@ public class SpellcastForm implements NameChangeListener, SpellcastMessage.Messa
 
     @Override
     public void onRoundStart(SpellcastChannel channel, String[] message) {
-
+        leftComboBox.setSelectedItem(Icons.Left.nothing);
+        rightComboBox.setSelectedItem(Icons.Right.nothing);
+        leftComboBox.revalidate();
+        rightComboBox.revalidate();
+        leftComboBox.repaint();
+        rightComboBox.repaint();
     }
 
     @Override

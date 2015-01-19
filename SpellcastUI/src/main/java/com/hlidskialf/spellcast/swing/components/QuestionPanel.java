@@ -69,7 +69,11 @@ public class QuestionPanel extends JPanel {
                 label.setText("Which spell would you like to cast with your " + hand + "hand?");
                 break;
             case Target:
-                label.setText("Which target would you like to cast '"+spellName+"' at with your "+hand+" hand?");
+                if (spellName.equals("stab")) {
+                    label.setText("Which target would you like to stab with your "+hand+" hand?");
+                } else {
+                    label.setText("Which target would you like to cast '"+spellName+"' at with your "+hand+" hand?");
+                }
                 break;
         }
     }
