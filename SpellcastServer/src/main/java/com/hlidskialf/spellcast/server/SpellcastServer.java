@@ -399,6 +399,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
 
+
     private void declareWinner(SpellcastClient winner) {
         broadcast("390 "+currentMatchId+" "+winner.getNickname()+" :Wins the match!");
         currentMatchState = MatchState.WaitingForPlayers;
@@ -488,8 +489,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     public void monsters(SpellcastClient client) {
         sendToClient(client, "310 Monsters:");
-//        for (SpellcastClient c : clients.values()) {
-//        }
+        for (SpellcastClient c : clients.values()) {
+            for (Monster monster : c.getMonsters()) {
+                sendToClient(client, monster.get311());
+            }
+        }
         sendToClient(client, "312 End of Monsters");
 
     }

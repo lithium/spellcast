@@ -7,7 +7,11 @@ import java.util.Iterator;
 /**
  * Created by wiggins on 1/11/15.
  */
-public class SpellcastClient {
+public class SpellcastClient extends Target {
+
+    public ArrayList<Monster> getMonsters() {
+        return monsters;
+    }
 
     public enum ClientState {
         WaitingForName,
@@ -24,14 +28,14 @@ public class SpellcastClient {
     private String nickname;
     private String visibleName;
     private String gender;
-    private int hitpoints;
-    private int maxHitpoints;
     private boolean ready;
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
     private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
 
     private ArrayList<SpellEffect> effects;
+
+    private ArrayList<Monster> monsters;
 
 
     public SpellcastClient(Object channel) {
@@ -43,6 +47,7 @@ public class SpellcastClient {
         leftSpellQuestions = new ArrayList<SpellQuestion>();
         rightSpellQuestions = new ArrayList<SpellQuestion>();
         effects = new ArrayList<SpellEffect>();
+        monsters = new ArrayList<Monster>();
     }
 
 
@@ -96,30 +101,6 @@ public class SpellcastClient {
         this.ready = ready;
     }
 
-    public int getHitpoints() {
-        return hitpoints;
-    }
-
-    public void setHitpoints(int hitpoints) {
-        this.hitpoints = hitpoints;
-    }
-
-    public int getMaxHitpoints() {
-        return maxHitpoints;
-    }
-
-    public void setMaxHitpoints(int maxHitpoints) {
-        this.maxHitpoints = maxHitpoints;
-    }
-
-    public int takeDamage(int damage) {
-        hitpoints -= damage;
-        return hitpoints;
-    }
-    public int healDamage(int damage) {
-        hitpoints += damage;
-        return hitpoints;
-    }
     public String getHitpointString() {
         if (state == ClientState.Playing) {
             return hitpoints+"/"+maxHitpoints;
@@ -128,6 +109,18 @@ public class SpellcastClient {
             return "+";
         }
         return "-";
+    }
+
+    public void takeControlOfMonster(Monster monster) {
+        monsters.add(monster);
+        SpellcastClient previousController = monster.getController();
+        if (previousController != null) {
+            previousController.loseControlOfMonster(monster);
+        }
+        monster.setController(this);
+    }
+    public void loseControlOfMonster(Monster monster) {
+        monsters.remove(monster);
     }
 
 
