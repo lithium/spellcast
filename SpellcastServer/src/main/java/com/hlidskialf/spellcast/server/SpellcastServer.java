@@ -318,7 +318,10 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.resetQuestions();
-            client.expireEffects(this);
+            ArrayList<String> expireEffects = client.expireEffects(this);
+            for (String expireMsg : expireEffects) {
+                broadcast("355 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :"+expireMsg);
+            }
             if (client.canGestureThisRound(currentRoundNumber)) {
                 broadcast("320 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :What are your gestures");
             }

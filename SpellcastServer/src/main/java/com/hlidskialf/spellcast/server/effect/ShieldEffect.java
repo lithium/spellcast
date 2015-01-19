@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server.effect;
 
 import com.hlidskialf.spellcast.server.SpellEffect;
+import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 
 /**
@@ -10,7 +11,12 @@ public class ShieldEffect extends SpellEffect {
 
     public static final String name = "shield";
 
-    public ShieldEffect(SpellcastMatchState matchState, int duration) {
-        super(name, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), duration);
+    public ShieldEffect(SpellcastMatchState matchState, SpellcastClient target, int duration) {
+        super(name, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, duration);
+    }
+
+    @Override
+    public String expire() {
+        return "The shield dissapates from around "+target.getNickname()+".";
     }
 }

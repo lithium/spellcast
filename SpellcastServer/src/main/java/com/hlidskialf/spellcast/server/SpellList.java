@@ -1,5 +1,6 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.ProtectionFromEvilSpell;
 import com.hlidskialf.spellcast.server.spell.ShieldSpell;
 
 /**
@@ -45,7 +46,7 @@ public class SpellList {
     public static final Spell Paralysis = new Spell("Paralysis", "FFF");
     public static final Spell Fear = new Spell("Fear", "SWD");
     public static final Spell AntiSpell = new Spell("Anti-spell", "SPF");
-    public static final Spell ProtectionFromEvil = new Spell("Protection From Evil", "WWP");
+    public static final Spell ProtectionFromEvil = new ProtectionFromEvilSpell("Protection From Evil", "WWP");
     public static final Spell ResistHeat = new Spell("Resist Heat", "WWFP");
     public static final Spell ResistCold = new Spell("Resist Cold", "SSFP");
     public static final Spell Disease = new Spell("Disease", "DSFFFc");

@@ -18,7 +18,7 @@ public class ShieldSpell extends Spell {
     @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, SpellcastClient target) {
 
-        SpellEffect effect = new ShieldEffect(matchState, 1);
+        SpellEffect effect = new ShieldEffect(matchState, target, 1);
         target.addEffect(effect);
     }
 }

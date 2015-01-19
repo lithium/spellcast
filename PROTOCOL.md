@@ -137,6 +137,9 @@ Round
 
     351 <nickname> CASTS <spell> AT <target> WITH <left | right>
     352 <nickname> STABS <target> WITH <left | right>
+
+    353 <target> BLOCKS <nickname> :the attack is blocked
+    355 <match-id>.<roundnumber> <nickname> :effect expiration message
     -- server then re-sends game state, 301s, and 311s for all players, and the next round starts*
 
 

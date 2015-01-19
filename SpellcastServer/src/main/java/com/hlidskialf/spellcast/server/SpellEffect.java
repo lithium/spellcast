@@ -3,16 +3,18 @@ package com.hlidskialf.spellcast.server;
 /**
  * Created by wiggins on 1/18/15.
  */
-public class SpellEffect {
-    private String name;
-    private String matchId;
-    private int roundCast;
-    private int duration;
+abstract public class SpellEffect {
+    protected String name;
+    protected String matchId;
+    protected int roundCast;
+    protected SpellcastClient target;
+    protected int duration;
 
-    public SpellEffect(String name, String matchId, int roundCast, int duration) {
+    public SpellEffect(String name, String matchId, int roundCast, SpellcastClient target, int duration) {
         this.name = name;
         this.matchId = matchId;
         this.roundCast = roundCast;
+        this.target = target;
         this.duration = duration;
     }
 
@@ -47,4 +49,14 @@ public class SpellEffect {
     public void setDuration(int duration) {
         this.duration = duration;
     }
+
+    public SpellcastClient getTarget() {
+        return target;
+    }
+
+    public void setTarget(SpellcastClient target) {
+        this.target = target;
+    }
+
+    abstract public String expire();
 }

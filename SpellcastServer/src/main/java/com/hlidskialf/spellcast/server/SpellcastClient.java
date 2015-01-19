@@ -149,16 +149,20 @@ public class SpellcastClient {
         }
         return false;
     }
-    public void expireEffects(SpellcastMatchState matchState) {
+    public ArrayList<String> expireEffects(SpellcastMatchState matchState) {
+        ArrayList<String> expired = new ArrayList<String>();
+
         String matchId = matchState.getCurrentMatchId();
         int roundNumber = matchState.getCurrentRoundNumber();
         Iterator<SpellEffect> iterator = effects.iterator();
         while (iterator.hasNext()) {
             SpellEffect se = iterator.next();
             if (!matchId.equals(se.getMatchId()) || roundNumber >= se.getRoundCast()+se.getDuration()) {
+                expired.add(se.expire());
                 iterator.remove();
             }
         }
+        return expired;
     }
 
     public String get301() {
