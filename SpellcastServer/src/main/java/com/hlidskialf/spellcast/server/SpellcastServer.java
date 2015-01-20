@@ -364,11 +364,17 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     private void resolveRound() {
 
+	    ArrayList<ResolvingSpell> resolvingSpells = new ArrayList<ResolvingSpell>();
+
         for (SpellcastClient client : clients.values()) {
-            resolveSpells(client, client.getLeftSpellQuestions(), "left");
-            resolveSpells(client, client.getRightSpellQuestions(), "right");
+            resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
+            resolveSpells(client, client.getRightSpellQuestions(), "right", resolvingSpells);
         }
 
+	    for (ResolvingSpell rSpell : resolvingSpells) {
+			broadcast(rSpell.get351());
+		    rSpell.fire(this);
+	    }
 	    // TODO: resolve death effects
 
         for (SpellcastClient client : clients.values()) {
@@ -382,13 +388,12 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         startNewRound();
     }
 
-    private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
+    private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand, ArrayList<ResolvingSpell> spellBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
             Target target = getTargetByNickname(q.getTarget());
             if (!spell.getSlug().equals("stab")) {
-                broadcast("351 "+client.getNickname()+" CASTS "+spell.getSlug()+" AT "+target.getNickname()+" WITH "+hand);
-                spell.fireSpell(this, client, target);
+	            spellBuffer.add(new ResolvingSpell(spell, client, target, hand));
             }
         }
     }
