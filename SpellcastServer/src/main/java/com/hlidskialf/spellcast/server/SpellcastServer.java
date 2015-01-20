@@ -203,13 +203,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         if (target == null || target.isEmpty()) {
             return false;
         }
-        for (SpellcastClient c : clients.values()) {
-            if (target.equals(c.getNickname())) {
-                return true;
-            }
-            // TODO: check monsters
-        }
-        return false;
+        return getTargetByNickname(target) != null;
     }
 
     public Collection<SpellcastClient> getAllClients() {
@@ -234,6 +228,20 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     public RoundState getCurrentRoundState() {
         return currentRoundState;
+    }
+
+    public Target getTargetByNickname(String nick) {
+        Target target = getClientByNickname(nick);
+        if (target != null) {
+            return target;
+        }
+        for (SpellcastClient client : clients.values()) {
+            target = client.getMonsterById(nick);
+            if (target != null) {
+                return target;
+            }
+        }
+        return null;
     }
 
     public SpellcastClient getClientByNickname(String nickname) {
@@ -318,7 +326,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.resetQuestions();
-            ArrayList<String> expireEffects = client.expireEffects(this);
+            ArrayList<String> expireEffects = client.expireEffects(currentMatchId, currentRoundNumber);
             for (String expireMsg : expireEffects) {
                 broadcast("355 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :"+expireMsg);
             }
@@ -373,7 +381,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
-            SpellcastClient target = getClientByNickname(q.getTarget());
+            Target target = getTargetByNickname(q.getTarget());
             if (!spell.getSlug().equals("stab")) {
                 broadcast("351 "+client.getNickname()+" CASTS "+spell.getSlug()+" AT "+target.getNickname()+" WITH "+hand);
                 spell.fireSpell(this, client, target);
@@ -383,7 +391,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
-            SpellcastClient target = getClientByNickname(q.getTarget());
+            Target target = getTargetByNickname(q.getTarget());
             if (spell.getSlug().equals("stab")) {
                 broadcast("352 " + client.getNickname() + " STABS " + target.getNickname() + " WITH " + hand);
 
@@ -392,6 +400,9 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                     broadcast("353 "+target.getNickname()+" BLOCKS "+client.getNickname()+" :the attack is blocked by a shield around "+target.getVisibleName());
                 } else {
                     target.takeDamage(1);
+                    if (target.isDead()) {
+                        broadcast("380 "+target.getNickname()+" :"+target.getVisibleName()+" dies");
+                    }
                 }
             }
         }

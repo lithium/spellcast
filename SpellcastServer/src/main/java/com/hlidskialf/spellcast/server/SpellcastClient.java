@@ -9,9 +9,6 @@ import java.util.Iterator;
  */
 public class SpellcastClient extends Target {
 
-    public ArrayList<Monster> getMonsters() {
-        return monsters;
-    }
 
     public enum ClientState {
         WaitingForName,
@@ -25,15 +22,11 @@ public class SpellcastClient extends Target {
 
     private Object channel;
     private ClientState state;
-    private String nickname;
-    private String visibleName;
     private String gender;
     private boolean ready;
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
     private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
-
-    private ArrayList<SpellEffect> effects;
 
     private ArrayList<Monster> monsters;
 
@@ -46,7 +39,6 @@ public class SpellcastClient extends Target {
         this.rightGestures = new ArrayList<String>();
         leftSpellQuestions = new ArrayList<SpellQuestion>();
         rightSpellQuestions = new ArrayList<SpellQuestion>();
-        effects = new ArrayList<SpellEffect>();
         monsters = new ArrayList<Monster>();
     }
 
@@ -65,18 +57,6 @@ public class SpellcastClient extends Target {
     }
     public void setState(ClientState state) {
         this.state = state;
-    }
-    public String getNickname() {
-        return nickname;
-    }
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-    public String getVisibleName() {
-        return visibleName == null ? nickname : visibleName;
-    }
-    public void setVisibleName(String visibleName) {
-        this.visibleName = visibleName;
     }
     public String getGender() {
         return gender != null ? gender : GenderNone;
@@ -111,6 +91,19 @@ public class SpellcastClient extends Target {
         return "-";
     }
 
+    public ArrayList<Monster> getMonsters() {
+        return monsters;
+    }
+
+    public Monster getMonsterById(String nick) {
+        for (Monster m : monsters) {
+            if (m.getNickname().equals(nick)) {
+                return m;
+            }
+        }
+        return null;
+    }
+
     public void takeControlOfMonster(Monster monster) {
         monsters.add(monster);
         SpellcastClient previousController = monster.getController();
@@ -124,39 +117,7 @@ public class SpellcastClient extends Target {
     }
 
 
-    public boolean hasEffect(String effectName) {
-        return getEffect(effectName) != null;
-    }
-    public SpellEffect getEffect(String effectName) {
-        for (SpellEffect se : effects) {
-            if (se.getName().equals(effectName)) {
-                return se;
-            }
-        }
-        return null;
-    }
-    public boolean addEffect(SpellEffect effect) {
-        if (!hasEffect(effect.getName())) {
-            effects.add(effect);
-            return true;
-        }
-        return false;
-    }
-    public ArrayList<String> expireEffects(SpellcastMatchState matchState) {
-        ArrayList<String> expired = new ArrayList<String>();
 
-        String matchId = matchState.getCurrentMatchId();
-        int roundNumber = matchState.getCurrentRoundNumber();
-        Iterator<SpellEffect> iterator = effects.iterator();
-        while (iterator.hasNext()) {
-            SpellEffect se = iterator.next();
-            if (!matchId.equals(se.getMatchId()) || roundNumber >= se.getRoundCast()+se.getDuration()) {
-                expired.add(se.expire());
-                iterator.remove();
-            }
-        }
-        return expired;
-    }
 
     public String get301() {
         return "301 "+nickname+" "+getHitpointString()+" "+getGender()+" :"+getVisibleName();

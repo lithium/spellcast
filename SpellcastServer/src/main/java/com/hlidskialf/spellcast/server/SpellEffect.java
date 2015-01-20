@@ -7,10 +7,10 @@ abstract public class SpellEffect {
     protected String name;
     protected String matchId;
     protected int roundCast;
-    protected SpellcastClient target;
+    protected Target target;
     protected int duration;
 
-    public SpellEffect(String name, String matchId, int roundCast, SpellcastClient target, int duration) {
+    public SpellEffect(String name, String matchId, int roundCast, Target target, int duration) {
         this.name = name;
         this.matchId = matchId;
         this.roundCast = roundCast;
@@ -50,11 +50,11 @@ abstract public class SpellEffect {
         this.duration = duration;
     }
 
-    public SpellcastClient getTarget() {
+    public Target getTarget() {
         return target;
     }
 
-    public void setTarget(SpellcastClient target) {
+    public void setTarget(Target target) {
         this.target = target;
     }
 

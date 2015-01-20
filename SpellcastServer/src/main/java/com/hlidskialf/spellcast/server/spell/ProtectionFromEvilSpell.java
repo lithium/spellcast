@@ -1,9 +1,6 @@
 package com.hlidskialf.spellcast.server.spell;
 
-import com.hlidskialf.spellcast.server.Spell;
-import com.hlidskialf.spellcast.server.SpellEffect;
-import com.hlidskialf.spellcast.server.SpellcastClient;
-import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 
 /*
@@ -22,7 +19,7 @@ public class ProtectionFromEvilSpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, SpellcastClient target) {
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         SpellEffect effect = new ShieldEffect(matchState, target, 4);
         target.addEffect(effect);
     }

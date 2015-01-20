@@ -37,7 +37,7 @@ Game State
     302 End of Wizards
 
     310 Monster list:
-    311 <owner-nick>+<monster-id> <HP> :monster name
+    311 <monster-id> <controller-nickname> <HP> :monster name
     312 End of Monsters
 
     315 Effects list:
@@ -148,8 +148,7 @@ Winning
 
 *server notifies all clients of a death*
 
-    380 <wizard> dies
-    381 <monster-id> dies
+    380 <target> dies
 
 *server notifies all clients of a winner*
 

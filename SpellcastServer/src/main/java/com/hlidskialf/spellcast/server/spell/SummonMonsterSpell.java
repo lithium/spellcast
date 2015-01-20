@@ -1,9 +1,6 @@
 package com.hlidskialf.spellcast.server.spell;
 
-import com.hlidskialf.spellcast.server.Monster;
-import com.hlidskialf.spellcast.server.Spell;
-import com.hlidskialf.spellcast.server.SpellcastClient;
-import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.*;
 
 /**
  * Created by wiggins on 1/19/15.
@@ -43,7 +40,7 @@ public class SummonMonsterSpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, SpellcastClient target) {
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         Monster monster = new Monster(generateMonsterName(), damage, damage);
         caster.takeControlOfMonster(monster);
     }

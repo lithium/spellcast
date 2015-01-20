@@ -45,6 +45,6 @@ public class Spell {
         return type;
     }
 
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, SpellcastClient target) {
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
     }
 }
