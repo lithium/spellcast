@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.effect.SpellEffect;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -49,10 +51,10 @@ public abstract class Target {
     }
 
     public void takeDamage(int damage) {
-        this.hitpoints -= damage;
+        this.hitpoints = Math.max(hitpoints-damage, 0);
     }
     public void healDamage(int damage) {
-        this.hitpoints += damage;
+        this.hitpoints = Math.min(hitpoints + damage, maxHitpoints);
     }
     public void heal() {
         this.hitpoints = this.maxHitpoints;

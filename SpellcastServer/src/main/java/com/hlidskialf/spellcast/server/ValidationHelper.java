@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.Spell;
+
 import java.util.regex.Pattern;
 
 /**

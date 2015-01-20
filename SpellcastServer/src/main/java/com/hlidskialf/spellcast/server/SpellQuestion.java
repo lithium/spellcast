@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.Spell;
+
 /**
  * Created by wiggins on 1/12/15.
  */

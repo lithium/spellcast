@@ -1,4 +1,8 @@
-package com.hlidskialf.spellcast.server;
+package com.hlidskialf.spellcast.server.spell;
+
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.Target;
 
 /**
  * Created by wiggins on 1/11/15.

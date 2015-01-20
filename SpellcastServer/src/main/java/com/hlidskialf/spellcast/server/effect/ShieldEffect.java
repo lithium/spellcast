@@ -1,7 +1,5 @@
 package com.hlidskialf.spellcast.server.effect;
 
-import com.hlidskialf.spellcast.server.SpellEffect;
-import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
 
@@ -10,10 +8,10 @@ import com.hlidskialf.spellcast.server.Target;
  */
 public class ShieldEffect extends SpellEffect {
 
-    public static final String name = "shield";
+	public final static String Name = "shield";
 
-    public ShieldEffect(SpellcastMatchState matchState, Target target, int duration) {
-        super(name, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, duration);
+	public ShieldEffect(SpellcastMatchState matchState, Target target, int duration) {
+        super(Name, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, duration);
     }
 
     @Override

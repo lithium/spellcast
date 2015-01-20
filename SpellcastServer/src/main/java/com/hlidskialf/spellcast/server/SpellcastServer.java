@@ -2,6 +2,7 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
+import com.hlidskialf.spellcast.server.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -395,8 +396,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             if (spell.getSlug().equals("stab")) {
                 broadcast("352 " + client.getNickname() + " STABS " + target.getNickname() + " WITH " + hand);
 
-                //TODO: dont take damage if target has shield effect
-                if (target.hasEffect(ShieldEffect.name)) {
+                if (target.hasEffect(ShieldEffect.Name)) {
                     broadcast("353 "+target.getNickname()+" BLOCKS "+client.getNickname()+" :the attack is blocked by a shield around "+target.getVisibleName());
                 } else {
                     target.takeDamage(1);

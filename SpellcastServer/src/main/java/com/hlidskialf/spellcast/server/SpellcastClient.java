@@ -1,8 +1,9 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.hlidskialf.spellcast.server.spell.Spell;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * Created by wiggins on 1/11/15.

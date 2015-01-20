@@ -1,7 +1,10 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.CureWoundsSpell;
+import com.hlidskialf.spellcast.server.spell.MissileSpell;
 import com.hlidskialf.spellcast.server.spell.ProtectionFromEvilSpell;
 import com.hlidskialf.spellcast.server.spell.ShieldSpell;
+import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 /**

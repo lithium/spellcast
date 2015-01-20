@@ -2,6 +2,7 @@ package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
+import com.hlidskialf.spellcast.server.effect.SpellEffect;
 
 /**
  * Created by wiggins on 1/18/15.
@@ -15,9 +16,7 @@ import com.hlidskialf.spellcast.server.effect.ShieldEffect;
  */
 public class ShieldSpell extends Spell {
 
-    public final static String ShieldEffect = "shield";
-
-    public ShieldSpell(String name, String gestures) {
+	public ShieldSpell(String name, String gestures) {
         super(name, gestures, SpellType.Protection);
     }
 

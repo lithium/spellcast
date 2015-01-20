@@ -1,4 +1,6 @@
-package com.hlidskialf.spellcast.server;
+package com.hlidskialf.spellcast.server.effect;
+
+import com.hlidskialf.spellcast.server.Target;
 
 /**
  * Created by wiggins on 1/18/15.
