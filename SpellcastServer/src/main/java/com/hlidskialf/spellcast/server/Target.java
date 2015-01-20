@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.effect.SpellEffect;
+import com.hlidskialf.spellcast.server.spell.Spell;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -95,4 +96,13 @@ public abstract class Target {
         return expired;
     }
 
+	public void removeEnchantments() {
+		Iterator<SpellEffect> it = effects.iterator();
+		while (it.hasNext()) {
+			SpellEffect effect = it.next();
+			if (Spell.SpellType.Enchantment.equals(effect.getSpellType())) {
+				it.remove();
+			}
+		}
+	}
 }

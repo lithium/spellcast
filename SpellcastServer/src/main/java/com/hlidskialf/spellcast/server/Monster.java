@@ -6,6 +6,7 @@ package com.hlidskialf.spellcast.server;
 public class Monster extends Target {
     private final int damage;
     private SpellcastClient controller;
+	private boolean dispelled;
 
     public Monster(String name, int damage, int maxHitpoints) {
         this.nickname = generateMonsterId();
@@ -51,4 +52,11 @@ public class Monster extends Target {
 
     }
 
+	public boolean isDispelled() {
+		return dispelled;
+	}
+
+	public void setDispelled(final boolean dispelled) {
+		this.dispelled = dispelled;
+	}
 }

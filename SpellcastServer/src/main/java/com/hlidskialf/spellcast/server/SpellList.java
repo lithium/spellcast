@@ -1,11 +1,16 @@
 package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.spell.CauseWoundsSpell;
+import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.CureWoundsSpell;
+import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.FingerOfDeathSpell;
+import com.hlidskialf.spellcast.server.spell.FireballSpell;
 import com.hlidskialf.spellcast.server.spell.LightningBoltSpell;
+import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.MissileSpell;
 import com.hlidskialf.spellcast.server.spell.ProtectionFromEvilSpell;
+import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.ShieldSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
@@ -17,11 +22,11 @@ public class SpellList {
 
     // protection spells
     public static final Spell Shield = new ShieldSpell("Shield", "P");
-    public static final Spell RemoveEnchantment = new Spell("Remove Enchantment", "PDWP", Spell.SpellType.Protection);
-    public static final Spell MagicMirror = new Spell("Magic Mirror", "cw", Spell.SpellType.Protection);
-    public static final Spell Counterspell = new Spell("Counterspell", "WPP", Spell.SpellType.Protection);
-    public static final Spell Counterspell2 = new Spell("Counterspell", "WWS", Spell.SpellType.Protection);
-    public static final Spell DispelMagic = new Spell("Dispel Magic", "CDPW", Spell.SpellType.Protection);
+    public static final Spell RemoveEnchantment = new RemoveEnchantmentSpell("Remove Enchantment", "PDWP");
+    public static final Spell MagicMirror = new MagicMirrorSpell("Magic Mirror", "cw");
+    public static final Spell Counterspell = new CounterspellSpell("Counterspell", "WPP");
+    public static final Spell Counterspell2 = new CounterspellSpell("Counterspell", "WWS");
+    public static final Spell DispelMagic = new DispelMagicSpell("Dispel Magic", "CDPW");
     public static final Spell RaiseDead = new Spell("Raise Dead", "DWWFWC", Spell.SpellType.Protection);
     public static final Spell CureLightWounds = new CureWoundsSpell("Cure Light Wounds", "DFW", 1);
     public static final Spell CureHeavyWounds = new CureWoundsSpell("Cure Heavy Wounds", "DFPW", 2);
@@ -41,7 +46,7 @@ public class SpellList {
     public static final Spell LightningBolt2 = new LightningBoltSpell("Lightning Bolt", "WDDc");
     public static final Spell CauseLightWounds = new CauseWoundsSpell("Cause Light Wounds", "WFP", 2);
     public static final Spell CauseHeavyWounds = new CauseWoundsSpell("Cause Heavy Wounds", "WPFD", 3);
-    public static final Spell Fireball = new Spell("Fireball", "FSSDD", Spell.SpellType.Damage);
+    public static final Spell Fireball = new FireballSpell("Fireball", "FSSDD");
     public static final Spell FireStorm = new Spell("Fire Storm", "SWWc", Spell.SpellType.Damage);
     public static final Spell IceStorm = new Spell("Ice Storm", "WSSc", Spell.SpellType.Damage);
 

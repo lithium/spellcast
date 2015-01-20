@@ -1,20 +1,23 @@
 package com.hlidskialf.spellcast.server.effect;
 
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.spell.Spell;
 
 /**
  * Created by wiggins on 1/18/15.
  */
 abstract public class SpellEffect {
     protected String name;
-    protected String matchId;
+	private final Spell.SpellType spellType;
+	protected String matchId;
     protected int roundCast;
     protected Target target;
     protected int duration;
 
-    public SpellEffect(String name, String matchId, int roundCast, Target target, int duration) {
+    public SpellEffect(String name, Spell.SpellType spellType, String matchId, int roundCast, Target target, int duration) {
         this.name = name;
-        this.matchId = matchId;
+	    this.spellType = spellType;
+	    this.matchId = matchId;
         this.roundCast = roundCast;
         this.target = target;
         this.duration = duration;
@@ -60,5 +63,11 @@ abstract public class SpellEffect {
         this.target = target;
     }
 
-    abstract public String expire();
+	public Spell.SpellType getSpellType() {
+		return spellType;
+	}
+
+	abstract public String expire();
+
+
 }

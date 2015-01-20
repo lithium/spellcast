@@ -23,12 +23,15 @@ public class Spell {
         PhysicalAttack
     }
 
-    public Spell(String name, String gestures, SpellType type) {
+	public Spell(String name, String gestures, SpellType type) {
+		this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type);
+	}
+    public Spell(String name, String slug, String gestures, SpellType type) {
         this.name = name;
+	    this.slug = slug;
         this.gestures = gestures;
         this.type = type;
         this.reverse = new StringBuilder(gestures).reverse().toString();
-        this.slug = this.name.replaceAll(" ", "").toLowerCase();
     }
 
     public String getName() {
@@ -49,6 +52,5 @@ public class Spell {
         return type;
     }
 
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-    }
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) { }
 }

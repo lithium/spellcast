@@ -16,6 +16,9 @@ import com.hlidskialf.spellcast.server.effect.DeathEffect;
  *
  */
 public class FingerOfDeathSpell extends Spell {
+
+	public static final String Slug = "fingerofdeath";
+
 	public FingerOfDeathSpell(final String name, final String gestures) {
 		super(name, gestures, SpellType.Damage);
 	}

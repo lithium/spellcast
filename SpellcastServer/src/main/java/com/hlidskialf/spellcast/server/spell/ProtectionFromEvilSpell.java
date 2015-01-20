@@ -1,8 +1,9 @@
 package com.hlidskialf.spellcast.server.spell;
 
-import com.hlidskialf.spellcast.server.*;
-import com.hlidskialf.spellcast.server.effect.ShieldEffect;
-import com.hlidskialf.spellcast.server.effect.SpellEffect;
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.effect.ProtectionFromEvilEffect;
 
 /*
  * Created by wiggins on 1/18/15.
@@ -19,9 +20,8 @@ public class ProtectionFromEvilSpell extends Spell {
         super(name, gestures, SpellType.Enchantment);
     }
 
-    @Override
+	@Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-        SpellEffect effect = new ShieldEffect(matchState, target, 4);
-        target.addEffect(effect);
+		target.addEffect(new ProtectionFromEvilEffect(matchState, target, 4));
     }
 }

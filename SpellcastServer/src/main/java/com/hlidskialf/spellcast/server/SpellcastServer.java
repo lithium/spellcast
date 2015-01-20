@@ -2,6 +2,10 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
+import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
+import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
+import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
+import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
 
 import java.util.ArrayList;
@@ -21,9 +25,10 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private int currentRoundNumber;
     private MatchState currentMatchState;
     private RoundState currentRoundState;
+	private ArrayList<ResolvingSpell> resolvingSpells;
 
 
-    private enum MatchState {
+	private enum MatchState {
         WaitingForPlayers,
         Playing
     }
@@ -45,6 +50,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         this.serverName = serverName;
         this.serverVersion = serverVersion;
         clients = new HashMap<ChannelType, SpellcastClient>();
+	    resolvingSpells = new ArrayList<ResolvingSpell>();
         matchIdSeed = 1000;
         currentMatchState = MatchState.WaitingForPlayers;
         currentRoundState = RoundState.NotPlaying;
@@ -362,18 +368,40 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
     }
 
+	public ArrayList<ResolvingSpell> getResolvingSpells() {
+		return resolvingSpells;
+	}
+
     private void resolveRound() {
 
-	    ArrayList<ResolvingSpell> resolvingSpells = new ArrayList<ResolvingSpell>();
+	    resolvingSpells.clear();
 
         for (SpellcastClient client : clients.values()) {
             resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
             resolveSpells(client, client.getRightSpellQuestions(), "right", resolvingSpells);
         }
 
+	    /*
+	     * Resolution order:
+		 * resolve any dispel magic
+	     * resolve any counterspell
+	     * resolve magic mirrors
+	     * resolve remove enchantment
+	     * resolve any uncountered spells
+	     * stabs/monster attacks
+	     * dispel monsters
+	     */
+
+	    fireParticularSpell(resolvingSpells, DispelMagicSpell.Slug);
+	    fireParticularSpell(resolvingSpells, CounterspellSpell.Slug);
+	    fireParticularSpell(resolvingSpells, MagicMirrorSpell.Slug);
+	    fireParticularSpell(resolvingSpells, RemoveEnchantmentSpell.Slug);
+
 	    for (ResolvingSpell rSpell : resolvingSpells) {
-			broadcast(rSpell.get351());
-		    rSpell.fire(this);
+		    if (!(rSpell.isCountered() || rSpell.isFired())) {
+			    rSpell.fire(this);
+			    broadcast(rSpell.get351());
+		    }
 	    }
 	    // TODO: resolve death effects
 
@@ -382,11 +410,21 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             resolveStabs(client, client.getRightSpellQuestions(), "right");
         }
 
+	    // TODO: dispel monsters
+
         broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
         broadcast_stats();
 
         startNewRound();
     }
+
+	private void fireParticularSpell(ArrayList<ResolvingSpell> resolvingSpells, String spellSlug) {
+		for (ResolvingSpell rs : resolvingSpells) {
+			if (rs.getSpell().getSlug().equals(spellSlug)) {
+				rs.fire(this);
+			}
+		}
+	}
 
     private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand, ArrayList<ResolvingSpell> spellBuffer) {
         for (SpellQuestion q : questions) {

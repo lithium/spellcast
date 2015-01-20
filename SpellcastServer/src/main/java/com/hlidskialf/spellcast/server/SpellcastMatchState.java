@@ -1,7 +1,6 @@
 package com.hlidskialf.spellcast.server;
 
-import com.sun.mirror.apt.RoundState;
-
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -14,4 +13,5 @@ public interface SpellcastMatchState {
     public Collection<SpellcastClient> getAllClients();
     public SpellcastClient getClientByNickname(String nickname);
 
+	public ArrayList<ResolvingSpell> getResolvingSpells();
 }

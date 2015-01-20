@@ -10,12 +10,16 @@ public class ResolvingSpell {
 	private SpellcastClient caster;
 	private Target target;
 	private String hand;
+	private boolean fired;
+	private boolean countered;
 
 	public ResolvingSpell(final Spell spell, final SpellcastClient caster, final Target target, final String hand) {
 		this.spell = spell;
 		this.caster = caster;
 		this.target = target;
 		this.hand = hand;
+		this.fired = false;
+		this.fired = countered;
 	}
 
 	public Spell getSpell() {
@@ -50,8 +54,29 @@ public class ResolvingSpell {
 		this.hand = hand;
 	}
 
+	public boolean isFired() {
+		return fired;
+	}
+
+	public boolean isCountered() {
+		return countered;
+	}
+
+	public void setCountered(final boolean countered) {
+		this.countered = countered;
+	}
+
+	public void setFired(final boolean fired) {
+		this.fired = fired;
+	}
+
+	public void effects(SpellcastMatchState matchState) {
+		spell.addEffects(matchState, caster, target);
+	}
+
 	public void fire(SpellcastMatchState matchState) {
 		spell.fireSpell(matchState, caster, target);
+		this.fired = true;
 	}
 
 	public String get351() {
