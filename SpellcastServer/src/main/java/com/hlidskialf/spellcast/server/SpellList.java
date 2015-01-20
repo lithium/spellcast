@@ -1,6 +1,9 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.CauseWoundsSpell;
 import com.hlidskialf.spellcast.server.spell.CureWoundsSpell;
+import com.hlidskialf.spellcast.server.spell.FingerOfDeathSpell;
+import com.hlidskialf.spellcast.server.spell.LightningBoltSpell;
 import com.hlidskialf.spellcast.server.spell.MissileSpell;
 import com.hlidskialf.spellcast.server.spell.ProtectionFromEvilSpell;
 import com.hlidskialf.spellcast.server.spell.ShieldSpell;
@@ -20,8 +23,8 @@ public class SpellList {
     public static final Spell Counterspell2 = new Spell("Counterspell", "WWS", Spell.SpellType.Protection);
     public static final Spell DispelMagic = new Spell("Dispel Magic", "CDPW", Spell.SpellType.Protection);
     public static final Spell RaiseDead = new Spell("Raise Dead", "DWWFWC", Spell.SpellType.Protection);
-    public static final Spell CureLightWounds = new Spell("Cure Light Wounds", "DFW", Spell.SpellType.Protection);
-    public static final Spell CureHeavyWounds = new Spell("Cure Heavy Wounds", "DFPW", Spell.SpellType.Protection);
+    public static final Spell CureLightWounds = new CureWoundsSpell("Cure Light Wounds", "DFW", 1);
+    public static final Spell CureHeavyWounds = new CureWoundsSpell("Cure Heavy Wounds", "DFPW", 2);
 
     // summon spells
     public static final Spell Summon1 = new SummonMonsterSpell("Summon Goblin",   "SFW", 1);
@@ -32,12 +35,12 @@ public class SpellList {
     public static final Spell SummonIceElemental = new Spell("Summon Ice Elemental", "cSWWS", Spell.SpellType.Summon);
 
     // damage spells
-    public static final Spell Missile = new Spell("Missile", "SD", Spell.SpellType.Damage);
-    public static final Spell FingerOfDeath = new Spell("Finger of Death", "PWPFSSSD", Spell.SpellType.Damage);
-    public static final Spell LightningBolt = new Spell("Lightning Bolt", "DFFDD", Spell.SpellType.Damage);
-    public static final Spell LightningBolt2 = new Spell("Lightning Bolt", "WDDc", Spell.SpellType.Damage);
-    public static final Spell CauseLightWounds = new Spell("Cause Light Wounds", "WFP", Spell.SpellType.Damage);
-    public static final Spell CauseHeavyWounds = new Spell("Cause Heavy Wounds", "WPFD", Spell.SpellType.Damage);
+    public static final Spell Missile = new MissileSpell("Missile", "SD");
+    public static final Spell FingerOfDeath = new FingerOfDeathSpell("Finger of Death", "PWPFSSSD");
+    public static final Spell LightningBolt = new LightningBoltSpell("Lightning Bolt", "DFFDD");
+    public static final Spell LightningBolt2 = new LightningBoltSpell("Lightning Bolt", "WDDc");
+    public static final Spell CauseLightWounds = new CauseWoundsSpell("Cause Light Wounds", "WFP", 2);
+    public static final Spell CauseHeavyWounds = new CauseWoundsSpell("Cause Heavy Wounds", "WPFD", 3);
     public static final Spell Fireball = new Spell("Fireball", "FSSDD", Spell.SpellType.Damage);
     public static final Spell FireStorm = new Spell("Fire Storm", "SWWc", Spell.SpellType.Damage);
     public static final Spell IceStorm = new Spell("Ice Storm", "WSSc", Spell.SpellType.Damage);

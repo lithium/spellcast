@@ -368,6 +368,9 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             resolveSpells(client, client.getLeftSpellQuestions(), "left");
             resolveSpells(client, client.getRightSpellQuestions(), "right");
         }
+
+	    // TODO: resolve death effects
+
         for (SpellcastClient client : clients.values()) {
             resolveStabs(client, client.getLeftSpellQuestions(), "left");
             resolveStabs(client, client.getRightSpellQuestions(), "right");
