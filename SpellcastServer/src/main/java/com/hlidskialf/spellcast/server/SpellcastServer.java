@@ -219,9 +219,6 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         return clients.values();
     }
 
-    public void setClients(HashMap<ChannelType, SpellcastClient> clients) {
-        this.clients = clients;
-    }
 
     public String getCurrentMatchId() {
         return currentMatchId;
@@ -358,6 +355,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         for (SpellcastClient client : clients.values()) {
             client.setReady(false);
             client.performGestures();
+            client.askForMonsterAttacks();
             if (askClientQuestions(client)) {
                 anyQuestions = true;
             }
@@ -493,7 +491,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
             questions(client, client.getLeftSpellQuestions(), "left");
             questions(client, client.getRightSpellQuestions(), "right");
-            //TODO: ask for targets of monsters
+            questions_monsters(client, client.getMonsterQuestions());
             sendToClient(client, "349 :End of Questions");
             return true;
         }
@@ -507,19 +505,45 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             for (SpellQuestion q : spellQuestions) {
                 sendToClient(client, "342 "+hand+" " + q.getSpell().getSlug() + " :" + q.getSpell().getName());
             }
-            sendToClient(client, "343 End of spells");
+            sendToClient(client, "343 :End of spells");
         } else if (left > 0) { // one spell to resolve, needs a target
             SpellQuestion q = spellQuestions.get(0);
             if (!q.hasTarget()) {
                 sendToClient(client, "345 "+hand+" "+ q.getSpell().getSlug() + " :Which target for "+hand+" hand");
-                for (SpellcastClient t : clients.values()) {
+                for (Target t : getVisibleTargets(client)) {
                    sendToClient(client, "346 "+hand+" "+t.getNickname()+" :"+t.getVisibleName());
                 }
-                sendToClient(client, "347 End of targets");
+                sendToClient(client, "347 :End of targets");
             }
         }
+    }
 
+    public void questions_monsters(SpellcastClient client, ArrayList<MonsterQuestion> monsterQuestions) {
+        int remaining = 0;
+        for (MonsterQuestion mq : monsterQuestions) {
+            if (!mq.hasTarget()) {
+                remaining++;
 
+                sendToClient(client, "335 "+mq.getMonsterNickname()+" :Which target should monster attack");
+                for (Target t : getVisibleTargets(mq.getMonster())) {
+                    sendToClient(client, "336 "+mq.getMonsterNickname()+" "+t.getNickname()+" :"+t.getVisibleName());
+                }
+                sendToClient(client, "337 :End of monster targets");
+            }
+        }
+    }
+
+    public Iterable<Target> getVisibleTargets(Target origin) {
+        ArrayList<Target> visible = new ArrayList<Target>();
+        for (SpellcastClient client : clients.values()) {
+            if (client.getState().equals(SpellcastClient.ClientState.Playing)) {
+                visible.add(client);
+                for (Monster monster : client.getMonsters()) {
+                    visible.add(monster);
+                }
+            }
+        }
+        return visible;
     }
 
 
@@ -552,35 +576,35 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
     }
     public void wizards(SpellcastClient client) {
-        sendToClient(client, "300 Wizards:");
+        sendToClient(client, "300 Wizards");
         for (SpellcastClient c : clients.values()) {
             sendToClient(client, c.get301());
         }
-        sendToClient(client, "302 End of Wizards");
+        sendToClient(client, "302 :End of Wizards");
     }
 
     public void monsters(SpellcastClient client) {
-        sendToClient(client, "310 Monsters:");
+        sendToClient(client, "310 Monsters");
         for (SpellcastClient c : clients.values()) {
             for (Monster monster : c.getMonsters()) {
                 sendToClient(client, monster.get311());
             }
         }
-        sendToClient(client, "312 End of Monsters");
+        sendToClient(client, "312 :End of Monsters");
 
     }
 
 
     public void error_nickname_used(SpellcastClient client) {
-        sendToClient(client, "400 Nickname in use");
+        sendToClient(client, "400 :Nickname in use");
     }
     public void error_invalid_nickname(SpellcastClient client) {
-        sendToClient(client, "401 Invalid nickname");
+        sendToClient(client, "401 :Invalid nickname");
     }
     public void error_invalid_gesture(SpellcastClient client) {
-        sendToClient(client, "402 Invalid gesture");
+        sendToClient(client, "402 :Invalid gesture");
     }
     public void error_invalid_answer(SpellcastClient client) {
-        sendToClient(client, "403 Invalid answer");
+        sendToClient(client, "403 :Invalid answer");
     }
 }

@@ -120,6 +120,11 @@ Round
     346 <left | right> <target> :Visible Name
     347 end of target options
 
+
+    335 <monster-id> :Which target to have monster attack
+    336 <monster-id> <target> :Visible Name
+    337 end of target options
+
     349 end of questions
 
 *client answers questions*

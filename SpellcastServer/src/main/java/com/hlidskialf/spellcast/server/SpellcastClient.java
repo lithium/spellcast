@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SpellList;
+import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 import java.util.ArrayList;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
  * Created by wiggins on 1/11/15.
  */
 public class SpellcastClient extends Target {
+
 
 
     public enum ClientState {
@@ -29,8 +31,8 @@ public class SpellcastClient extends Target {
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
     private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
-
     private ArrayList<Monster> monsters;
+    private ArrayList<MonsterQuestion> monsterQuestions;
 
 
     public SpellcastClient(Object channel) {
@@ -42,6 +44,7 @@ public class SpellcastClient extends Target {
         leftSpellQuestions = new ArrayList<SpellQuestion>();
         rightSpellQuestions = new ArrayList<SpellQuestion>();
         monsters = new ArrayList<Monster>();
+        monsterQuestions = new ArrayList<MonsterQuestion>();
     }
 
 
@@ -158,6 +161,10 @@ public class SpellcastClient extends Target {
         return rightSpellQuestions;
     }
 
+    public ArrayList<MonsterQuestion> getMonsterQuestions() {
+        return monsterQuestions;
+    }
+
     public void resetHistory() {
         leftGestures.clear();
         rightGestures.clear();
@@ -165,6 +172,26 @@ public class SpellcastClient extends Target {
     public void resetQuestions() {
         leftSpellQuestions.clear();
         rightSpellQuestions.clear();
+        monsterQuestions.clear();
+    }
+
+    public void askForMonsterAttacks() {
+        for (Monster monster : monsters) {
+            monsterQuestions.add(new MonsterQuestion(monster));
+        }
+        checkForSummonSpellQuestion(leftSpellQuestions, "left");
+        checkForSummonSpellQuestion(rightSpellQuestions, "right");
+
+    }
+    private void checkForSummonSpellQuestion(ArrayList<SpellQuestion> questions, String hand) {
+        if (questions.size() == 1) {
+            SpellQuestion q = questions.get(0);
+            try {
+                SummonMonsterSpell summonSpell = (SummonMonsterSpell) q.getSpell();
+                monsterQuestions.add(new MonsterQuestion(hand+"$"+summonSpell.getSlug()));
+            } catch (ClassCastException e) { }
+        }
+
     }
 
     public void performGestures() {
@@ -273,8 +300,9 @@ public class SpellcastClient extends Target {
     public boolean hasUnansweredQuestions() {
         int nLeft = leftSpellQuestions.size();
         int nRight = rightSpellQuestions.size();
+        int nMon = monsterQuestions.size();
 
-        return (nLeft > 1 ||  nRight > 1 ||
+        return (nMon > 0 || nLeft > 1 ||  nRight > 1 ||
                (nLeft == 1 && !leftSpellQuestions.get(0).hasTarget()) ||
                (nRight == 1 && !rightSpellQuestions.get(0).hasTarget()));
 

@@ -70,10 +70,6 @@ public class ResolvingSpell {
 		this.fired = fired;
 	}
 
-	public void effects(SpellcastMatchState matchState) {
-		spell.addEffects(matchState, caster, target);
-	}
-
 	public void fire(SpellcastMatchState matchState) {
 		spell.fireSpell(matchState, caster, target);
 		this.fired = true;
