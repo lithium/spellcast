@@ -50,10 +50,10 @@ public class SpellList {
     public static final Spell ProtectionFromEvil = new ProtectionFromEvilSpell("Protection From Evil", "WWP");
     public static final Spell ResistHeat = new ResistElementSpell("Resist Heat", "WWFP", Element.fire);
     public static final Spell ResistCold = new ResistElementSpell("Resist Cold", "SSFP", Element.ice);
-    public static final Spell Disease = new Spell("Disease", "DSFFFc", Spell.SpellType.Enchantment);
-    public static final Spell Poison = new Spell("Poison", "DWWFWD", Spell.SpellType.Enchantment);
-    public static final Spell Blindness = new Spell("Blindness", "DWFFd", Spell.SpellType.Enchantment);
-    public static final Spell Invisibility = new Spell("Invisibility", "PPws", Spell.SpellType.Enchantment);
+    public static final Spell Disease = new DiseaseSpell("Disease", "DSFFFc");
+    public static final Spell Poison = new PoisonSpell("Poison", "DWWFWD");
+    public static final Spell Blindness = new BlindnessSpell("Blindness", "DWFFd");
+    public static final Spell Invisibility = new InvisibilitySpell("Invisibility", "PPws");
     public static final Spell Haste = new Spell("Haste", "PWPWWc", Spell.SpellType.Enchantment);
     public static final Spell TimeStop = new Spell("Time Stop", "SPPC", Spell.SpellType.Enchantment);
     public static final Spell DelayedEffect = new Spell("Delayed Effect", "DWSSSP", Spell.SpellType.Enchantment);

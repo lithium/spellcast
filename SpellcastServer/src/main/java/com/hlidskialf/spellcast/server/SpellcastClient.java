@@ -168,10 +168,9 @@ public class SpellcastClient extends Target {
 
     public Elemental getElemental() {
         for (Monster monster : monsters) {
-            try {
-                Elemental el = (Elemental)monster;
-                return el;
-            } catch (ClassCastException e) {  }
+            if (monster instanceof Elemental) {
+                return (Elemental)monster;
+            }
         }
         return null;
     }
@@ -190,7 +189,7 @@ public class SpellcastClient extends Target {
 
     public void askForMonsterAttacks() {
         for (Monster monster : monsters) {
-            if (!Elemental.isElemental(monster)) {
+            if (monster instanceof Elemental) {
                 monsterQuestions.add(new MonsterQuestion(monster));
             }
         }
@@ -201,17 +200,17 @@ public class SpellcastClient extends Target {
     private void checkForSummonSpellQuestion(ArrayList<SpellQuestion> questions, String hand) {
         if (questions.size() == 1) {
             SpellQuestion q = questions.get(0);
-            try {
+            if (q.getSpell() instanceof SummonMonsterSpell) {
                 SummonMonsterSpell summonSpell = (SummonMonsterSpell) q.getSpell();
-                try {
+                if (summonSpell instanceof SummonElementalSpell) {
                     // summon spell ask for element
-                    SummonElementalSpell summonElementalSpell = (SummonElementalSpell)summonSpell;
+                    SummonElementalSpell summonElementalSpell = (SummonElementalSpell) summonSpell;
                     //TODO: ask for element
-                } catch (ClassCastException e) {
+                } else {
                     // monster spell ask for target
-                    monsterQuestions.add(new MonsterQuestion(hand+"$"+summonSpell.getSlug()));
+                    monsterQuestions.add(new MonsterQuestion(hand + "$" + summonSpell.getSlug()));
                 }
-            } catch (ClassCastException e) { }
+            }
         }
 
     }

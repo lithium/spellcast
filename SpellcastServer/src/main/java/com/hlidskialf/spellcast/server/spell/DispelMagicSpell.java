@@ -40,7 +40,7 @@ public class DispelMagicSpell extends Spell {
 		}
 
 		//remove enchantments from all beings
-		for (Target t: matchState.getAllClients()) {
+		for (Target t: matchState.getAllTargets()) {
 			t.removeEnchantments();
 
 			//mark all monsters to be destroyed after attacking this round

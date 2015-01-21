@@ -17,16 +17,4 @@ public class Elemental extends Monster {
         return element;
     }
 
-    public static boolean isElemental(Monster monster) {
-        return Elemental.nullCast(monster) != null;
-    }
-    public static Elemental nullCast(Monster monster) {
-        try {
-            Elemental e = (Elemental)monster;
-            return e;
-        } catch (ClassCastException e) {
-
-        }
-        return null;
-    }
 }
