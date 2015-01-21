@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.Element;
+
 /**
  * Created by wiggins on 1/11/15.
  */
@@ -21,8 +23,8 @@ public class SpellList {
     public static final Spell Summon2 = new SummonMonsterSpell("Summon Ogre",    "PSFW", 2);
     public static final Spell Summon3 = new SummonMonsterSpell("Summon Troll",  "FPSFW", 3);
     public static final Spell Summon4 = new SummonMonsterSpell("Summon Giant", "WFPSFW", 4);
-    public static final Spell SummonFireElemental = new Spell("Summon Fire Elemental", "cSWWS", Spell.SpellType.Summon);
-    public static final Spell SummonIceElemental = new Spell("Summon Ice Elemental", "cSWWS", Spell.SpellType.Summon);
+    public static final Spell SummonFireElemental = new SummonElementalSpell("Summon Fire Elemental", "cSWWS", Element.fire);
+    public static final Spell SummonIceElemental = new SummonElementalSpell("Summon Ice Elemental", "cSWWS", Element.ice);
 
     // damage spells
     public static final Spell Missile = new MissileSpell("Missile", "SD");
@@ -32,20 +34,22 @@ public class SpellList {
     public static final Spell CauseLightWounds = new CauseWoundsSpell("Cause Light Wounds", "WFP", 2);
     public static final Spell CauseHeavyWounds = new CauseWoundsSpell("Cause Heavy Wounds", "WPFD", 3);
     public static final Spell Fireball = new FireballSpell("Fireball", "FSSDD");
-    public static final Spell FireStorm = new Spell("Fire Storm", "SWWc", Spell.SpellType.Damage);
-    public static final Spell IceStorm = new Spell("Ice Storm", "WSSc", Spell.SpellType.Damage);
+    public static final Spell FireStorm = new FireStormSpell("Fire Storm", "SWWc");
+    public static final Spell IceStorm = new IceStormSpell("Ice Storm", "WSSc");
 
     // enchantments
+    // control enchantments (cancel each other)
     public static final Spell Amnesia = new Spell("Amnesia", "DPP", Spell.SpellType.Enchantment);
     public static final Spell Confusion = new Spell("Confusion", "DSF", Spell.SpellType.Enchantment);
     public static final Spell CharmPerson = new Spell("Charm Person", "PSDF", Spell.SpellType.Enchantment);
     public static final Spell CharmMonster = new Spell("Charm Monster", "PSDD", Spell.SpellType.Enchantment);
     public static final Spell Paralysis = new Spell("Paralysis", "FFF", Spell.SpellType.Enchantment);
     public static final Spell Fear = new Spell("Fear", "SWD", Spell.SpellType.Enchantment);
+    // regular enchantments
     public static final Spell AntiSpell = new Spell("Anti-spell", "SPF", Spell.SpellType.Enchantment);
     public static final Spell ProtectionFromEvil = new ProtectionFromEvilSpell("Protection From Evil", "WWP");
-    public static final Spell ResistHeat = new Spell("Resist Heat", "WWFP", Spell.SpellType.Enchantment);
-    public static final Spell ResistCold = new Spell("Resist Cold", "SSFP", Spell.SpellType.Enchantment);
+    public static final Spell ResistHeat = new ResistElementSpell("Resist Heat", "WWFP", Element.fire);
+    public static final Spell ResistCold = new ResistElementSpell("Resist Cold", "SSFP", Element.ice);
     public static final Spell Disease = new Spell("Disease", "DSFFFc", Spell.SpellType.Enchantment);
     public static final Spell Poison = new Spell("Poison", "DWWFWD", Spell.SpellType.Enchantment);
     public static final Spell Blindness = new Spell("Blindness", "DWFFd", Spell.SpellType.Enchantment);

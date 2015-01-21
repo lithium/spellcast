@@ -61,7 +61,7 @@ public class Monster extends Target {
 	}
 
     public String get360() {
-        StringBuilder sb = new StringBuilder("311 ");
+        StringBuilder sb = new StringBuilder("360 ");
         sb.append(nickname);
         sb.append(" :");
         sb.append(visibleName);

@@ -1,9 +1,10 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.Element;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
-import com.hlidskialf.spellcast.server.effect.ResistHeatEffect;
+import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
  * Created by wiggins on 1/20/15.
@@ -22,13 +23,16 @@ import com.hlidskialf.spellcast.server.effect.ResistHeatEffect;
  * and it destroys ice elementals if they are the subject of the spell but doesn't affect fire elementals.
 
  */
-public class ResistHeatSpell extends Spell {
-    public ResistHeatSpell(String name, String gestures) {
+public class ResistElementSpell extends Spell {
+    private Element element;
+
+    public ResistElementSpell(String name, String gestures, Element element) {
         super(name, gestures, SpellType.Enchantment);
+        this.element = element;
     }
 
     @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-        target.addEffect(new ResistHeatEffect(matchState, target));
+        target.addEffect(new ResistElementEffect(matchState, target, element));
     }
 }

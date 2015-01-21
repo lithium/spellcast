@@ -4,7 +4,7 @@ import com.hlidskialf.spellcast.server.ResolvingSpell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
-import com.hlidskialf.spellcast.server.effect.ResistColdEffect;
+import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
  * Created by wiggins on 1/20/15.
@@ -34,7 +34,7 @@ public class IceStormSpell extends Spell {
         //TODO: if there is a ice elemental destroy it
 
         for (Target t : matchState.getAllTargets()) {
-            if (!t.hasEffect(ResistColdEffect.Name)) {
+            if (!t.hasEffect(ResistElementEffect.Cold)) {
                 t.takeDamage(5);
             }
         }

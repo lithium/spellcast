@@ -4,7 +4,7 @@ import com.hlidskialf.spellcast.server.ResolvingSpell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
-import com.hlidskialf.spellcast.server.effect.ResistHeatEffect;
+import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
  * Created by wiggins on 1/20/15.
@@ -33,7 +33,7 @@ public class FireStormSpell extends Spell {
         //TODO: if there is a fire elemental destroy it
 
         for (Target t : matchState.getAllTargets()) {
-            if (!t.hasEffect(ResistHeatEffect.Name)) {
+            if (!t.hasEffect(ResistElementEffect.Heat)) {
                 t.takeDamage(5);
             }
         }

@@ -65,7 +65,7 @@ public abstract class Target {
     }
 
     public boolean hasEffect(String effectName) {
-        return getEffect(effectName) != null;
+        return effectName != null && getEffect(effectName) != null;
     }
     public SpellEffect getEffect(String effectName) {
         for (SpellEffect se : effects) {

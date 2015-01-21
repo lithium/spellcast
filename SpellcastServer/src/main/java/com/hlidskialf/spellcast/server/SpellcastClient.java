@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SpellList;
+import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
 import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 import java.util.ArrayList;
@@ -165,6 +166,17 @@ public class SpellcastClient extends Target {
         return monsterQuestions;
     }
 
+    public Elemental getElemental() {
+        for (Monster monster : monsters) {
+            try {
+                Elemental el = (Elemental)monster;
+                return el;
+            } catch (ClassCastException e) {  }
+        }
+        return null;
+    }
+
+
     public void resetHistory() {
         leftGestures.clear();
         rightGestures.clear();
@@ -175,9 +187,12 @@ public class SpellcastClient extends Target {
         monsterQuestions.clear();
     }
 
+
     public void askForMonsterAttacks() {
         for (Monster monster : monsters) {
-            monsterQuestions.add(new MonsterQuestion(monster));
+            if (!Elemental.isElemental(monster)) {
+                monsterQuestions.add(new MonsterQuestion(monster));
+            }
         }
         checkForSummonSpellQuestion(leftSpellQuestions, "left");
         checkForSummonSpellQuestion(rightSpellQuestions, "right");
@@ -188,7 +203,14 @@ public class SpellcastClient extends Target {
             SpellQuestion q = questions.get(0);
             try {
                 SummonMonsterSpell summonSpell = (SummonMonsterSpell) q.getSpell();
-                monsterQuestions.add(new MonsterQuestion(hand+"$"+summonSpell.getSlug()));
+                try {
+                    // summon spell ask for element
+                    SummonElementalSpell summonElementalSpell = (SummonElementalSpell)summonSpell;
+                    //TODO: ask for element
+                } catch (ClassCastException e) {
+                    // monster spell ask for target
+                    monsterQuestions.add(new MonsterQuestion(hand+"$"+summonSpell.getSlug()));
+                }
             } catch (ClassCastException e) { }
         }
 

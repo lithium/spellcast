@@ -4,7 +4,7 @@ import com.hlidskialf.spellcast.server.ResolvingSpell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
-import com.hlidskialf.spellcast.server.effect.ResistHeatEffect;
+import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
  * Created by wiggins on 1/19/15.
@@ -31,7 +31,7 @@ public class FireballSpell extends Spell {
 
             //TODO: if target is iceElemental target.addEffect(DeathEffect)
 
-            if (!target.hasEffect(ResistHeatEffect.Name)) {
+            if (!target.hasEffect(ResistElementEffect.Heat)) {
                 target.takeDamage(5);
             }
 

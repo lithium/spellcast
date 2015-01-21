@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
@@ -385,8 +386,25 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
         // queue up all attacks that resolved
         for (SpellcastClient client : clients.values()) {
+            //stabs
             resolveStabs(client, client.getLeftSpellQuestions(), "left", resolvingAttacks);
             resolveStabs(client, client.getRightSpellQuestions(), "right", resolvingAttacks);
+
+            //monster attacks
+            for (MonsterQuestion mq : client.getMonsterQuestions()) {
+                Target target = getTargetByNickname(mq.getTarget());
+                resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getMonster().getDamage()));
+            }
+
+            //elemental attacks
+            Elemental elemental = client.getElemental();
+            if (elemental != null) {
+                for (Target target : getVisibleTargets(null)) {
+                    if (!target.hasEffect(ResistElementEffect.resistanceFor(elemental.getElement()))) {
+                        resolvingAttacks.add(new ResolvingAttack(elemental, target, elemental.getDamage()));
+                    }
+                }
+            }
         }
 
 	    /*
