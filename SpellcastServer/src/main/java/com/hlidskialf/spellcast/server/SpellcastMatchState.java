@@ -10,8 +10,6 @@ public interface SpellcastMatchState {
     public String getCurrentMatchId();
     public int getCurrentRoundNumber();
 
-    public Collection<SpellcastClient> getAllClients();
-    public SpellcastClient getClientByNickname(String nickname);
-
 	public ArrayList<ResolvingSpell> getResolvingSpells();
+    public Iterable<Target> getAllTargets();
 }

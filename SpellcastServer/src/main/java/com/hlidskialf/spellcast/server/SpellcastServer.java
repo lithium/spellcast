@@ -533,6 +533,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
     }
 
+    @Override
+    public Iterable<Target> getAllTargets() {
+        return getVisibleTargets(null);
+    }
+
     public Iterable<Target> getVisibleTargets(Target origin) {
         ArrayList<Target> visible = new ArrayList<Target>();
         for (SpellcastClient client : clients.values()) {

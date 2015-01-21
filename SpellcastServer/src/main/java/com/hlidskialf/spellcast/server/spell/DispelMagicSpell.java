@@ -40,13 +40,14 @@ public class DispelMagicSpell extends Spell {
 		}
 
 		//remove enchantments from all beings
-		for (SpellcastClient client : matchState.getAllClients()) {
-			client.removeEnchantments();
+		for (Target t: matchState.getAllClients()) {
+			t.removeEnchantments();
 
 			//mark all monsters to be destroyed after attacking this round
-			for (Monster monster : client.getMonsters()) {
+			try {
+				Monster monster = (Monster)t;
 				monster.setDispelled(true);
-			}
+			} catch (ClassCastException e) {  }
 		}
 
 		// target gets a shield effect for this round

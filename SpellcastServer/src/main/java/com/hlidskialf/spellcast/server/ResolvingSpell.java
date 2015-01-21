@@ -86,5 +86,14 @@ public class ResolvingSpell {
 		sb.append(hand);
 		return sb.toString();
 	}
+
+	public static boolean isSpellResolving(Iterable<ResolvingSpell> resolvingSpells, String spellSlug) {
+		for (ResolvingSpell rs : resolvingSpells) {
+			if (rs.getSpell().getSlug().equals(spellSlug)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 

@@ -1,8 +1,10 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.ResolvingSpell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.effect.ResistHeatEffect;
 
 /**
  * Created by wiggins on 1/19/15.
@@ -23,6 +25,20 @@ public class FireballSpell extends Spell {
 
 	@Override
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+
+
+		if (!ResolvingSpell.isSpellResolving(matchState.getResolvingSpells(), IceStormSpell.Slug)) {
+
+            //TODO: if target is iceElemental target.addEffect(DeathEffect)
+
+            if (!target.hasEffect(ResistHeatEffect.Name)) {
+                target.takeDamage(5);
+            }
+
+		}
+
+
+
 
 	}
 }
