@@ -1,19 +1,4 @@
-package com.hlidskialf.spellcast.server;
-
-import com.hlidskialf.spellcast.server.spell.CauseWoundsSpell;
-import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
-import com.hlidskialf.spellcast.server.spell.CureWoundsSpell;
-import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
-import com.hlidskialf.spellcast.server.spell.FingerOfDeathSpell;
-import com.hlidskialf.spellcast.server.spell.FireballSpell;
-import com.hlidskialf.spellcast.server.spell.LightningBoltSpell;
-import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
-import com.hlidskialf.spellcast.server.spell.MissileSpell;
-import com.hlidskialf.spellcast.server.spell.ProtectionFromEvilSpell;
-import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
-import com.hlidskialf.spellcast.server.spell.ShieldSpell;
-import com.hlidskialf.spellcast.server.spell.Spell;
-import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
+package com.hlidskialf.spellcast.server.spell;
 
 /**
  * Created by wiggins on 1/11/15.

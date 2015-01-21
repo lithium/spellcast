@@ -26,6 +26,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private MatchState currentMatchState;
     private RoundState currentRoundState;
 	private ArrayList<ResolvingSpell> resolvingSpells;
+    private ArrayList<ResolvingAttack> resolvingAttacks;
 
 
 	private enum MatchState {
@@ -51,6 +52,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         this.serverVersion = serverVersion;
         clients = new HashMap<ChannelType, SpellcastClient>();
 	    resolvingSpells = new ArrayList<ResolvingSpell>();
+        resolvingAttacks = new ArrayList<ResolvingAttack>();
         matchIdSeed = 1000;
         currentMatchState = MatchState.WaitingForPlayers;
         currentRoundState = RoundState.NotPlaying;
@@ -375,10 +377,18 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void resolveRound() {
 
 	    resolvingSpells.clear();
+        resolvingAttacks.clear();
 
+        // queue up all spells that resolved
         for (SpellcastClient client : clients.values()) {
             resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
             resolveSpells(client, client.getRightSpellQuestions(), "right", resolvingSpells);
+        }
+
+        // queue up all attacks that resolved
+        for (SpellcastClient client : clients.values()) {
+            resolveStabs(client, client.getLeftSpellQuestions(), "left", resolvingAttacks);
+            resolveStabs(client, client.getRightSpellQuestions(), "right", resolvingAttacks);
         }
 
 	    /*
@@ -392,25 +402,40 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	     * dispel monsters
 	     */
 
+        // resolve any counter/negation spells first in priority order
 	    fireParticularSpell(resolvingSpells, DispelMagicSpell.Slug);
 	    fireParticularSpell(resolvingSpells, CounterspellSpell.Slug);
 	    fireParticularSpell(resolvingSpells, MagicMirrorSpell.Slug);
 	    fireParticularSpell(resolvingSpells, RemoveEnchantmentSpell.Slug);
 
+        //resolve any remaining un-countered spells
 	    for (ResolvingSpell rSpell : resolvingSpells) {
 		    if (!(rSpell.isCountered() || rSpell.isFired())) {
 			    rSpell.fire(this);
 			    broadcast(rSpell.get351());
 		    }
 	    }
+
 	    // TODO: resolve death effects
 
-        for (SpellcastClient client : clients.values()) {
-            resolveStabs(client, client.getLeftSpellQuestions(), "left");
-            resolveStabs(client, client.getRightSpellQuestions(), "right");
+        //resolve stabs/monster attacks
+        for (ResolvingAttack rAttack : resolvingAttacks) {
+            if (rAttack.resolveAttack(this)) {
+                broadcast(rAttack.get352());
+            } else {
+                broadcast(rAttack.get353());
+            }
         }
 
-	    // TODO: dispel monsters
+	    // dispel monsters
+        for (SpellcastClient client : clients.values()) {
+            for (Monster monster : client.getMonsters()) {
+                if (monster.isDispelled()) {
+                    client.loseControlOfMonster(monster);
+                    broadcast(monster.get360());
+                }
+            }
+        }
 
         broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
         broadcast_stats();
@@ -435,24 +460,14 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             }
         }
     }
-    private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand) {
+    private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand, ArrayList<ResolvingAttack> attackBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
             Target target = getTargetByNickname(q.getTarget());
             if (spell.getSlug().equals("stab")) {
-                broadcast("352 " + client.getNickname() + " STABS " + target.getNickname() + " WITH " + hand);
-
-                if (target.hasEffect(ShieldEffect.Name)) {
-                    broadcast("353 "+target.getNickname()+" BLOCKS "+client.getNickname()+" :the attack is blocked by a shield around "+target.getVisibleName());
-                } else {
-                    target.takeDamage(1);
-                    if (target.isDead()) {
-                        broadcast("380 "+target.getNickname()+" :"+target.getVisibleName()+" dies");
-                    }
-                }
+                attackBuffer.add(new ResolvingAttack(client, target, 1));
             }
         }
-
     }
 
 

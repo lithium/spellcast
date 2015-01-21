@@ -59,4 +59,13 @@ public class Monster extends Target {
 	public void setDispelled(final boolean dispelled) {
 		this.dispelled = dispelled;
 	}
+
+    public String get360() {
+        StringBuilder sb = new StringBuilder("311 ");
+        sb.append(nickname);
+        sb.append(" :");
+        sb.append(visibleName);
+        sb.append(" is dispelled");
+        return sb.toString();
+    }
 }

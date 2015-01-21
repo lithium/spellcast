@@ -2,6 +2,7 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.spell.Spell;
+import com.hlidskialf.spellcast.server.spell.SpellList;
 
 import java.util.ArrayList;
 
