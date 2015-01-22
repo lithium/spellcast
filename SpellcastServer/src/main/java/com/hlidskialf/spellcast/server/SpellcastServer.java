@@ -13,15 +13,19 @@ import sun.security.ntlm.Client;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.ListIterator;
 
 /**
  * Created by wiggins on 1/11/15.
  */
 public abstract class SpellcastServer<ChannelType> implements SpellcastMatchState {
-    private HashMap<ChannelType, SpellcastClient> clients;
     private String serverName;
     private String serverVersion;
 
+    private HashMap<ChannelType, SpellcastClient> clients;
+
+    private ArrayList<SpellcastClient> players;
+    private ArrayList<Tombstone> tombstones;
     private int matchIdSeed;
     private String currentMatchId;
     private int currentRoundNumber;
@@ -53,6 +57,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         this.serverName = serverName;
         this.serverVersion = serverVersion;
         clients = new HashMap<ChannelType, SpellcastClient>();
+        players = new ArrayList<SpellcastClient>();
+        tombstones = new ArrayList<Tombstone>();
 	    resolvingSpells = new ArrayList<ResolvingSpell>();
         resolvingAttacks = new ArrayList<ResolvingAttack>();
         matchIdSeed = 1000;
@@ -190,7 +196,9 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     private void disconnectClient(SpellcastClient client, boolean close) {
         broadcast("303 "+client.getNickname()+" :Quits", client);
+        killTarget(client);
         clients.remove(client.getChannel());
+        displayTombstones();
         if (currentMatchState == MatchState.Playing) {
             checkForWinner();
         }
@@ -240,7 +248,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         if (target != null) {
             return target;
         }
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             target = client.getMonsterById(nick);
             if (target != null) {
                 return target;
@@ -260,25 +268,19 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     /* return false if still playing, true if there was a winner */
     private boolean checkForWinner() {
-        SpellcastClient lastSeen=null;
-        if (currentMatchState == MatchState.Playing) {
-            for (SpellcastClient c : clients.values()) {
-                if (lastSeen != null) { // more than one client still playing
-                    return false;
-                }
-                if (c.getState() == SpellcastClient.ClientState.Playing) {
-                    lastSeen = c;
-                }
-            }
+        if (players.size() > 1) {
+            return false;
         }
-        if (lastSeen != null) { //only one client left playing
-            declareWinner(lastSeen);
+        if (players.size() == 1) {
+            declareWinner(players.get(0));
             return true;
         }
-        return false;
+        // no players left -- its a draw
+        declareDraw();
+        return true;
     }
     private boolean isAllClientsAnswered() {
-        for (SpellcastClient c : clients.values()) {
+        for (SpellcastClient c : players) {
             if (c.hasUnansweredQuestions()) {
                 return false;
             }
@@ -289,7 +291,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         if (clients.size() < 2) {
             return false;
         }
-        for (SpellcastClient c : clients.values()) {
+        for (SpellcastClient c : players) {
             if (!c.isReady()) {
                 return false;
             }
@@ -312,17 +314,22 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             return;
         }
 
+        players.clear();
+        tombstones.clear();
         currentMatchState = MatchState.Playing;
         currentMatchId = generateMatchId();
         currentRoundNumber = 0;
         broadcast("250 "+currentMatchId+ " :Match start");
         for (SpellcastClient c : clients.values()) {
-            c.resetHistory();
-            c.setHitpoints(15);
-            c.setMaxHitpoints(15);
-            c.setState(SpellcastClient.ClientState.Playing);
+            if (c.getState().equals(SpellcastClient.ClientState.Watching)) {
+                c.resetHistory();
+                c.setReady(false);
+                c.setHitpoints(15);
+                c.setMaxHitpoints(15);
+                c.setState(SpellcastClient.ClientState.Playing);
+                players.add(c);
+            }
         }
-        broadcast_stats();
         startNewRound();
     }
 
@@ -330,7 +337,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         currentRoundNumber += 1;
         currentRoundState = RoundState.WaitingForGestures;
         broadcast("251 "+currentMatchId+"."+currentRoundNumber+" :Round start");
-        for (SpellcastClient client : clients.values()) {
+        broadcast_stats();
+        for (SpellcastClient client : players) {
             client.setReady(false);
             client.resetQuestions();
             ArrayList<String> expireEffects = client.expireEffects(currentMatchId, currentRoundNumber);
@@ -345,7 +353,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void startRoundQuestions() {
 
         broadcast("330 Gestures:");
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             broadcast("331 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" "+client.getLeftGesture()+" "+client.getRightGesture());
         }
         broadcast("332 End of Gestures");
@@ -353,7 +361,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         boolean anyQuestions = false;
 
         // ask each client their questions
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             client.setReady(false);
             client.performGestures();
             client.askForMonsterAttacks();
@@ -380,13 +388,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
 
         // queue up all spells that resolved
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
             resolveSpells(client, client.getRightSpellQuestions(), "right", resolvingSpells);
         }
 
         // queue up all attacks that resolved
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             //stabs
             resolveStabs(client, client.getLeftSpellQuestions(), "left", resolvingAttacks);
             resolveStabs(client, client.getRightSpellQuestions(), "right", resolvingAttacks);
@@ -442,20 +450,19 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 killTarget(t);
             }
         }
+        displayTombstones();
 
         //resolve stabs/monster attacks
         for (ResolvingAttack rAttack : resolvingAttacks) {
-            if (!rAttack.getAttacker().isDead()) {
-                if (rAttack.resolveAttack(this)) {
-                    broadcast(rAttack.get352());
-                } else {
-                    broadcast(rAttack.get353());
-                }
+            if (rAttack.resolveAttack(this)) {
+                broadcast(rAttack.get352());
+            } else {
+                broadcast(rAttack.get353());
             }
         }
 
 	    // dispel monsters
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             for (Monster monster : client.getMonsters()) {
                 if (monster.isDispelled()) {
                     client.loseControlOfMonster(monster);
@@ -470,21 +477,40 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 killTarget(t);
             }
         }
+        displayTombstones();
 
 
-        broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
+        broadcast("350 " + currentMatchId + "." + currentRoundNumber + " :Round complete");
 
         if (!checkForWinner()) {
-            broadcast_stats();
             startNewRound();
         }
     }
 
+    private void displayTombstones() {
+        int last = tombstones.size();
+        if (last <= 0)
+            return;
+        ListIterator<Tombstone> it = tombstones.listIterator(last);
+        while (it.hasPrevious()) {
+            Tombstone tomb = it.previous();
+            if (tomb.getDeathRound() == currentRoundNumber) {
+
+                broadcast("380 "+tomb.getNickname()+" :dies");
+                SpellcastClient client = tomb.getClient();
+                client.setState(SpellcastClient.ClientState.Watching);
+                client.setReady(false);
+                players.remove(client);
+            } else {
+                break;
+            }
+        }
+    }
+
     private void killTarget(Target t) {
-        broadcast("380 "+t.getNickname()+" :dies");
         if (t instanceof SpellcastClient) {
             SpellcastClient client = (SpellcastClient) t;
-            client.setState(SpellcastClient.ClientState.Watching);
+            tombstones.add(new Tombstone(client, currentMatchId, currentRoundNumber));
         } else if (t instanceof Monster) {
             Monster monster = (Monster) t;
             monster.getController().loseControlOfMonster(monster);
@@ -523,17 +549,29 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void declareWinner(SpellcastClient winner) {
         broadcast("390 "+currentMatchId+" "+winner.getNickname()+" :Wins the match!");
         currentMatchState = MatchState.WaitingForPlayers;
-        for (SpellcastClient client : clients.values()) {
-            if (client.getState() != SpellcastClient.ClientState.WaitingForName) {
-                client.setReady(false);
-                client.setHitpoints(0);
-                client.setMaxHitpoints(0);
-                client.resetHistory();
-                client.resetQuestions();
-                client.setState(SpellcastClient.ClientState.Watching);
-            }
+        winner.setReady(false);
+        winner.setHitpoints(0);
+        winner.setMaxHitpoints(0);
+        winner.resetHistory();
+        winner.resetQuestions();
+        winner.setState(SpellcastClient.ClientState.Watching);
+        players.clear();
+    }
+    private void declareDraw() {
+
+        // since there are no players left, a draw is declared between all wizards who died this round.
+        broadcast("391 "+currentMatchId+" :is a draw between-");
+
+        // we're assuming tombstones are in round order here
+        ListIterator<Tombstone> it = tombstones.listIterator(tombstones.size());
+        while (it.hasPrevious()) {
+            Tombstone tomb = it.previous();
+            if (tomb.getDeathRound() != currentRoundNumber) //we've gone back past anyone who died this round
+                break;
+            broadcast("392 "+tomb.getNickname());
         }
-        broadcast_stats();
+        broadcast("393 :End of draw");
+        currentMatchState = MatchState.WaitingForPlayers;
     }
 
     private boolean askClientQuestions(SpellcastClient client) {
@@ -590,7 +628,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     public Iterable<Target> getVisibleTargets(Target origin) {
         ArrayList<Target> visible = new ArrayList<Target>();
-        for (SpellcastClient client : clients.values()) {
+        for (SpellcastClient client : players) {
             if (client.getState().equals(SpellcastClient.ClientState.Playing)) {
                 visible.add(client);
                 for (Monster monster : client.getMonsters()) {
@@ -625,14 +663,14 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
 
     public void broadcast_stats() {
-        for (SpellcastClient c : clients.values()) {
+        for (SpellcastClient c : players) {
             wizards(c);
             monsters(c);
         }
     }
     public void wizards(SpellcastClient client) {
         sendToClient(client, "300 Wizards");
-        for (SpellcastClient c : clients.values()) {
+        for (SpellcastClient c : players) {
             sendToClient(client, c.get301());
         }
         sendToClient(client, "302 :End of Wizards");
@@ -640,7 +678,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     public void monsters(SpellcastClient client) {
         sendToClient(client, "310 Monsters");
-        for (SpellcastClient c : clients.values()) {
+        for (SpellcastClient c : players) {
             for (Monster monster : c.getMonsters()) {
                 sendToClient(client, monster.get311());
             }
