@@ -111,12 +111,12 @@ public class SpellcastClient extends Target {
     }
 
     public void takeControlOfMonster(Monster monster) {
-        monsters.add(monster);
         SpellcastClient previousController = monster.getController();
         if (previousController != null) {
             previousController.loseControlOfMonster(monster);
         }
         monster.setController(this);
+        monsters.add(monster);
     }
     public void loseControlOfMonster(Monster monster) {
         monsters.remove(monster);

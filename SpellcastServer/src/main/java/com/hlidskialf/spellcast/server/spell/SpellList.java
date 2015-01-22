@@ -39,12 +39,12 @@ public class SpellList {
 
     // enchantments
     // control enchantments (cancel each other)
-    public static final Spell Amnesia = new Spell("Amnesia", "DPP", Spell.SpellType.Enchantment);
-    public static final Spell Confusion = new Spell("Confusion", "DSF", Spell.SpellType.Enchantment);
-    public static final Spell CharmPerson = new Spell("Charm Person", "PSDF", Spell.SpellType.Enchantment);
-    public static final Spell CharmMonster = new Spell("Charm Monster", "PSDD", Spell.SpellType.Enchantment);
-    public static final Spell Paralysis = new Spell("Paralysis", "FFF", Spell.SpellType.Enchantment);
-    public static final Spell Fear = new Spell("Fear", "SWD", Spell.SpellType.Enchantment);
+    public static final Spell Amnesia = new AmnesiaSpell("Amnesia", "DPP");
+    public static final Spell Confusion = new ConfusionSpell("Confusion", "DSF");
+    public static final Spell CharmPerson = new CharmPersonSpell("Charm Person", "PSDF");
+    public static final Spell CharmMonster = new CharmMonsterSpell("Charm Monster", "PSDD");
+    public static final Spell Paralysis = new ParalysisSpell("Paralysis", "FFF");
+    public static final Spell Fear = new FearSpell("Fear", "SWD");
     // regular enchantments
     public static final Spell Antispell = new AntispellSpell("Antispell", "SPF");
     public static final Spell ProtectionFromEvil = new ProtectionFromEvilSpell("Protection From Evil", "WWP");
