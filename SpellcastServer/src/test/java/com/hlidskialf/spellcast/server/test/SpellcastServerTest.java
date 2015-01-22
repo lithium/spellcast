@@ -2,6 +2,7 @@ package com.hlidskialf.spellcast.server.test;
 
 
 import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.test.helpers.SpellcastTest;
 import com.hlidskialf.spellcast.server.test.helpers.TestSpellcastChannel;
 import com.hlidskialf.spellcast.server.test.helpers.TestSpellcastServer;
 import org.junit.Before;
@@ -15,77 +16,12 @@ import static org.junit.Assert.*;
 /**
  * Created by wiggins on 1/22/15.
  */
-public class SpellcastServerTest {
-
-    private TestSpellcastServer server;
-    private TestSpellcastChannel firstChannel;
-    private TestSpellcastChannel secondChannel;
-    private SpellcastClient first;
-    private SpellcastClient second;
-
-    private ArrayList<TestSpellcastChannel> channels;
-
-    @Before
-    public void initialize() {
-        server = new TestSpellcastServer("TestServer", "v0.0");
-        firstChannel = new TestSpellcastChannel();
-        secondChannel = new TestSpellcastChannel();
-
-        first = server.addChannel(firstChannel);
-        assertEquals("222 SPELLCAST TestServer v0.0", firstChannel.nextMessage());
-
-        second = server.addChannel(secondChannel);
-        assertEquals("222 SPELLCAST TestServer v0.0", secondChannel.nextMessage());
-
-        channels = new ArrayList<TestSpellcastChannel>();
-        channels.add(firstChannel);
-        channels.add(secondChannel);
-    }
-
-
-    private void authenticate() {
-        server.processChannelMessage(firstChannel, "NAME first");
-        assertEquals("200 Hello first", firstChannel.nextMessage());
-
-        server.processChannelMessage(secondChannel, "NAME second");
-        assertEquals("200 Hello second", secondChannel.nextMessage());
-    }
-
-    private void sendFirst(String msg) {
-        server.processChannelMessage(firstChannel, msg);
-    }
-    private void sendSecond(String msg) {
-        server.processChannelMessage(secondChannel, msg);
-    }
-
-    private static void assertStartsWith(String expected, String actual) {
-        if (!actual.startsWith(expected)) {
-            throw new ComparisonFailure("", (String)expected, (String)actual);
-        }
-    }
-    private static void assertChannelContains(String expected, TestSpellcastChannel channel) {
-        for (String msg : channel.messages) {
-            if (expected.equals(msg)) {
-                return;
-            }
-        }
-        throw new ComparisonFailure("channel did not contain", expected, channel.messages.toString());
-    }
-    private static void assertContainsStartingWith(String expected, TestSpellcastChannel channel) {
-        for (String msg : channel.messages) {
-            if (msg.startsWith(expected)) {
-                return;
-            }
-        }
-        throw new ComparisonFailure("channel did not contain", expected, channel.messages.toString());
-    }
+public class SpellcastServerTest extends SpellcastTest {
 
 
     @Test
     public void shouldInitializeTwoClients() {
-
         assertEquals(server.getAllClients().size(), 2);
-
     }
 
 
@@ -98,6 +34,7 @@ public class SpellcastServerTest {
         assertNotNull(client);
         assertEquals(client.getNickname(), "first");
         assertEquals(client.getState(), SpellcastClient.ClientState.Watching);
+
     }
 
     @Test
@@ -134,6 +71,64 @@ public class SpellcastServerTest {
             assertContainsStartingWith("320 " + server.getCurrentMatchId() + ".1 first", channel);
             assertContainsStartingWith("320 " + server.getCurrentMatchId() + ".1 second", channel);
         }
+    }
+
+    @Test
+    public void shouldTakeGesturesFromAllPlayers() {
+        authenticateAndStart();
+
+        String roundId = getRoundId();
+        sendFirst("GESTURE s W");
+
+        assertStartsWith("321 " + getRoundId() + " first ", firstChannel.lastMessage());
+
+        sendSecond("GESTURE C C");
+
+        assertBroadcasted("331 "+roundId+ " first S W");
+        assertBroadcasted("331 "+roundId+ " second c c");
+        assertBroadcastedStartingWith("332 ");  //saw end of gestures
+
 
     }
+
+    private String getRoundId() {
+        return server.getCurrentMatchId()+"."+server.getCurrentRoundNumber();
+    }
+
+    @Test
+    public void shouldTakeDamageFromStab() {
+        authenticateAndStart();
+
+        sendFirst("GESTURE K _");
+        sendSecond("GESTURE _ _");
+        sendFirst("ANSWER left second");    //first stabs second
+
+        //first got asked which tartget to stab
+        assertContainsStartingWith("345 left stab ", firstChannel);
+
+        //notified of stabs
+        assertBroadcasted("352 first ATTACKS second");
+
+        //second took 1 damage
+        assertEquals(second.getMaxHitpoints() - 1, second.getHitpoints());
+        assertBroadcastedStartingWith("301 second 14/15 ");
+    }
+
+    @Test
+    public void shouldCastShield() {
+        authenticateAndStart();
+
+        sendFirst("GESTURE P _");
+        sendSecond("GESTURE K _");
+
+        sendFirst("ANSWER left first");     //first casts shield on self
+        sendSecond("ANSWER left first");    //second stabs first
+
+        assertBroadcasted("351 first CASTS shield AT first WITH left");
+        assertBroadcastedStartingWith("353 first BLOCKS second ");
+
+        assertEquals(first.getHitpoints(), first.getMaxHitpoints());
+
+    }
+
 }

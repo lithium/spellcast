@@ -148,7 +148,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 if (ValidationHelper.isGestureValid(parts[1]) && ValidationHelper.isGestureValid(parts[2])) {
                     client.readyGestures(parts[1], parts[2]);
                     broadcast("321 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :Gestures ready");
-                    if (isAllClientsReady()) {
+                    if (isAllPlayersGestured()) {
                         startRoundQuestions();
                     }
                 } else {
@@ -289,6 +289,14 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
         return true;
     }
+    private boolean isAllPlayersGestured() {
+        for (SpellcastClient c : players) {
+            if (!c.isReady()) {
+                return false;
+            }
+        }
+        return true;
+    }
     private boolean isAllClientsReady() {
         if (clients.size() < 2) {
             return false;
@@ -339,14 +347,20 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         currentRoundNumber += 1;
         currentRoundState = RoundState.WaitingForGestures;
         broadcast("251 "+currentMatchId+"."+currentRoundNumber+" :Round start");
-        broadcast_stats();
+
+        //expire effects and reset players
         for (SpellcastClient client : players) {
             client.setReady(false);
             client.resetQuestions();
-            ArrayList<String> expireEffects = client.expireEffects(currentMatchId, currentRoundNumber);
-            for (String expireMsg : expireEffects) {
+            for (String expireMsg : client.expireEffects(currentMatchId, currentRoundNumber)) {
                 broadcast("355 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" :"+expireMsg);
             }
+        }
+
+        broadcast_stats();
+
+        //ask for gestures
+        for (SpellcastClient client : players) {
             if (client.canGestureThisRound(currentRoundNumber)) {
                 broadcast("320 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " :What are your gestures");
             }
@@ -354,11 +368,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
     private void startRoundQuestions() {
 
-        broadcast("330 Gestures:");
+        broadcast("330 :Gestures--");
         for (SpellcastClient client : players) {
             broadcast("331 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" "+client.getLeftGesture()+" "+client.getRightGesture());
         }
-        broadcast("332 End of Gestures");
+        broadcast("332 :End of Gestures");
 
         boolean anyQuestions = false;
 
