@@ -17,7 +17,7 @@ public class SpellcastClient extends Target {
 
     public enum ClientState {
         WaitingForName,
-        Identified,
+        Watching,
         Playing
     };
 
@@ -91,7 +91,7 @@ public class SpellcastClient extends Target {
         if (state == ClientState.Playing) {
             return hitpoints+"/"+maxHitpoints;
         }
-        if (state == ClientState.Identified && ready) {
+        if (state == ClientState.Watching && ready) {
             return "+";
         }
         return "-";

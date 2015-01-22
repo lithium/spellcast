@@ -1,13 +1,14 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
-import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
+import sun.security.ntlm.Client;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +101,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                     } else if (parts.length > 3) {
                         client.setVisibleName(parts[3]);
                     }
-                    client.setState(SpellcastClient.ClientState.Identified);
+                    client.setState(SpellcastClient.ClientState.Watching);
 
                     welcome(client);
                     broadcast(client.get301(), client);
@@ -121,13 +122,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 String txt = message.substring(4);
                 broadcast("201 " + client.getNickname() + " :" + txt, null);
             } else if (currentMatchState == MatchState.WaitingForPlayers && command.equals("READY")) {
-                if (client.getState() == SpellcastClient.ClientState.Identified) {
+                if (client.getState() == SpellcastClient.ClientState.Watching) {
                     client.setReady(true);
                     broadcast(client.get301(), null);
                     checkForMatchStart();
                 }
             } else if (command.equals("YIELD")) {
-                if (client.getState() == SpellcastClient.ClientState.Identified) {
+                if (client.getState() == SpellcastClient.ClientState.Watching) {
                     // client indicates they aren't ready for the match to start
                     client.setReady(false);
                     broadcast(client.get301(), null);
@@ -191,10 +192,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         broadcast("303 "+client.getNickname()+" :Quits", client);
         clients.remove(client.getChannel());
         if (currentMatchState == MatchState.Playing) {
-            SpellcastClient winner = checkForWinner();
-            if (winner != null) {
-                declareWinner(winner);
-            }
+            checkForWinner();
         }
         if (close) {
             closeClient(client);
@@ -260,12 +258,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         return null;
     }
 
-    private SpellcastClient checkForWinner() {
+    /* return false if still playing, true if there was a winner */
+    private boolean checkForWinner() {
         SpellcastClient lastSeen=null;
         if (currentMatchState == MatchState.Playing) {
             for (SpellcastClient c : clients.values()) {
                 if (lastSeen != null) { // more than one client still playing
-                    return null;
+                    return false;
                 }
                 if (c.getState() == SpellcastClient.ClientState.Playing) {
                     lastSeen = c;
@@ -273,9 +272,10 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             }
         }
         if (lastSeen != null) { //only one client left playing
-            return lastSeen;
+            declareWinner(lastSeen);
+            return true;
         }
-        return null;
+        return false;
     }
     private boolean isAllClientsAnswered() {
         for (SpellcastClient c : clients.values()) {
@@ -378,6 +378,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	    resolvingSpells.clear();
         resolvingAttacks.clear();
 
+
         // queue up all spells that resolved
         for (SpellcastClient client : clients.values()) {
             resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
@@ -414,9 +415,12 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	     * resolve magic mirrors
 	     * resolve remove enchantment
 	     * resolve any uncountered spells
+	     * resolve death effects
 	     * stabs/monster attacks
 	     * dispel monsters
+	     * clean up the dead
 	     */
+
 
         // resolve any counter/negation spells first in priority order
 	    fireParticularSpell(resolvingSpells, DispelMagicSpell.Slug);
@@ -432,14 +436,21 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 		    }
 	    }
 
-	    // TODO: resolve death effects
+	    // resolve death effects
+        for (Target t: getAllTargets()) {
+            if (t.hasEffect(DeathEffect.Name)) {
+                killTarget(t);
+            }
+        }
 
         //resolve stabs/monster attacks
         for (ResolvingAttack rAttack : resolvingAttacks) {
-            if (rAttack.resolveAttack(this)) {
-                broadcast(rAttack.get352());
-            } else {
-                broadcast(rAttack.get353());
+            if (!rAttack.getAttacker().isDead()) {
+                if (rAttack.resolveAttack(this)) {
+                    broadcast(rAttack.get352());
+                } else {
+                    broadcast(rAttack.get353());
+                }
             }
         }
 
@@ -453,10 +464,31 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             }
         }
 
-        broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
-        broadcast_stats();
+        // clean up the dead
+        for (Target t : getAllTargets()) {
+            if (t.getHitpoints() < 1) {
+                killTarget(t);
+            }
+        }
 
-        startNewRound();
+
+        broadcast("350 "+currentMatchId+"."+currentRoundNumber+" :Round complete");
+
+        if (!checkForWinner()) {
+            broadcast_stats();
+            startNewRound();
+        }
+    }
+
+    private void killTarget(Target t) {
+        broadcast("380 "+t.getNickname()+" :dies");
+        if (t instanceof SpellcastClient) {
+            SpellcastClient client = (SpellcastClient) t;
+            client.setState(SpellcastClient.ClientState.Watching);
+        } else if (t instanceof Monster) {
+            Monster monster = (Monster) t;
+            monster.getController().loseControlOfMonster(monster);
+        }
     }
 
 	private void fireParticularSpell(ArrayList<ResolvingSpell> resolvingSpells, String spellSlug) {
@@ -492,13 +524,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         broadcast("390 "+currentMatchId+" "+winner.getNickname()+" :Wins the match!");
         currentMatchState = MatchState.WaitingForPlayers;
         for (SpellcastClient client : clients.values()) {
-            if (client.getState() == SpellcastClient.ClientState.Playing) {
+            if (client.getState() != SpellcastClient.ClientState.WaitingForName) {
                 client.setReady(false);
                 client.setHitpoints(0);
                 client.setMaxHitpoints(0);
                 client.resetHistory();
                 client.resetQuestions();
-                client.setState(SpellcastClient.ClientState.Identified);
+                client.setState(SpellcastClient.ClientState.Watching);
             }
         }
         broadcast_stats();

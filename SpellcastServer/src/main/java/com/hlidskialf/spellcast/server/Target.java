@@ -15,6 +15,7 @@ public abstract class Target {
     protected int hitpoints;
     protected int maxHitpoints;
     protected ArrayList<SpellEffect> effects;
+    protected boolean dead;
 
     public Target() {
         effects = new ArrayList<SpellEffect>();
@@ -61,7 +62,10 @@ public abstract class Target {
         this.hitpoints = this.maxHitpoints;
     }
     public boolean isDead() {
-        return this.hitpoints < 1;
+        return dead || this.hitpoints < 1;
+    }
+    public void setDead(boolean dead) {
+        this.dead = dead;
     }
 
     public boolean hasEffect(String effectName) {
