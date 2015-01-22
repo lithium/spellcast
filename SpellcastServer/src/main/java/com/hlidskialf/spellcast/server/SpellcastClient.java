@@ -215,6 +215,11 @@ public class SpellcastClient extends Target {
 
     }
 
+    public void addGestures(String left, String right) {
+        leftGestures.add(left);
+        rightGestures.add(right);
+    }
+
     public void performGestures() {
         if (leftGesture == null || rightGesture == null) {
             return;
