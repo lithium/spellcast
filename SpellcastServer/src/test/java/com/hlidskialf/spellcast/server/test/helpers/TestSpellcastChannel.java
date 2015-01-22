@@ -7,6 +7,7 @@ import java.util.ArrayList;
  */
 public class TestSpellcastChannel {
     public ArrayList<String> messages;
+    private int index;
 
     public TestSpellcastChannel() {
         messages = new ArrayList<String>();
@@ -14,6 +15,18 @@ public class TestSpellcastChannel {
 
     public void sendToClient(String message) {
         messages.add(message);
+    }
+
+    public void setIndex() {
+        index = messages.size();
+    }
+    public String nextMessage() {
+        return this.nextMessage(0);
+    }
+    public String nextMessage(int skip) {
+        String ret = this.messages.get(index+skip);
+        index = index+skip+1;
+        return ret;
     }
 
     public String lastMessage() {

@@ -197,7 +197,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     private void disconnectClient(SpellcastClient client, boolean close) {
-        broadcast("303 "+client.getNickname()+" :Quits", client);
+        broadcast("303 " + client.getNickname() + " :Quits", client);
         clients.remove(client.getChannel());
         if (currentMatchState == MatchState.Playing) {
             killTarget(client);
@@ -293,8 +293,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         if (clients.size() < 2) {
             return false;
         }
-        for (SpellcastClient c : players) {
-            if (!c.isReady()) {
+        for (SpellcastClient c : clients.values()) {
+            if (c.getState() == SpellcastClient.ClientState.Watching && !c.isReady()) {
                 return false;
             }
         }

@@ -7,6 +7,11 @@ import com.hlidskialf.spellcast.server.SpellcastServer;
  * Created by wiggins on 1/22/15.
  */
 public class TestSpellcastServer extends SpellcastServer<TestSpellcastChannel> {
+
+    public TestSpellcastServer(String serverName, String serverVersion) {
+        super(serverName, serverVersion);
+    }
+
     @Override
     public void sendToClient(SpellcastClient client, String message) {
         TestSpellcastChannel channel = (TestSpellcastChannel)client.getChannel();
