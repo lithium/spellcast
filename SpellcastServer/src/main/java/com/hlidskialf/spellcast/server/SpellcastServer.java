@@ -8,7 +8,6 @@ import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
-import sun.security.ntlm.Client;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,26 +50,29 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     abstract public void sendToClient(SpellcastClient client, String message);
     abstract public void closeClient(SpellcastClient client);
 
-    public SpellcastServer() {}
-
-    public SpellcastServer(String serverName, String serverVersion) {
-        this.serverName = serverName;
-        this.serverVersion = serverVersion;
+    public SpellcastServer() {
         clients = new HashMap<ChannelType, SpellcastClient>();
         players = new ArrayList<SpellcastClient>();
         tombstones = new ArrayList<Tombstone>();
-	    resolvingSpells = new ArrayList<ResolvingSpell>();
+        resolvingSpells = new ArrayList<ResolvingSpell>();
         resolvingAttacks = new ArrayList<ResolvingAttack>();
         matchIdSeed = 1000;
         currentMatchState = MatchState.WaitingForPlayers;
         currentRoundState = RoundState.NotPlaying;
     }
 
+    public SpellcastServer(String serverName, String serverVersion) {
+        this();
+        this.serverName = serverName;
+        this.serverVersion = serverVersion;
+    }
 
-    public void addChannel(ChannelType channel) {
+
+    public SpellcastClient addChannel(ChannelType channel) {
         SpellcastClient newClient = new SpellcastClient(channel);
         clients.put(channel, newClient);
         hello(newClient);
+        return newClient;
     }
     public void removeChannel(ChannelType channel) {
         SpellcastClient client = clients.get(channel);
@@ -196,10 +198,10 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     private void disconnectClient(SpellcastClient client, boolean close) {
         broadcast("303 "+client.getNickname()+" :Quits", client);
-        killTarget(client);
         clients.remove(client.getChannel());
-        displayTombstones();
         if (currentMatchState == MatchState.Playing) {
+            killTarget(client);
+            displayTombstones();
             checkForWinner();
         }
         if (close) {
