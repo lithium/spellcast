@@ -523,8 +523,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         ListIterator<Tombstone> it = tombstones.listIterator(last);
         while (it.hasPrevious()) {
             Tombstone tomb = it.previous();
-            if (tomb.getDeathRound() == currentRoundNumber) {
-
+            if (!tomb.isDisplayed() && tomb.getDeathRound() == currentRoundNumber) {
+                tomb.setDisplayed(true);
                 broadcast("380 "+tomb.getNickname()+" :dies");
                 SpellcastClient client = tomb.getClient();
                 client.setState(SpellcastClient.ClientState.Watching);

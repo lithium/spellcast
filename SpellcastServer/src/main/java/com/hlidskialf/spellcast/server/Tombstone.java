@@ -8,6 +8,7 @@ public class Tombstone {
     private final String matchId;
     private final int deathRound;
     private SpellcastClient client;
+    private boolean displayed;
 
     public Tombstone(SpellcastClient client, String matchId, int deathRound) {
         this.client = client;
@@ -30,5 +31,13 @@ public class Tombstone {
 
     public int getDeathRound() {
         return deathRound;
+    }
+
+    public boolean isDisplayed() {
+        return displayed;
+    }
+
+    public void setDisplayed(boolean displayed) {
+        this.displayed = displayed;
     }
 }

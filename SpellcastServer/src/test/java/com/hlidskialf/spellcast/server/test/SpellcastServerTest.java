@@ -236,4 +236,37 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcastedStartingWith("353 second BLOCKS first ");
         assertEquals(second.getMaxHitpoints(), second.getHitpoints());
     }
+
+    @Test
+    public void shouldFingerOfDeath() {
+        authenticateAndStart();
+
+        //PWPFSSSD
+
+        sendGestures("P","_","_","_");
+        sendFirst("ANSWER left first");  //first: shield on self
+        sendGestures("WP","__","__","__");
+        sendFirst("ANSWER left first");  //first: shield on self
+
+        sendGestures("FSSSD","_____",
+                     "__WWS","_____");
+
+        sendSecond("ANSWER left second"); //second: counterspell on self
+
+        assertContainsStartingWith("341 left ", firstChannel);  //ask for disambiguation between finger of death and missile
+
+        sendFirst("ANSWER left fingerofdeath");  // first: finger of death on second
+        sendFirst("ANSWER left second");
+
+        assertBroadcasted("351 first CASTS fingerofdeath AT second WITH left");
+
+        // counterspell has no effect on finger of death
+        assertBroadcasted("351 second CASTS counterspell AT second WITH left");
+
+        //second dies
+        assertBroadcastedStartingWith("380 second ");
+
+        //first wins
+        assertBroadcastedStartingWith("390 "+server.getCurrentMatchId()+" first ");
+    }
 }
