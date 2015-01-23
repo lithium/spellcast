@@ -26,6 +26,9 @@ public class Spell {
 	public Spell(String name, String gestures, SpellType type) {
 		this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type);
 	}
+    public Spell(Spell copy) {
+        this(copy.name, copy.slug, copy.gestures, copy.type);
+    }
     public Spell(String name, String slug, String gestures, SpellType type) {
         this.name = name;
 	    this.slug = slug;
@@ -54,13 +57,13 @@ public class Spell {
 
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) { }
 
-    protected void broadcastFizzle(SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+    protected void broadcastFizzle(SpellcastMatchState matchState, Target caster, Target target, String message) {
         broadcast("356", matchState, caster,target,message);
     }
-    protected void broadcastSuccess(SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+    protected void broadcastSuccess(SpellcastMatchState matchState, Target caster, Target target, String message) {
         broadcast("357", matchState, caster,target,message);
     }
-    protected void broadcast(String cmd, SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+    protected void broadcast(String cmd, SpellcastMatchState matchState, Target caster, Target target, String message) {
         StringBuilder sb = new StringBuilder(cmd);
         sb.append(" ");
         sb.append(caster.getNickname());

@@ -41,7 +41,12 @@ public class ValidationHelper {
             }
             hand = hand.substring(0,idx);
         }
-        return (hand.equals("left") || hand.equals("right"));
+        Hand h = Hand.valueOf(hand);
+        if (h == null) {
+            int foo = 42;
+        }
+        return h != null;
+//        return (hand.equals("left") || hand.equals("right"));
     }
     public static boolean isSpellValid(String slug) {
         Spell s = SpellList.lookupSpellBySlug(slug);

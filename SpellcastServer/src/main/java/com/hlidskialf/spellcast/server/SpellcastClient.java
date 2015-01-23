@@ -7,6 +7,8 @@ import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
 import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Queue;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -31,7 +33,7 @@ public class SpellcastClient extends Target {
     private boolean ready;
     private String leftGesture, rightGesture;
     private ArrayList<String> leftGestures, rightGestures;
-    private ArrayList<SpellQuestion> leftSpellQuestions, rightSpellQuestions;
+    private HashMap<Hand, ArrayList<SpellQuestion>> spellQuestions;
     private ArrayList<Monster> monsters;
     private ArrayList<MonsterQuestion> monsterQuestions;
 
@@ -42,10 +44,12 @@ public class SpellcastClient extends Target {
         this.ready = false;
         this.leftGestures = new ArrayList<String>();
         this.rightGestures = new ArrayList<String>();
-        leftSpellQuestions = new ArrayList<SpellQuestion>();
-        rightSpellQuestions = new ArrayList<SpellQuestion>();
         monsters = new ArrayList<Monster>();
         monsterQuestions = new ArrayList<MonsterQuestion>();
+        spellQuestions = new HashMap<Hand, ArrayList<SpellQuestion>>();
+        spellQuestions.put(Hand.left, new ArrayList<SpellQuestion>());
+        spellQuestions.put(Hand.right, new ArrayList<SpellQuestion>());
+        spellQuestions.put(Hand.both, new ArrayList<SpellQuestion>());
     }
 
 
@@ -154,12 +158,12 @@ public class SpellcastClient extends Target {
         return leftGesture;
     }
 
-    public ArrayList<SpellQuestion> getLeftSpellQuestions() {
-        return leftSpellQuestions;
+    public HashMap<Hand, ArrayList<SpellQuestion>> getSpellQuestions() {
+        return spellQuestions;
     }
 
-    public ArrayList<SpellQuestion> getRightSpellQuestions() {
-        return rightSpellQuestions;
+    public ArrayList<SpellQuestion> getSpellQuestions(Hand hand) {
+        return spellQuestions.get(hand);
     }
 
     public ArrayList<MonsterQuestion> getMonsterQuestions() {
@@ -181,8 +185,9 @@ public class SpellcastClient extends Target {
         rightGestures.clear();
     }
     public void resetQuestions() {
-        leftSpellQuestions.clear();
-        rightSpellQuestions.clear();
+        for (ArrayList<SpellQuestion> qs : spellQuestions.values()) {
+            qs.clear();
+        }
         monsterQuestions.clear();
     }
 
@@ -193,11 +198,13 @@ public class SpellcastClient extends Target {
                 monsterQuestions.add(new MonsterQuestion(monster));
             }
         }
-        checkForSummonSpellQuestion(leftSpellQuestions, "left");
-        checkForSummonSpellQuestion(rightSpellQuestions, "right");
+        checkForSummonSpellQuestion(Hand.both);
+        checkForSummonSpellQuestion(Hand.right);
+        checkForSummonSpellQuestion(Hand.left);
 
     }
-    private void checkForSummonSpellQuestion(ArrayList<SpellQuestion> questions, String hand) {
+    private void checkForSummonSpellQuestion(Hand hand) {
+        ArrayList<SpellQuestion> questions = spellQuestions.get(hand);
         if (questions.size() == 1) {
             SpellQuestion q = questions.get(0);
             if (q.getSpell() instanceof SummonMonsterSpell) {
@@ -229,15 +236,37 @@ public class SpellcastClient extends Target {
 
         leftGestures.add(leftGesture);
         rightGestures.add(rightGesture);
+
+        if (Character.isLowerCase(leftGesture.charAt(0)) && Character.isLowerCase(rightGesture.charAt(0))) {
+
+            ArrayList<Spell> casting = new ArrayList<Spell>();
+            for(Spell s : findMatchingSpells(gestureHistory(leftGestures))) {
+                spellQuestions.get(Hand.both).add(new SpellQuestion(s));
+                casting.add(s);
+            }
+            for(Spell s : findMatchingSpells(gestureHistory(rightGestures))) {
+                if (!casting.contains(s)) {
+                    spellQuestions.get(Hand.both).add(new SpellQuestion(s));
+                }
+
+            }
+
+        } else {
+
+            for(Spell s : findMatchingSpells(gestureHistory(leftGestures))) {
+                spellQuestions.get(Hand.left).add(new SpellQuestion(s));
+            }
+            for(Spell s : findMatchingSpells(gestureHistory(rightGestures))) {
+                spellQuestions.get(Hand.right).add(new SpellQuestion(s));
+            }
+
+        }
+
+
+
+
         leftGesture = null;
         rightGesture = null;
-
-        for(Spell s : findMatchingSpells(gestureHistory(leftGestures))) {
-            leftSpellQuestions.add(new SpellQuestion(s));
-        }
-        for(Spell s : findMatchingSpells(gestureHistory(rightGestures))) {
-            rightSpellQuestions.add(new SpellQuestion(s));
-        }
 
     }
 
@@ -307,11 +336,11 @@ public class SpellcastClient extends Target {
         return null;
     }
 
-    public void answerQuestion(String hand, String answer) {
+    public void answerQuestion(String handString, String answer) {
 
-        if (hand.contains("$")) {
+        if (handString.contains("$")) {
             for (MonsterQuestion mq : monsterQuestions) {
-                if (mq.getNickname().equals(hand)) {
+                if (mq.getNickname().equals(handString)) {
                     mq.setTarget(answer);
                     return;
                 }
@@ -319,7 +348,8 @@ public class SpellcastClient extends Target {
             return;
         }
 
-        ArrayList<SpellQuestion> questions = hand.toLowerCase().equals("left") ? leftSpellQuestions : rightSpellQuestions;
+        Hand hand = Hand.valueOf(handString.toLowerCase());
+        ArrayList<SpellQuestion> questions = spellQuestions.get(hand);
 
         if (questions.size() > 1) { // should be specifying which spell
             Spell s = SpellList.lookupSpellBySlug(answer);
@@ -341,8 +371,6 @@ public class SpellcastClient extends Target {
     }
 
     public boolean hasUnansweredQuestions() {
-        int nLeft = leftSpellQuestions.size();
-        int nRight = rightSpellQuestions.size();
 
         for (MonsterQuestion mq : monsterQuestions) {
             if (!mq.hasTarget()) {
@@ -350,9 +378,12 @@ public class SpellcastClient extends Target {
             }
         }
 
-        return (nLeft > 1 ||  nRight > 1 ||
-               (nLeft == 1 && !leftSpellQuestions.get(0).hasTarget()) ||
-               (nRight == 1 && !rightSpellQuestions.get(0).hasTarget()));
+        for (ArrayList<SpellQuestion> qs : spellQuestions.values()) {
+            if (qs.size() > 1 || (qs.size() == 1 && !qs.get(0).hasTarget())) {
+                return true;
+            }
+        }
+        return false;
 
     }
 }

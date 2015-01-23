@@ -9,11 +9,11 @@ public class ResolvingSpell {
 	private Spell spell;
 	private SpellcastClient caster;
 	private Target target;
-	private String hand;
+	private Hand hand;
 	private boolean fired;
 	private boolean countered;
 
-	public ResolvingSpell(final Spell spell, final SpellcastClient caster, final Target target, final String hand) {
+	public ResolvingSpell(final Spell spell, final SpellcastClient caster, final Target target, final Hand hand) {
 		this.spell = spell;
 		this.caster = caster;
 		this.target = target;
@@ -46,11 +46,11 @@ public class ResolvingSpell {
 		this.target = target;
 	}
 
-	public String getHand() {
+	public Hand getHand() {
 		return hand;
 	}
 
-	public void setHand(final String hand) {
+	public void setHand(final Hand hand) {
 		this.hand = hand;
 	}
 

@@ -28,10 +28,11 @@ public class MagicMirrorSpell extends Spell {
 	}
 
 	@Override
-	public void effects(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 		for (ResolvingSpell rs : matchState.getResolvingSpells()) {
-			if (rs.getTarget().getNickname().equals(target.getNickname())) {
+			if (!rs.getSpell().getSlug().equals(Slug) && rs.getTarget().getNickname().equals(target.getNickname())) {
 				rs.setTarget(rs.getCaster());
+				broadcastFizzle(matchState, target, rs.getCaster(), "Magic mirror reflects the spell");
 			}
 		}
 

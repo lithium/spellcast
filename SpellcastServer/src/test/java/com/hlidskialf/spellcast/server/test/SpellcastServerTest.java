@@ -196,11 +196,17 @@ public class SpellcastServerTest extends SpellcastTest {
                      "cw","cw"); //second: magic mirror
 
         sendFirst("ANSWER LEFT second");
-        sendSecond("ANSWER LEFT second");
 
+        sendSecond("ANSWER both second");
+
+        //spells fired correctly
         assertBroadcasted("351 second CASTS magicmirror AT second WITH both");
-        assertBroadcasted("351 first CASTS missile AT firsrt WITH left");
+        assertBroadcasted("351 first CASTS missile AT first WITH left");
 
+        //got mirror reflect message
+        assertBroadcastedStartingWith("356 second magicmirror first ");
+
+        //first took damage, not second
         assertEquals(first.getMaxHitpoints()-1, first.getHitpoints());
 
     }

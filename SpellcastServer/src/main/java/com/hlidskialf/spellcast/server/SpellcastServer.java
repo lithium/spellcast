@@ -9,10 +9,8 @@ import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.ListIterator;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -406,15 +404,18 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
         // queue up all spells that resolved
         for (SpellcastClient client : players) {
-            resolveSpells(client, client.getLeftSpellQuestions(), "left", resolvingSpells);
-            resolveSpells(client, client.getRightSpellQuestions(), "right", resolvingSpells);
+
+            for (Map.Entry<Hand,ArrayList<SpellQuestion>> e : client.getSpellQuestions().entrySet()) {
+                resolveSpells(client, e.getValue(), e.getKey(), resolvingSpells);
+            }
         }
 
         // queue up all attacks that resolved
         for (SpellcastClient client : players) {
             //stabs
-            resolveStabs(client, client.getLeftSpellQuestions(), "left", resolvingAttacks);
-            resolveStabs(client, client.getRightSpellQuestions(), "right", resolvingAttacks);
+            for (Map.Entry<Hand,ArrayList<SpellQuestion>> e : client.getSpellQuestions().entrySet()) {
+                resolveStabs(client, e.getValue(), e.getKey(), resolvingAttacks);
+            }
 
             //monster attacks
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
@@ -548,12 +549,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	private void fireParticularSpell(ArrayList<ResolvingSpell> resolvingSpells, String spellSlug) {
 		for (ResolvingSpell rs : resolvingSpells) {
 			if (rs.getSpell().getSlug().equals(spellSlug)) {
+                broadcast(rs.get351());
 				rs.fire(this);
 			}
 		}
 	}
 
-    private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand, ArrayList<ResolvingSpell> spellBuffer) {
+    private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, Hand hand, ArrayList<ResolvingSpell> spellBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
             Target target = getTargetByNickname(q.getTarget());
@@ -562,7 +564,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             }
         }
     }
-    private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, String hand, ArrayList<ResolvingAttack> attackBuffer) {
+    private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, Hand hand, ArrayList<ResolvingAttack> attackBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
             Target target = getTargetByNickname(q.getTarget());
@@ -604,9 +606,12 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
     private boolean askClientQuestions(SpellcastClient client) {
         if (client.hasUnansweredQuestions()) {
-            sendToClient(client, "340 "+currentMatchId+"."+currentRoundNumber+" :Questions");
-            questions(client, client.getLeftSpellQuestions(), "left");
-            questions(client, client.getRightSpellQuestions(), "right");
+            sendToClient(client, "340 " + currentMatchId + "." + currentRoundNumber + " :Questions");
+
+
+            for (Map.Entry<Hand,ArrayList<SpellQuestion>> e : client.getSpellQuestions().entrySet()) {
+                questions(client, e.getValue(), e.getKey());
+            }
             questions_monsters(client, client.getMonsterQuestions());
             sendToClient(client, "349 :End of Questions");
             return true;
@@ -614,7 +619,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         return false;
     }
 
-    public void questions(SpellcastClient client, ArrayList<SpellQuestion> spellQuestions, String hand) {
+    public void questions(SpellcastClient client, ArrayList<SpellQuestion> spellQuestions, Hand hand) {
         int left = spellQuestions.size();
         if (left > 1) {
             sendToClient(client, "341 "+hand+" :Cast which spell with "+hand+" hand");
