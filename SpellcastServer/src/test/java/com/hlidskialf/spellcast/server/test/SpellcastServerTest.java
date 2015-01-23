@@ -267,6 +267,32 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcastedStartingWith("380 second ");
 
         //first wins
-        assertBroadcastedStartingWith("390 "+server.getCurrentMatchId()+" first ");
+        assertBroadcastedStartingWith("390 " + server.getCurrentMatchId() + " first ");
+    }
+
+    @Test
+    public void shouldInterruptWithAntispell() {
+        authenticateAndStart();
+
+        // first: antispell on second
+        // second: try to finish interrupted missile
+        sendGestures("SP","__",   "__","__");
+
+        sendFirst("ANSWER left first"); // shield on self
+
+        sendGestures("F","_",  "S","_");
+
+        sendFirst("ANSWER left second"); // antispell on second
+
+        sendGestures("_","_",  "D","_");
+
+
+        //second did not complete missile
+        assertDoesNotContainStartingWith("345 left missile ", secondChannel);
+        assertNotBroadcastedStartingWith("345 second CASTS missile");
+
+        //next round started with no missile
+        assertBroadcastedStartingWith("320 m1001.5 ");
+
     }
 }
