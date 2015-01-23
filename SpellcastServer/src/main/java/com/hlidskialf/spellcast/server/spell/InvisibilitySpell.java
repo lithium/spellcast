@@ -29,7 +29,7 @@ public class InvisibilitySpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         if (target instanceof Monster) {
             target.addEffect(new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
         } else {

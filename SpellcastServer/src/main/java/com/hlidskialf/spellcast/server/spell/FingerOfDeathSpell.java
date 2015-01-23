@@ -24,7 +24,7 @@ public class FingerOfDeathSpell extends Spell {
 	}
 
 	@Override
-	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+	public void effects(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 		target.addEffect(new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
 	}
 }

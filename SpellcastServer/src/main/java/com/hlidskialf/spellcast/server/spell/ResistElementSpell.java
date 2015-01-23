@@ -32,7 +32,7 @@ public class ResistElementSpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         target.addEffect(new ResistElementEffect(matchState, target, element));
     }
 }

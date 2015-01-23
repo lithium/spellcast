@@ -25,6 +25,9 @@ public class MissileSpell extends Spell {
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 		if (!target.hasEffect(ShieldEffect.Name)) {
 			target.takeDamage(1);
+			broadcastSuccess(matchState, caster, target, "The missile strikes "+target.getVisibleName());
+		} else {
+			broadcastFizzle(matchState, caster, target, "The missile bounces off a shield around "+target.getVisibleName());
 		}
 	}
 }

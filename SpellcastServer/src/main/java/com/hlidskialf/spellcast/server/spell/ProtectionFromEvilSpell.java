@@ -21,7 +21,7 @@ public class ProtectionFromEvilSpell extends Spell {
     }
 
 	@Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
 		target.addEffect(new ProtectionFromEvilEffect(matchState, target, 4));
     }
 }

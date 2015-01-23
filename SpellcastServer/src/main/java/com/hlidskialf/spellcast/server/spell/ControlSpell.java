@@ -22,7 +22,7 @@ public class ControlSpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
 
         if (!isResolvingMultipleControlSpells(matchState, target)) {
             target.addEffect(new ControlEffect(effectName, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, duration));

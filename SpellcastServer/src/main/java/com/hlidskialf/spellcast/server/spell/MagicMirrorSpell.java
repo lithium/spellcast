@@ -28,7 +28,7 @@ public class MagicMirrorSpell extends Spell {
 	}
 
 	@Override
-	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+	public void effects(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 		for (ResolvingSpell rs : matchState.getResolvingSpells()) {
 			if (rs.getTarget().getNickname().equals(target.getNickname())) {
 				rs.setTarget(rs.getCaster());

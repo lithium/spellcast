@@ -28,7 +28,7 @@ public class HasteSpell extends Spell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         target.addEffect(new HasteEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, 4));
     }
 }

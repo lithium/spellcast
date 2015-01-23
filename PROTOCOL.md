@@ -147,6 +147,9 @@ Round
     355 <match-id>.<roundNumber> <nickname> :effect expiration message
 
 
+    356 <caster> <spell> <target> :spell fizzle description
+    357 <caster> <spell> <target> :spell success description
+
     360 <monster> :monster name is dispelled
 
     -- server then re-sends game state, 301s, and 311s for all players, and the next round starts*

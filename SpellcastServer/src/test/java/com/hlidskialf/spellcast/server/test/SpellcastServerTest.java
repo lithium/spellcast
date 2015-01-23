@@ -132,7 +132,8 @@ public class SpellcastServerTest extends SpellcastTest {
     @Test
     public void shouldSummonMonster() {
         authenticateAndStart();
-        sendGestures("SFW", "___", "___", "___");
+        sendGestures("SFW", "___",
+                     "___", "___");
 
         //asked which target for summongoblin
         assertContainsStartingWith("345 left summongoblin ", firstChannel);
@@ -147,12 +148,44 @@ public class SpellcastServerTest extends SpellcastTest {
         // no answer errors
         assertNotBroadcastedStartingWith("403 ");
 
-
         assertBroadcastedStartingWith("351 first CASTS summongoblin AT first WITH left");
         assertBroadcasted("352 mon1000 ATTACKS second");
 
-        assertEquals(14, second.getHitpoints());
+        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
 
+    }
+
+    @Test
+    public void shouldTakeDamageFromMissile() {
+        authenticateAndStart();
+        sendGestures("SD","__",
+                     "__","__");
+
+        //first: cast missile at second
+        sendFirst("ANSWER LEFT second");
+
+        assertBroadcasted("351 first CASTS missile AT second WITH left");
+        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
+
+    }
+
+    @Test
+    public void shouldBlockMissileWithShield() {
+        authenticateAndStart();
+        sendGestures("SD","__",
+                     "_P","__");
+
+        //second: cast shield on self
+        sendSecond("ANSWER LEFT second");
+
+        //first: cast missile at second
+        sendFirst("ANSWER LEFT second");
+
+
+        assertBroadcasted("351 first CASTS missile AT second WITH left");
+        assertBroadcasted("351 second CASTS shield AT second WITH left");
+
+        assertEquals(second.getMaxHitpoints(), second.getHitpoints());
 
     }
 }

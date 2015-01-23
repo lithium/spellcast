@@ -443,7 +443,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	     * resolve any counterspell
 	     * resolve magic mirrors
 	     * resolve remove enchantment
-	     * resolve any uncountered spells
+	     * bestow any effects from resolving spells
+	     * fire remaining spells
 	     * resolve death effects
 	     * stabs/monster attacks
 	     * dispel monsters
@@ -457,10 +458,16 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	    fireParticularSpell(resolvingSpells, MagicMirrorSpell.Slug);
 	    fireParticularSpell(resolvingSpells, RemoveEnchantmentSpell.Slug);
 
-        //resolve any remaining un-countered spells
+        //get effects from remaining spells
+        for (ResolvingSpell rSpell : resolvingSpells) {
+            if (!(rSpell.isCountered() || rSpell.isFired())) {
+                broadcast(rSpell.get351());
+                rSpell.effects(this);
+            }
+        }
+        //fire any remaining un-countered spells
 	    for (ResolvingSpell rSpell : resolvingSpells) {
 		    if (!(rSpell.isCountered() || rSpell.isFired())) {
-                broadcast(rSpell.get351());
 			    rSpell.fire(this);
 		    }
 	    }

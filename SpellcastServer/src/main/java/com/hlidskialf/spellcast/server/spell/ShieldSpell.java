@@ -21,8 +21,12 @@ public class ShieldSpell extends Spell {
         super(name, gestures, SpellType.Protection);
     }
 
-	@Override
+    @Override
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+        target.addEffect(new ShieldEffect(matchState, target, 1));
+    }
+
+    @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-		target.addEffect(new ShieldEffect(matchState, target, 1));
     }
 }

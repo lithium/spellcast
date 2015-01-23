@@ -53,4 +53,27 @@ public class Spell {
     }
 
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) { }
+
+    protected void broadcastFizzle(SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+        broadcast("356", matchState, caster,target,message);
+    }
+    protected void broadcastSuccess(SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+        broadcast("357", matchState, caster,target,message);
+    }
+    protected void broadcast(String cmd, SpellcastMatchState matchState, SpellcastClient caster, Target target, String message) {
+        StringBuilder sb = new StringBuilder(cmd);
+        sb.append(" ");
+        sb.append(caster.getNickname());
+        sb.append(" ");
+        sb.append(slug);
+        sb.append(" ");
+        sb.append(target.getNickname());
+        sb.append(" :");
+        sb.append(message);
+        matchState.broadcast(sb.toString());
+    }
+
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+
+    }
 }
