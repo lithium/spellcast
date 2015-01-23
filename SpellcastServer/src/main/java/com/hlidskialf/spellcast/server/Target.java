@@ -92,7 +92,7 @@ public abstract class Target {
         Iterator<SpellEffect> iterator = effects.iterator();
         while (iterator.hasNext()) {
             SpellEffect se = iterator.next();
-            if (!matchId.equals(se.getMatchId()) || roundNumber >= se.getRoundCast()+se.getDuration()) {
+            if (se.getDuration() > 0 && roundNumber >= se.getRoundCast()+se.getDuration()) {
                 expired.add(se.expire());
                 iterator.remove();
             }

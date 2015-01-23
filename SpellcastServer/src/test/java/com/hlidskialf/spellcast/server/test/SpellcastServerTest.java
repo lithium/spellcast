@@ -318,4 +318,39 @@ public class SpellcastServerTest extends SpellcastTest {
 
         assertEquals(first.getMaxHitpoints()-1, first.getHitpoints());
     }
+
+    @Test
+    public void shouldTakeDamageFromFireball() {
+        authenticateAndStart();
+
+        //first- fireball at second
+        sendGestures("FSSD","____", "____","____");
+        sendFirst("ANSWER left first"); //first: fire missile at self
+
+        sendGestures("D","_","_","_");
+        sendFirst("ANSWER left second"); //first: fireball at second
+
+        assertBroadcasted("351 first CASTS fireball AT second WITH left");
+
+        assertEquals(second.getMaxHitpoints()-5, second.getHitpoints());
+    }
+
+    @Test
+    public void souldResistHeatFromFireball() {
+        authenticateAndStart();
+
+        //first- fireball at second
+        sendGestures("FSSD","____",
+                     "WWFP","____");
+        sendFirst("ANSWER left first"); //first: fire missile at self
+        sendSecond("ANSWER left resistheat"); //second: resist heat on self
+        sendSecond("ANSWER left second");
+
+        sendGestures("D","_","_","_");
+        sendFirst("ANSWER left second"); //first: fireball at second
+
+        assertBroadcasted("351 first CASTS fireball AT second WITH left");
+
+        assertEquals(second.getMaxHitpoints(), second.getHitpoints());
+    }
 }

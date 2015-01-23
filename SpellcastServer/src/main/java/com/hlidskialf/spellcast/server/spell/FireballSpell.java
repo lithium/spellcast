@@ -33,7 +33,9 @@ public class FireballSpell extends Spell {
 
             if (!target.hasEffect(ResistElementEffect.Heat)) {
                 target.takeDamage(5);
-            }
+            } else {
+				broadcastFizzle(matchState, caster, target, "resists the fireball's heat");
+			}
 
 		}
 
