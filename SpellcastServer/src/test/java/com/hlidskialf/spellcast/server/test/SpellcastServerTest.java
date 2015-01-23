@@ -91,9 +91,7 @@ public class SpellcastServerTest extends SpellcastTest {
 
     }
 
-    private String getRoundId() {
-        return server.getCurrentMatchId()+"."+server.getCurrentRoundNumber();
-    }
+
 
     @Test
     public void shouldTakeDamageFromStab() {
@@ -131,4 +129,30 @@ public class SpellcastServerTest extends SpellcastTest {
 
     }
 
+    @Test
+    public void shouldSummonMonster() {
+        authenticateAndStart();
+        sendGestures("SFW", "___", "___", "___");
+
+        //asked which target for summongoblin
+        assertContainsStartingWith("345 left summongoblin ", firstChannel);
+
+        //asked which target we wanted newly summoned goblin to attack
+        assertContainsStartingWith("335 left$summongoblin ", firstChannel);
+
+        //cast it on first and have it attack second
+        sendFirst("ANSWER left first");
+        sendFirst("ANSWER left$summongoblin second");
+
+        // no answer errors
+        assertNotBroadcastedStartingWith("403 ");
+
+
+        assertBroadcastedStartingWith("351 first CASTS summongoblin AT first WITH left");
+        assertBroadcasted("352 mon1000 ATTACKS second");
+
+        assertEquals(14, second.getHitpoints());
+
+
+    }
 }

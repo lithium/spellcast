@@ -7,6 +7,7 @@ public class Monster extends Target {
     private final int damage;
     private SpellcastClient controller;
 	private boolean dispelled;
+    private String ref;
 
     public Monster(String name, int damage, int maxHitpoints) {
         this.nickname = generateMonsterId();
@@ -28,6 +29,14 @@ public class Monster extends Target {
 
     public int getDamage() {
         return damage;
+    }
+
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
     }
 
     public String get311() {

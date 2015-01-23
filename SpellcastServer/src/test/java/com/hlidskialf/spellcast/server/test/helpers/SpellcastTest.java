@@ -68,6 +68,26 @@ public class SpellcastTest {
             assertContainsStartingWith(expected, c);
         }
     }
+    public void assertNotBroadcastedStartingWith(String expected) {
+        for (TestSpellcastChannel c : channels) {
+            assertDoesNotContainStartingWith(expected, c);
+        }
+    }
+
+    protected String getRoundId() {
+        return server.getCurrentMatchId()+"."+server.getCurrentRoundNumber();
+    }
+
+
+    protected void sendGestures(String firstLeft, String firstRight, String secondLeft, String secondRight) {
+        int i;
+        int l = firstLeft.length();
+        for (i=0; i < l; i++) {
+            sendFirst("GESTURE "+firstLeft.charAt(i)+" "+firstRight.charAt(i));
+            sendSecond("GESTURE " + secondLeft.charAt(i) + " " + secondRight.charAt(i));
+        }
+    }
+
 
 
 
@@ -91,6 +111,14 @@ public class SpellcastTest {
             }
         }
         throw new ComparisonFailure("channel did not contain", expected, channel.messages.toString());
+    }
+    public static void assertDoesNotContainStartingWith(String expected, TestSpellcastChannel channel) {
+        for (String msg : channel.messages) {
+            if (msg.startsWith(expected)) {
+                throw new ComparisonFailure("channel contained", expected, channel.messages.toString());
+            }
+        }
+
     }
 
 

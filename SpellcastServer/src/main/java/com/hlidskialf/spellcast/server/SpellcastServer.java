@@ -189,7 +189,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     private boolean answer_question(SpellcastClient client, String hand, String answer) {
-        if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) || ValidationHelper.isSpellValid(answer))) {
+        if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) ||
+                                                   ValidationHelper.isSpellValid(answer))) {
             client.answerQuestion(hand, answer);
             return true;
         }
@@ -418,7 +419,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             //monster attacks
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
                 Target target = getTargetByNickname(mq.getTarget());
-                resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getMonster().getDamage()));
+                if (mq.getMonster() == null) {
+                    resolvingAttacks.add(new ResolvingAttack(client, mq.getNickname(), target, mq.getDamage()));
+                } else {
+                    resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getDamage()));
+                }
             }
 
             //elemental attacks
@@ -455,8 +460,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         //resolve any remaining un-countered spells
 	    for (ResolvingSpell rSpell : resolvingSpells) {
 		    if (!(rSpell.isCountered() || rSpell.isFired())) {
+                broadcast(rSpell.get351());
 			    rSpell.fire(this);
-			    broadcast(rSpell.get351());
 		    }
 	    }
 

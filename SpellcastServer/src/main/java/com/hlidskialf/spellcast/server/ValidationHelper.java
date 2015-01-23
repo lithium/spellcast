@@ -26,11 +26,21 @@ public class ValidationHelper {
         return validGestureCharacters.indexOf(c) != -1;
     }
 
+
     public static boolean isHandValid(String hand) {
         if (hand == null || hand.isEmpty()) {
             return false;
         }
         hand = hand.toLowerCase();
+
+        int idx = hand.indexOf("$");
+        if (idx != -1) {
+            String spell = hand.substring(idx+1);
+            if (!isSpellValid(spell)) {
+                return false;
+            }
+            hand = hand.substring(0,idx);
+        }
         return (hand.equals("left") || hand.equals("right"));
     }
     public static boolean isSpellValid(String slug) {

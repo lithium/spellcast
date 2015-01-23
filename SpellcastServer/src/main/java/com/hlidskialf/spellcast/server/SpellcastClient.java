@@ -208,7 +208,9 @@ public class SpellcastClient extends Target {
                     //TODO: ask for element
                 } else {
                     // monster spell ask for target
-                    monsterQuestions.add(new MonsterQuestion(hand + "$" + summonSpell.getSlug()));
+                    String monsterRef = hand + "$" + summonSpell.getSlug();
+                    summonSpell.setMonsterRef(monsterRef);
+                    monsterQuestions.add(new MonsterQuestion(monsterRef));
                 }
             }
         }
@@ -306,6 +308,17 @@ public class SpellcastClient extends Target {
     }
 
     public void answerQuestion(String hand, String answer) {
+
+        if (hand.contains("$")) {
+            for (MonsterQuestion mq : monsterQuestions) {
+                if (mq.getNickname().equals(hand)) {
+                    mq.setTarget(answer);
+                    return;
+                }
+            }
+            return;
+        }
+
         ArrayList<SpellQuestion> questions = hand.toLowerCase().equals("left") ? leftSpellQuestions : rightSpellQuestions;
 
         if (questions.size() > 1) { // should be specifying which spell
@@ -323,12 +336,21 @@ public class SpellcastClient extends Target {
         }
     }
 
+    public void answerMonsterQuestion(String hand, String spell) {
+
+    }
+
     public boolean hasUnansweredQuestions() {
         int nLeft = leftSpellQuestions.size();
         int nRight = rightSpellQuestions.size();
-        int nMon = monsterQuestions.size();
 
-        return (nMon > 0 || nLeft > 1 ||  nRight > 1 ||
+        for (MonsterQuestion mq : monsterQuestions) {
+            if (!mq.hasTarget()) {
+                return true;
+            }
+        }
+
+        return (nLeft > 1 ||  nRight > 1 ||
                (nLeft == 1 && !leftSpellQuestions.get(0).hasTarget()) ||
                (nRight == 1 && !rightSpellQuestions.get(0).hasTarget()));
 

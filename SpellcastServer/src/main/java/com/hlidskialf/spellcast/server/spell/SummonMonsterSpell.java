@@ -22,6 +22,7 @@ import com.hlidskialf.spellcast.server.*;
 public class SummonMonsterSpell extends Spell {
 
     private int damage;
+    private String monsterRef;
 
     public SummonMonsterSpell(String name, String gestures, int damage) {
         super(name, gestures, SpellType.Summon);
@@ -42,6 +43,28 @@ public class SummonMonsterSpell extends Spell {
     @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         Monster monster = new Monster(generateMonsterName(), damage, damage);
+        monster.setRef(monsterRef);
         caster.takeControlOfMonster(monster);
+        matchState.broadcast(monster.get311());
+
+        if (monsterRef != null) {
+            for (MonsterQuestion mq : caster.getMonsterQuestions()) {
+                if (mq.getNickname().equals(monsterRef)) {
+                    mq.setMonster(monster);
+                }
+            }
+        }
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public String getMonsterRef() {
+        return monsterRef;
+    }
+
+    public void setMonsterRef(String monsterRef) {
+        this.monsterRef = monsterRef;
     }
 }

@@ -1,5 +1,8 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.spell.SpellList;
+import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
+
 /**
  * Created by wiggins on 1/20/15.
  */
@@ -39,5 +42,21 @@ public class MonsterQuestion extends Question {
             return monster.getNickname();
         }
         return null;
+    }
+
+    public int getDamage() {
+        int idx = nickname.indexOf("$");
+        if (idx != -1) {
+            try {
+                SummonMonsterSpell summon = (SummonMonsterSpell) SpellList.lookupSpellBySlug(nickname.substring(idx + 1));
+                return summon.getDamage();
+            } catch (ClassCastException e) {
+            }
+
+        }
+        if (monster != null) {
+            return monster.getDamage();
+        }
+        return -1;
     }
 }
