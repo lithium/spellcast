@@ -244,6 +244,16 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         return currentRoundState;
     }
 
+    public Elemental getElemental() {
+        for (SpellcastClient c : players) {
+            Elemental e = c.getElemental();
+            if (e != null) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public Target getTargetByNickname(String nick) {
         Target target = getClientByNickname(nick);
         if (target != null) {

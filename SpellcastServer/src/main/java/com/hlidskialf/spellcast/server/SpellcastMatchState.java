@@ -13,5 +13,7 @@ public interface SpellcastMatchState {
 	public ArrayList<ResolvingSpell> getResolvingSpells();
     public Iterable<Target> getAllTargets();
 
-    void broadcast(String monster311);
+    public void broadcast(String monster311);
+
+    public Elemental getElemental();
 }

@@ -20,4 +20,11 @@ public class SpellQuestion extends Question {
         this.spell = spell;
     }
 
+    @Override
+    public boolean hasTarget() {
+        if (!spell.hasTarget()) {
+            return true;
+        }
+        return super.hasTarget();
+    }
 }

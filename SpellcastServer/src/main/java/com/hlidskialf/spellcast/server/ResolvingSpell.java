@@ -85,19 +85,22 @@ public class ResolvingSpell {
 		sb.append(" CASTS ");
 		sb.append(spell.getSlug());
 		sb.append(" AT ");
-		sb.append(target.getNickname());
+		sb.append(target != null ?target.getNickname() : "everyone");
 		sb.append(" WITH ");
 		sb.append(hand);
 		return sb.toString();
 	}
 
 	public static boolean isSpellResolving(Iterable<ResolvingSpell> resolvingSpells, String spellSlug) {
+		return ResolvingSpell.resolvingSpell(resolvingSpells, spellSlug) != null;
+	}
+	public static ResolvingSpell resolvingSpell(Iterable<ResolvingSpell> resolvingSpells, String spellSlug) {
 		for (ResolvingSpell rs : resolvingSpells) {
 			if (rs.getSpell().getSlug().equals(spellSlug)) {
-				return true;
+				return rs;
 			}
 		}
-		return false;
+		return null;
 	}
 }
 

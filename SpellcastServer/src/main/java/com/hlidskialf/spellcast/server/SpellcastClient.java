@@ -247,6 +247,7 @@ public class SpellcastClient extends Target {
             for(Spell s : findMatchingSpells(gestureHistory(rightGestures))) {
                 if (!casting.contains(s)) {
                     spellQuestions.get(Hand.both).add(new SpellQuestion(s));
+                    casting.add(s);
                 }
 
             }

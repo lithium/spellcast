@@ -8,11 +8,12 @@ import com.hlidskialf.spellcast.server.Target;
  * Created by wiggins on 1/11/15.
  */
 public class Spell {
-    private final String name;
-    private final String gestures;
-    private final String reverse;
-    private final String slug;
-    private final SpellType type;
+    protected final String name;
+    protected final String gestures;
+    protected final String reverse;
+    protected final String slug;
+    protected final SpellType type;
+    protected final boolean hasTarget;
 
     public enum SpellType {
         None,
@@ -23,17 +24,24 @@ public class Spell {
         PhysicalAttack
     }
 
-	public Spell(String name, String gestures, SpellType type) {
-		this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type);
-	}
-    public Spell(Spell copy) {
-        this(copy.name, copy.slug, copy.gestures, copy.type);
+    public Spell(String name, String gestures, SpellType type) {
+        this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type, true);
     }
+	public Spell(String name, String gestures, SpellType type, boolean hasTarget) {
+		this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type, hasTarget);
+	}
     public Spell(String name, String slug, String gestures, SpellType type) {
+        this(name, slug, gestures, type, true);
+    }
+    public Spell(Spell copy) {
+        this(copy.name, copy.slug, copy.gestures, copy.type, copy.hasTarget);
+    }
+    public Spell(String name, String slug, String gestures, SpellType type, boolean hasTarget) {
         this.name = name;
 	    this.slug = slug;
         this.gestures = gestures;
         this.type = type;
+        this.hasTarget = hasTarget;
         this.reverse = new StringBuilder(gestures).reverse().toString();
     }
 
@@ -53,6 +61,10 @@ public class Spell {
 
     public SpellType getType() {
         return type;
+    }
+
+    public boolean hasTarget() {
+        return this.hasTarget;
     }
 
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) { }

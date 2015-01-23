@@ -280,7 +280,7 @@ public class SpellcastServerTest extends SpellcastTest {
 
         sendFirst("ANSWER left first"); // shield on self
 
-        sendGestures("F","_",  "S","_");
+        sendGestures("F", "_", "S", "_");
 
         sendFirst("ANSWER left second"); // antispell on second
 
@@ -352,5 +352,31 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcasted("351 first CASTS fireball AT second WITH left");
 
         assertEquals(second.getMaxHitpoints(), second.getHitpoints());
+    }
+
+    @Test
+    public void shouldDamageEveryoneWithFirestorm() {
+        authenticateAndStart();
+        sendGestures("SWWc","___c", "____","____");
+
+        assertBroadcasted("351 first CASTS firestorm AT everyone WITH both");
+
+        assertTookDamage(first, 5);
+        assertTookDamage(second, 5);
+
+    }
+
+    @Test
+    public void shouldDamageAllExceptResistedWithStorm() {
+        authenticateAndStart();
+        sendGestures("SWWc","___c", "WWFP","____"); // first: firestorm on all
+
+        sendSecond("ANSWER left resistheat"); // second: resist heat on self
+        sendSecond("ANSWER left second");
+
+        assertBroadcasted("351 second CASTS resistheat AT second WITH left");
+        assertBroadcasted("351 first CASTS firestorm AT everyone WITH both");
+        assertTookDamage(first, 5);
+        assertTookNoDamage(second);
     }
 }

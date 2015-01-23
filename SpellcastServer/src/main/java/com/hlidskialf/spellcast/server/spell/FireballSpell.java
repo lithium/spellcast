@@ -19,15 +19,18 @@ import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
  *
  */
 public class FireballSpell extends Spell {
+
+	public static final String Slug = "fireball";
+
 	public FireballSpell(final String name, final String gestures) {
-		super(name, gestures, SpellType.Damage);
+		super(name, Slug, gestures, SpellType.Damage);
 	}
 
 	@Override
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 
 
-		if (!ResolvingSpell.isSpellResolving(matchState.getResolvingSpells(), IceStormSpell.Slug)) {
+		if (!ResolvingSpell.isSpellResolving(matchState.getResolvingSpells(), ElementStormSpell.IceStormSlug)) {
 
             //TODO: if target is iceElemental target.addEffect(DeathEffect)
 

@@ -7,6 +7,18 @@ import com.hlidskialf.spellcast.server.Element;
  */
 public class SpellList {
 
+    /*
+     * spells with no targets:
+     *  - dispel magic
+     *  - fire storm
+     *  - ice storm
+     *
+     * spells with specialized targets:
+     *  - charm person
+     *  - charm monster
+     *  - raise dead
+     */
+
     // protection spells
     public static final Spell Shield = new ShieldSpell("Shield", "P");
     public static final Spell RemoveEnchantment = new RemoveEnchantmentSpell("Remove Enchantment", "PDWP");
@@ -34,8 +46,8 @@ public class SpellList {
     public static final Spell CauseLightWounds = new CauseWoundsSpell("Cause Light Wounds", "WFP", 2);
     public static final Spell CauseHeavyWounds = new CauseWoundsSpell("Cause Heavy Wounds", "WPFD", 3);
     public static final Spell Fireball = new FireballSpell("Fireball", "FSSDD");
-    public static final Spell FireStorm = new FireStormSpell("Fire Storm", "SWWc");
-    public static final Spell IceStorm = new IceStormSpell("Ice Storm", "WSSc");
+    public static final Spell FireStorm = new ElementStormSpell("Fire Storm", "SWWc", Element.fire);
+    public static final Spell IceStorm = new ElementStormSpell("Ice Storm", "WSSc", Element.ice);
 
     // enchantments
     // control enchantments (cancel each other)

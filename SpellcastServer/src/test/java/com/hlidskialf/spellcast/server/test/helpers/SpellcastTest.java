@@ -90,6 +90,12 @@ public class SpellcastTest {
 
 
 
+    public static void assertTookNoDamage(SpellcastClient client) {
+        assertTookDamage(client, 0);
+    }
+    public static void assertTookDamage(SpellcastClient client, int howMuch) {
+        assertEquals(client.getMaxHitpoints()-howMuch, client.getHitpoints());
+    }
 
     public static void assertStartsWith(String expected, String actual) {
         if (!actual.startsWith(expected)) {
