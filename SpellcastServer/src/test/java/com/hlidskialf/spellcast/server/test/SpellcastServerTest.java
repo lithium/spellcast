@@ -289,10 +289,33 @@ public class SpellcastServerTest extends SpellcastTest {
 
         //second did not complete missile
         assertDoesNotContainStartingWith("345 left missile ", secondChannel);
-        assertNotBroadcastedStartingWith("345 second CASTS missile");
+        assertNotBroadcastedStartingWith("351 second CASTS missile");
 
         //next round started with no missile
         assertBroadcastedStartingWith("320 m1001.5 ");
 
+    }
+
+
+    @Test
+    public void shouldProtectionFromEvil() {
+        authenticateAndStart();
+
+        // first: protectionfromevil on self
+        sendGestures("WWP","___",  "__K","___");
+        sendFirst("ANSWER left protectionfromevil");
+        sendFirst("ANSWER left first");
+        sendSecond("ANSWER left first"); //stab first shield
+
+        assertBroadcasted("351 first CASTS protectionfromevil AT first WITH left");
+
+        sendGestures("____","____","___K","____");
+        sendSecond("ANSWER left first"); //stab first after shield is over
+
+        // should expire beginning of round 7
+        assertBroadcastedStartingWith("355 m1001.7 first :The shield dissipates");
+        assertBroadcasted("352 second ATTACKS first");
+
+        assertEquals(first.getMaxHitpoints()-1, first.getHitpoints());
     }
 }
