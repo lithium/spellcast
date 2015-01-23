@@ -32,21 +32,28 @@ public class CounterspellSpell extends Spell {
 	}
 
 	@Override
+	public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+		target.addEffect(new CounterspellEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
+		target.addEffect(new ShieldEffect(matchState, target, 1));
+	}
+
+	@Override
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
 		for (ResolvingSpell rs : matchState.getResolvingSpells()) {
-			if (rs.getTarget().getNickname().equals(target.getNickname()) &&
-				!rs.getSpell().getSlug().equals(FingerOfDeathSpell.Slug) &&
-				!rs.getSpell().getSlug().equals(DispelMagicSpell.Slug) &&
+			String slug = rs.getSpell().getSlug();
+			if (!slug.equals(Slug) &&
+				!slug.equals(FingerOfDeathSpell.Slug) &&
+				!slug.equals(DispelMagicSpell.Slug) &&
+				rs.getTarget().getNickname().equals(target.getNickname()) &&
 //				!next.getSpell().getSlug().equals(Surrender.Slug) &&
 //				!next.getSpell().getSlug().equals(FireStorm.Slug) &&
 //				!next.getSpell().getSlug().equals(IceStorm.Slug) &&
 				!rs.isCountered()  &&
 				!rs.isFired()) {
 
+				broadcastFizzle(matchState, caster, slug, rs.getTarget(), "Counters the spell");
 				rs.setCountered(true);
 			}
 		}
-		target.addEffect(new CounterspellEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
-		target.addEffect(new ShieldEffect(matchState, target, 1));
 	}
 }

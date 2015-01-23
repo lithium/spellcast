@@ -210,4 +210,29 @@ public class SpellcastServerTest extends SpellcastTest {
         assertEquals(first.getMaxHitpoints()-1, first.getHitpoints());
 
     }
+
+    @Test
+    public void shouldCounterspellShield() {
+        authenticateAndStart();
+        sendGestures("WWS","__K",
+                     "__P","___");
+
+        sendFirst("ANSWER left second"); //first: counterspell on second with left
+        sendFirst("ANSWER right second"); //first: stab second with right
+
+        sendSecond("ANSWER left second"); //second: shield on second
+
+
+
+        assertBroadcasted("351 first CASTS counterspell AT second WITH left");
+
+        //should not counter itself
+        assertNotBroadcastedStartingWith("356 second counterspell second ");
+
+        //notify of counter
+        assertBroadcastedStartingWith("356 first shield second ");
+
+        //second took damage
+        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
+    }
 }
