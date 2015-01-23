@@ -113,7 +113,7 @@ public class SpellcastServerTest extends SpellcastTest {
     }
 
     @Test
-    public void shouldCastShield() {
+    public void shouldNotTakeDamageIfShield() {
         authenticateAndStart();
 
         sendFirst("GESTURE P _");
@@ -165,7 +165,7 @@ public class SpellcastServerTest extends SpellcastTest {
         sendFirst("ANSWER LEFT second");
 
         assertBroadcasted("351 first CASTS missile AT second WITH left");
-        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
+        assertEquals(second.getMaxHitpoints() - 1, second.getHitpoints());
 
     }
 
@@ -186,6 +186,22 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcasted("351 second CASTS shield AT second WITH left");
 
         assertEquals(second.getMaxHitpoints(), second.getHitpoints());
+
+    }
+
+    @Test
+    public void shouldReflectMissileWithMagicMirror() {
+        authenticateAndStart();
+        sendGestures("SD","__",  //first: missile
+                     "cw","cw"); //second: magic mirror
+
+        sendFirst("ANSWER LEFT second");
+        sendSecond("ANSWER LEFT second");
+
+        assertBroadcasted("351 second CASTS magicmirror AT second WITH both");
+        assertBroadcasted("351 first CASTS missile AT firsrt WITH left");
+
+        assertEquals(first.getMaxHitpoints()-1, first.getHitpoints());
 
     }
 }
