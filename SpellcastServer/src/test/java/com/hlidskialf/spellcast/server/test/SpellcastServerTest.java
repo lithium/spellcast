@@ -229,10 +229,11 @@ public class SpellcastServerTest extends SpellcastTest {
         //should not counter itself
         assertNotBroadcastedStartingWith("356 second counterspell second ");
 
-        //notify of counter
+        //notified of counter
         assertBroadcastedStartingWith("356 first shield second ");
 
-        //second took damage
-        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
+        //second still doesnt take damage because counterspell provides shield
+        assertBroadcastedStartingWith("353 second BLOCKS first ");
+        assertEquals(second.getMaxHitpoints(), second.getHitpoints());
     }
 }

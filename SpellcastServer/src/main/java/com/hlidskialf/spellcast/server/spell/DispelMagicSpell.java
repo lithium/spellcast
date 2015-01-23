@@ -28,6 +28,11 @@ public class DispelMagicSpell extends Spell {
 		super(name, gestures, SpellType.Protection);
 	}
 
+	@Override
+	public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+		// target gets a shield effect for this round
+		target.addEffect(new ShieldEffect(matchState, target, 1));
+	}
 
 	@Override
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
@@ -50,7 +55,5 @@ public class DispelMagicSpell extends Spell {
 			} catch (ClassCastException e) {  }
 		}
 
-		// target gets a shield effect for this round
-		target.addEffect(new ShieldEffect(matchState, target, 1));
 	}
 }

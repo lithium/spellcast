@@ -548,8 +548,9 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
 	private void fireParticularSpell(ArrayList<ResolvingSpell> resolvingSpells, String spellSlug) {
 		for (ResolvingSpell rs : resolvingSpells) {
-			if (rs.getSpell().getSlug().equals(spellSlug)) {
+			if (!rs.isCountered() && rs.getSpell().getSlug().equals(spellSlug)) {
                 broadcast(rs.get351());
+                rs.effects(this);
 				rs.fire(this);
 			}
 		}
