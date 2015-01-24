@@ -1,9 +1,11 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.Element;
 import com.hlidskialf.spellcast.server.ResolvingSpell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
@@ -32,8 +34,13 @@ public class FireballSpell extends Spell {
 
 		if (!ResolvingSpell.isSpellResolving(matchState.getResolvingSpells(), ElementStormSpell.IceStormSlug)) {
 
-            //TODO: if target is iceElemental target.addEffect(DeathEffect)
-
+			if (matchState.getElemental() != null &&
+				target.getNickname().equals(matchState.getElemental().getNickname()) &&
+				matchState.getElemental().getElement().equals(Element.ice)
+				) {
+				target.addEffect( new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target) );
+			}
+			else
             if (!target.hasEffect(ResistElementEffect.Heat)) {
                 target.takeDamage(5);
             } else {

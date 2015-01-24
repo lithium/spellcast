@@ -1,7 +1,6 @@
 package com.hlidskialf.spellcast.server;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by wiggins on 1/18/15.
@@ -11,6 +10,7 @@ public interface SpellcastMatchState {
     public int getCurrentRoundNumber();
 
 	public ArrayList<ResolvingSpell> getResolvingSpells();
+    public ArrayList<ResolvingAttack> getResolvingAttacks();
     public Iterable<Target> getAllTargets();
 
     public void broadcast(String monster311);

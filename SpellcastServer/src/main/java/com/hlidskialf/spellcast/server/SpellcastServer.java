@@ -47,7 +47,6 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
 
-
     /* abstract methods */
     abstract public void sendToClient(SpellcastClient client, String message);
     abstract public void closeClient(SpellcastClient client);
@@ -406,9 +405,15 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
     }
 
+    @Override
 	public ArrayList<ResolvingSpell> getResolvingSpells() {
 		return resolvingSpells;
 	}
+
+    @Override
+    public ArrayList<ResolvingAttack> getResolvingAttacks() {
+        return resolvingAttacks;
+    }
 
     private void resolveRound() {
 
@@ -441,6 +446,12 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 }
             }
 
+        }
+
+        //elemental attacks
+        Elemental elemental = getElemental();
+        if (elemental != null) {
+            resolvingAttacks.add(new ResolvingAttack(elemental, null, elemental.getDamage()));
         }
 
 	    /*
@@ -487,24 +498,28 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         displayTombstones();
 
 
-        //elemental attacks
-        Elemental elemental = getElemental();
-        if (elemental != null) {
-            for (Target target : players) {
-                if (target.hasEffect(ResistElementEffect.resistanceFor(elemental.getElement()))) {
-                    broadcast(ResolvingAttack.get353(elemental, target, "resists "+elemental.getElement()));
-                }
-                else if (target.hasEffect(ShieldEffect.Name)) {
-                    broadcast(ResolvingAttack.get353(elemental, target, "slides off shield"));
-                } else {
-                    broadcast(ResolvingAttack.get352(elemental, target));
-                    target.takeDamage(elemental.getDamage());
-                }
-            }
-        }
-
         //resolve stabs/monster attacks
         for (ResolvingAttack rAttack : resolvingAttacks) {
+            if (rAttack.getTarget() == null) { // elemental attack on everyone
+                elemental = (Elemental)getElemental();
+                if (elemental != null && elemental.getNickname().equals(rAttack.getAttacker().getNickname())) {
+                    for (Target target : getAllTargets()) {
+                        if (target.getNickname().equals(elemental.getNickname())) {
+                            continue;
+                        }
+                        if (target.hasEffect(ResistElementEffect.resistanceFor(elemental.getElement()))) {
+                            broadcast(ResolvingAttack.get353(elemental, target, "resists "+elemental.getElement()));
+                        }
+                        else if (target.hasEffect(ShieldEffect.Name)) {
+                            broadcast(ResolvingAttack.get353(elemental, target, "slides off shield"));
+                        } else {
+                            broadcast(ResolvingAttack.get352(elemental, target));
+                            target.takeDamage(elemental.getDamage());
+                        }
+                    }
+                }
+            }
+            else
             if (rAttack.resolveAttack(this)) {
                 broadcast(rAttack.get352());
             } else {

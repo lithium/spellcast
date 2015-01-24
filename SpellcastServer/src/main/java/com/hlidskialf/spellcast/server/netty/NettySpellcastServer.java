@@ -1,5 +1,6 @@
 package com.hlidskialf.spellcast.server.netty;
 
+import com.hlidskialf.spellcast.server.ResolvingAttack;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastServer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -11,6 +12,8 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.CharsetUtil;
+
+import java.util.ArrayList;
 
 /**
  * Created by wiggins on 1/11/15.

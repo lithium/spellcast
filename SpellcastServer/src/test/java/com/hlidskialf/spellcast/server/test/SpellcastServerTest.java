@@ -458,4 +458,43 @@ public class SpellcastServerTest extends SpellcastTest {
         assertTookNoDamage(first);
         assertEquals(3, second.getHitpoints());
     }
+
+    @Test
+    public void shouldStillTakeDamageWhenKillingFireElementalWithFireball() {
+        authenticateAndStart();
+        sendGestures("cSWWS","c____",    //first: summon fire elemental
+                     "_FSSD","_____");
+
+        sendFirst("ANSWER left summonfireelemental");
+        sendFirst("ANSWER left first");
+        sendSecond("ANSWER left first"); //second: missile
+
+        assertNotNull(first.getElemental());
+
+
+        sendGestures("_","_", "D","_");  //second: fireball
+        sendSecond("ANSWER left "+first.getElemental().getNickname());
+
+        assertTookDamage(second, 6);
+        assertTookDamage(first, 7);
+    }
+
+    @Test
+    public void shouldKillIceElementalWithFireballBeforeAttacking() {
+        authenticateAndStart();
+        sendGestures("cSWWS","c____",    //first: summon ice elemental
+                     "_FSSD","_____");
+
+        sendFirst("ANSWER left summoniceelemental");
+        sendFirst("ANSWER left first");
+        sendSecond("ANSWER left first"); //second: missile
+
+        assertNotNull(first.getElemental());
+
+        sendGestures("_","_", "D","_");  //second: fireball
+        sendSecond("ANSWER left "+first.getElemental().getNickname());
+
+        assertTookDamage(second, 3);
+        assertTookDamage(first, 4);
+    }
 }

@@ -45,17 +45,23 @@ public class SummonElementalSpell extends SummonMonsterSpell {
     @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         Elemental mob = matchState.getElemental();
+        Elemental elemental = null;
         if (mob != null) {
             mob.getController().loseControlOfMonster(mob);
             if (mob.getElement().equals(element)) {
                 broadcastFizzle(matchState, caster, mob.getController(), "Elementals of the same type fuse");
-                caster.takeControlOfMonster( new Elemental(generateMonsterName(), element) );
+                elemental = new Elemental(generateMonsterName(), element);
             } else {
                 broadcastFizzle(matchState, caster, mob, "Elementals of opposing types destroy each other");
                 broadcastFizzle(matchState, caster, caster, "Elementals of opposing types destroy each other");
             }
         } else {
-            caster.takeControlOfMonster( new Elemental(generateMonsterName(), element) );
+            elemental = new Elemental(generateMonsterName(), element);
+        }
+
+        if (elemental != null) {
+            caster.takeControlOfMonster(elemental);
+            matchState.getResolvingAttacks().add(new ResolvingAttack(elemental, null, elemental.getDamage()));
         }
     }
 }
