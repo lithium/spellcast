@@ -30,6 +30,10 @@ import com.hlidskialf.spellcast.server.*;
 
  */
 public class SummonElementalSpell extends SummonMonsterSpell {
+
+    public static final String SummonFireElemental = "summonfireelemental";
+    public static final String SummonIceElemental = "summoniceelemental";
+
     private Element element;
 
     public SummonElementalSpell(String name, String gestures, Element element) {

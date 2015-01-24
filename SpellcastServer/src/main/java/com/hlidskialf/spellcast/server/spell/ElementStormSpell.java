@@ -1,8 +1,12 @@
 package com.hlidskialf.spellcast.server.spell;
 
-import com.hlidskialf.spellcast.server.*;
+import com.hlidskialf.spellcast.server.Element;
+import com.hlidskialf.spellcast.server.Elemental;
+import com.hlidskialf.spellcast.server.ResolvingSpell;
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.Target;
 import com.hlidskialf.spellcast.server.effect.DeathEffect;
-import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
  * Created by wiggins on 1/20/15.
@@ -50,7 +54,7 @@ public class ElementStormSpell extends Spell {
         if (elemental != null) {
             // cancel spell if there is an elemental of opposing element
             if (elemental.getElement().equals(Element.opposing(element))) {
-                broadcastFizzle(matchState, caster, target, getName()+" is cancelled by the ice elemental");
+                broadcastFizzle(matchState, caster, elemental.getController(), getName()+" is cancelled by the ice elemental");
                 return;
             }
 

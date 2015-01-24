@@ -9,6 +9,7 @@ import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
+import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -475,16 +476,20 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	    fireParticularSpell(resolvingSpells, MagicMirrorSpell.Slug);
 	    fireParticularSpell(resolvingSpells, RemoveEnchantmentSpell.Slug);
 
+        fireParticularSpell(resolvingSpells, SummonElementalSpell.SummonFireElemental);
+        fireParticularSpell(resolvingSpells, SummonElementalSpell.SummonIceElemental);
+
         //get effects from remaining spells
         for (ResolvingSpell rSpell : resolvingSpells) {
-            if (!(rSpell.isCountered() || rSpell.isFired())) {
+            if (!rSpell.isCountered() && !rSpell.isFired()) {
                 broadcast(rSpell.get351());
                 rSpell.effects(this);
             }
         }
+
         //fire any remaining un-countered spells
 	    for (ResolvingSpell rSpell : resolvingSpells) {
-		    if (!(rSpell.isCountered() || rSpell.isFired())) {
+		    if (!rSpell.isCountered() && !rSpell.isFired()) {
 			    rSpell.fire(this);
 		    }
 	    }

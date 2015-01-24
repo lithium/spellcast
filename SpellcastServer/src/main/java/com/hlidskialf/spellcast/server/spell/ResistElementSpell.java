@@ -1,9 +1,11 @@
 package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.Element;
+import com.hlidskialf.spellcast.server.Elemental;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 
 /**
@@ -33,6 +35,13 @@ public class ResistElementSpell extends Spell {
 
     @Override
     public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-        target.addEffect(new ResistElementEffect(matchState, target, element));
+        if (target instanceof Elemental) {
+            Elemental elemental = (Elemental)target;
+            if (elemental.getElement().equals(element)) {
+                elemental.addEffect(new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), elemental));
+            }
+        } else {
+            target.addEffect(new ResistElementEffect(matchState, target, element));
+        }
     }
 }
