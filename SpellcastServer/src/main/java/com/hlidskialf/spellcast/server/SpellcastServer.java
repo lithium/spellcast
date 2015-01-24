@@ -3,14 +3,18 @@ package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
+import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;
 import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
 
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -437,15 +441,6 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                 }
             }
 
-            //elemental attacks
-            Elemental elemental = client.getElemental();
-            if (elemental != null) {
-                for (Target target : getVisibleTargets(null)) {
-                    if (!target.hasEffect(ResistElementEffect.resistanceFor(elemental.getElement()))) {
-                        resolvingAttacks.add(new ResolvingAttack(elemental, target, elemental.getDamage()));
-                    }
-                }
-            }
         }
 
 	    /*
@@ -491,12 +486,29 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         }
         displayTombstones();
 
+
+        //elemental attacks
+        Elemental elemental = getElemental();
+        if (elemental != null) {
+            for (Target target : players) {
+                if (target.hasEffect(ResistElementEffect.resistanceFor(elemental.getElement()))) {
+                    broadcast(ResolvingAttack.get353(elemental, target, "resists "+elemental.getElement()));
+                }
+                else if (target.hasEffect(ShieldEffect.Name)) {
+                    broadcast(ResolvingAttack.get353(elemental, target, "slides off shield"));
+                } else {
+                    broadcast(ResolvingAttack.get352(elemental, target));
+                    target.takeDamage(elemental.getDamage());
+                }
+            }
+        }
+
         //resolve stabs/monster attacks
         for (ResolvingAttack rAttack : resolvingAttacks) {
             if (rAttack.resolveAttack(this)) {
                 broadcast(rAttack.get352());
             } else {
-                broadcast(rAttack.get353());
+                broadcast(rAttack.get353("slides off shield"));
             }
         }
 

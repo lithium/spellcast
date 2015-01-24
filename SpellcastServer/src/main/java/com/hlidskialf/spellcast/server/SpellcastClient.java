@@ -8,7 +8,6 @@ import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Queue;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -194,7 +193,7 @@ public class SpellcastClient extends Target {
 
     public void askForMonsterAttacks() {
         for (Monster monster : monsters) {
-            if (monster instanceof Elemental) {
+            if (!(monster instanceof Elemental)) {
                 monsterQuestions.add(new MonsterQuestion(monster));
             }
         }

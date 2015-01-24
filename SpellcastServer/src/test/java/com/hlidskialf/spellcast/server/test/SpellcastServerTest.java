@@ -4,12 +4,7 @@ package com.hlidskialf.spellcast.server.test;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.test.helpers.SpellcastTest;
 import com.hlidskialf.spellcast.server.test.helpers.TestSpellcastChannel;
-import com.hlidskialf.spellcast.server.test.helpers.TestSpellcastServer;
-import org.junit.Before;
-import org.junit.ComparisonFailure;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -378,5 +373,89 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcasted("351 first CASTS firestorm AT everyone WITH both");
         assertTookDamage(first, 5);
         assertTookNoDamage(second);
+    }
+
+    @Test
+    public void shouldSummonElemental() {
+        authenticateAndStart();
+        sendGestures("cSWWS","c____",  "_cSWW","_c___");
+
+
+        //asked which elemental
+        assertContainsStartingWith("342 left summonfireelemental ", firstChannel);
+        assertContainsStartingWith("342 left summoniceelemental ", firstChannel);
+
+        //summon a fire elemental
+        sendFirst("ANSWER left summonfireelemental");
+        sendFirst("ANSWER left first");
+
+        //all players should have been attacked
+        assertTookDamage(first, 3);
+        assertTookDamage(second, 3);
+
+        //summon an ice elemental
+        sendGestures("_","_",  "S","_");
+        sendSecond("ANSWER left summoniceelemental");
+        sendSecond("ANSWER left second");
+
+        //ice elemental should have cancelled fire and itself
+        assertBroadcastedStartingWith("356 second summoniceelemental mon1001 :Elementals of opposing types destroy each other");
+
+        //should have taken no more damage
+        assertTookDamage(first, 3);
+        assertTookDamage(second, 3);
+    }
+
+
+    @Test
+    public void shouldCancelFireElementals() {
+        cancelElementals("WWFP", "resistheat", "summonfireelemental");
+    }
+
+    @Test
+    public void shouldCancelIceElementals() {
+        cancelElementals("SSFP","resistcold","summoniceelemental");
+    }
+    private void cancelElementals(String resistSpell, String resist, String summon) {
+        authenticateAndStart();
+        sendGestures(resistSpell, "____",    //first: resist heat
+                     "cSWW","c___");         //second: summon fire elemental...
+
+        sendFirst("ANSWER left "+resist);
+        sendFirst("ANSWER left first");
+
+        sendGestures("c","c", "S","P");
+
+        sendSecond("ANSWER left "+summon);
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER right second"); //second: shield on self
+
+        assertBroadcasted("351 first CASTS "+resist+" AT first WITH left");
+        assertBroadcasted("351 second CASTS "+summon+" AT second WITH left");
+        assertBroadcasted("351 second CASTS shield AT second WITH right");
+
+        assertNotNull(second.getElemental());
+        String nick = second.getElemental().getNickname();
+
+        assertBroadcastedStartingWith("353 second BLOCKS "+nick+" ");
+        assertBroadcastedStartingWith("353 first BLOCKS "+nick+" ");
+
+        sendGestures("SWWS","____", "____","____"); // first: summon fire elemental
+
+        sendFirst("ANSWER left "+summon);
+        sendFirst("ANSWER left first");
+
+        assertBroadcasted("351 first CASTS "+summon+" AT first WITH left");
+        assertBroadcasted("356 first "+summon+" second :Elementals of the same type fuse");
+
+        //new elemental is created
+        assertNull(second.getElemental());
+        assertNotNull(first.getElemental());
+        String nextNick = first.getElemental().getNickname();
+        assertFalse(nick.equals(nextNick));
+        assertBroadcasted("352 "+nextNick+" ATTACKS second");
+
+        assertTookNoDamage(first);
+        assertEquals(3, second.getHitpoints());
     }
 }

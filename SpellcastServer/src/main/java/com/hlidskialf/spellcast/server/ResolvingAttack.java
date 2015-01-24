@@ -1,7 +1,6 @@
 package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
-import com.hlidskialf.spellcast.server.spell.Spell;
 
 /**
  * Created by wiggins on 1/20/15.
@@ -52,18 +51,28 @@ public class ResolvingAttack {
     }
 
     public String get352() {
+        return get352(attacker, target);
+    }
+    public String get353(String message) {
+        return get353(attacker, target, message);
+    }
+
+    public static String get352(Target attacker, Target target) {
         StringBuilder sb = new StringBuilder("352 ");
         sb.append(attacker.getNickname());
         sb.append(" ATTACKS ");
         sb.append(target.getNickname());
         return sb.toString();
     }
-    public String get353() {
+    public static String get353(Target attacker, Target target, String message) {
         StringBuilder sb = new StringBuilder("353 ");
         sb.append(target.getNickname());
         sb.append(" BLOCKS ");
         sb.append(attacker.getNickname());
-        sb.append(" :the attack is blocked by a shield");
+        if (message != null) {
+            sb.append(" :");
+            sb.append(message);
+        }
         return sb.toString();
     }
 
