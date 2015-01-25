@@ -375,5 +375,4 @@ public class SpellcastServerTest extends SpellcastTest {
         assertTookNoDamage(second);
     }
 
-
 }
