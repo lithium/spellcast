@@ -388,8 +388,13 @@ public class SpellcastClient extends Target {
         }
     }
 
-    public void answerMonsterQuestion(String hand, String spell) {
-
+    public void answerMonsterQuestion(String monsterId, String answer) {
+        for (MonsterQuestion mq : monsterQuestions) {
+            if (mq.getMonsterNickname().equals(monsterId)) {
+                mq.setTarget(answer);
+                return;
+            }
+        }
     }
 
     public boolean hasUnansweredQuestions() {

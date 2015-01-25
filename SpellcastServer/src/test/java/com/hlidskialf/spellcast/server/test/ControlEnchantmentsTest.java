@@ -1,5 +1,6 @@
 package com.hlidskialf.spellcast.server.test;
 
+import com.hlidskialf.spellcast.server.Monster;
 import com.hlidskialf.spellcast.server.test.helpers.SpellcastTest;
 import org.junit.Test;
 
@@ -43,6 +44,31 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
         //second did something random, but not nothing
         assertNotBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".4 second _ _");
-        assertBroadcastedStartingWith("331 "+server.getCurrentMatchId()+".4 second ");
+        assertBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".4 second ");
+    }
+
+    @Test
+    public void shouldCastConfusionOnMonster() {
+        authenticateAndStart();
+
+        //second: summon goblin
+        sendGestures("_DS","___", "SFW","___");
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER left$summongoblin first");
+        assertBroadcasted("351 second CASTS summongoblin AT second WITH left");
+        final Monster mob = second.getMonsters().iterator().next();
+
+        //first: confusion on monster
+        sendGestures("F", "_", "_", "_");
+        sendFirst("ANSWER left "+mob.getNickname());
+        sendSecond("ANSWER "+mob.getNickname()+" first");
+        assertBroadcasted("351 first CASTS confusion AT "+mob.getNickname()+" WITH left");
+
+        //next round
+        sendGestures("_", "_", "_", "_");
+
+        //there should be no questions asked on this round and monster attacks someone randomly
+        assertNotBroadcastedStartingWith("340 "+server.getCurrentMatchId()+".5 :Questions");
+        assertBroadcastedStartingWith("352 "+mob.getNickname()+" ATTACKS ");
     }
 }

@@ -45,7 +45,7 @@ public class MonsterQuestion extends Question {
     }
 
     public int getDamage() {
-        int idx = nickname.indexOf("$");
+        int idx = nickname == null ? -1 : nickname.indexOf("$");
         if (idx != -1) {
             try {
                 SummonMonsterSpell summon = (SummonMonsterSpell) SpellList.lookupSpellBySlug(nickname.substring(idx + 1));

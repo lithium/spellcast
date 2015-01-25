@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.hlidskialf.spellcast.server.effect.ControlEffect;
 import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
@@ -16,6 +17,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -191,9 +193,12 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     private boolean answer_question(SpellcastClient client, String hand, String answer) {
-        if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) ||
-                                                   ValidationHelper.isSpellValid(answer))) {
+        if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) || ValidationHelper.isSpellValid(answer))) {
             client.answerQuestion(hand, answer);
+            return true;
+        }
+        else if (isTargetValid(hand) && isTargetValid(answer) && client.getMonsterById(hand) != null) {
+            client.answerMonsterQuestion(hand, answer);
             return true;
         }
         return false;
@@ -394,6 +399,20 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         // ask each client their questions
         for (SpellcastClient client : players) {
             client.askForMonsterAttacks();
+
+            Random r = new Random();
+            final ArrayList<Target> allTargets = getAllTargets();
+            for (MonsterQuestion mq : client.getMonsterQuestions()) {
+                if (mq.getMonster() != null && mq.getMonster().hasEffect(ControlEffect.Confusion)) {
+
+                    int idx = -1;
+                    while (idx == -1 || allTargets.get(idx).getNickname().equals(mq.getMonsterNickname())) {
+                        idx = r.nextInt(allTargets.size());
+                    }
+                    mq.setTarget(allTargets.get(idx).getNickname());
+
+                }
+            }
             if (askClientQuestions(client)) {
                 anyQuestions = true;
             }
@@ -698,11 +717,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     @Override
-    public Iterable<Target> getAllTargets() {
+    public ArrayList<Target> getAllTargets() {
         return getVisibleTargets(null);
     }
 
-    public Iterable<Target> getVisibleTargets(Target origin) {
+    public ArrayList<Target> getVisibleTargets(Target origin) {
         ArrayList<Target> visible = new ArrayList<Target>();
         for (SpellcastClient client : players) {
             if (client.getState().equals(SpellcastClient.ClientState.Playing)) {
