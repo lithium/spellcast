@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
 
+import com.hlidskialf.spellcast.server.effect.ControlEffect;
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SpellList;
 import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
@@ -133,6 +134,11 @@ public class SpellcastClient extends Target {
     }
 
     public boolean canGestureThisRound(int roundNumber) {
+        if (hasEffect(ControlEffect.Amnesia)) {
+            readyGestures(leftGestures.get(leftGestures.size()-1),
+                          rightGestures.get(rightGestures.size()-1));
+            return false;
+        }
         // TODO: return false if under some effect, or if roundNumber is even and this user is not hasted
         return true;
     }

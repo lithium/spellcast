@@ -25,6 +25,7 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
         sendGestures("_","_","F","S");
 
+        assertNotBroadcastedStartingWith("331 "+server.getCurrentMatchId()+".4 second F S");
         assertBroadcasted("331 "+server.getCurrentMatchId()+".4 second S W");
 
     }
