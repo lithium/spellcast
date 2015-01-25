@@ -253,6 +253,17 @@ public class SpellcastClient extends Target {
             } else {
                 rightGesture = ValidationHelper.randomGesture();
             }
+            //TODO broadcast spell effect
+        }
+        if (hasEffect(ControlEffect.Fear)) {
+            final String forbidden = "CDFS";
+            if (forbidden.contains(leftGesture)) {
+                leftGesture = "_";
+            }
+            if (forbidden.contains(rightGesture)) {
+                rightGesture = "_";
+            }
+            //TODO broadcast spell effect
         }
 
         leftGestures.add(leftGesture);

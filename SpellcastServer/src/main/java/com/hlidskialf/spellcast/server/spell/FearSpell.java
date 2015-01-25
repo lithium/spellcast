@@ -1,5 +1,9 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.Monster;
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.Target;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
 
 /**
@@ -17,5 +21,14 @@ public class FearSpell extends ControlSpell {
 
     public FearSpell(String name, String gestures) {
         super(name, gestures, ControlEffect.Fear, 2);
+    }
+
+    @Override
+    public void effects(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+        if (target instanceof Monster) {
+            broadcastFizzle(matchState, caster, target, "Fear only affects wizards");
+        } else {
+            super.effects(matchState, caster, target);
+        }
     }
 }

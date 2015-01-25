@@ -60,15 +60,32 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
         //first: confusion on monster
         sendGestures("F", "_", "_", "_");
-        sendFirst("ANSWER left "+mob.getNickname());
+        sendFirst("ANSWER left " + mob.getNickname());
         sendSecond("ANSWER "+mob.getNickname()+" first");
-        assertBroadcasted("351 first CASTS confusion AT "+mob.getNickname()+" WITH left");
+        assertBroadcasted("351 first CASTS confusion AT " + mob.getNickname() + " WITH left");
 
         //next round
         sendGestures("_", "_", "_", "_");
 
         //there should be no questions asked on this round and monster attacks someone randomly
-        assertNotBroadcastedStartingWith("340 "+server.getCurrentMatchId()+".5 :Questions");
+        assertNotBroadcastedStartingWith("340 " + server.getCurrentMatchId() + ".5 :Questions");
         assertBroadcastedStartingWith("352 "+mob.getNickname()+" ATTACKS ");
     }
+
+    @Test
+    public void shouldCastFearOnWizard() {
+        authenticateAndStart();
+
+        //first: fear on second
+        sendGestures("SWD","___", "___","___");
+        sendFirst("ANSWER left second");
+        assertBroadcasted("351 first CASTS fear AT second WITH left");
+
+        sendGestures("__", "__", "CD", "FS");
+
+        assertNotBroadcastedStartingWith("331 "+server.getCurrentMatchId()+".4 second C F");
+        assertBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".4 second _ _");
+        assertBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".5 second D S");
+    }
+    
 }
