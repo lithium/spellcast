@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server;
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SpellList;
 
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class ValidationHelper {
     public final static Pattern validNicknamePattern = Pattern.compile("^\\w+$");
-    public final static String validGestureCharacters = "FPSWDCK_";
+    public final static String validGestureCharacters = "CDFPSWK_";  // this order matters for Confusion spell
 
     public static boolean isNicknameValid(String nickname) {
         return (nickname.length() > 0 &&
@@ -24,6 +25,11 @@ public class ValidationHelper {
         }
         char c = gesture.toUpperCase().charAt(0);
         return validGestureCharacters.indexOf(c) != -1;
+    }
+
+    public static String randomGesture() {
+        int idx = new Random().nextInt(6);
+        return validGestureCharacters.substring(idx,idx+1);
     }
 
 

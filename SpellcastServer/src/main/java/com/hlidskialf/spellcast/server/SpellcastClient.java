@@ -9,6 +9,7 @@ import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -163,6 +164,13 @@ public class SpellcastClient extends Target {
         return leftGesture;
     }
 
+    public String getLastLeftGesture() {
+        return leftGestures.get(leftGestures.size()-1);
+    }
+    public String getLastRightGesture() {
+        return rightGestures.get(rightGestures.size()-1);
+    }
+
     public HashMap<Hand, ArrayList<SpellQuestion>> getSpellQuestions() {
         return spellQuestions;
     }
@@ -237,6 +245,14 @@ public class SpellcastClient extends Target {
     public void performGestures() {
         if (leftGesture == null || rightGesture == null) {
             return;
+        }
+
+        if (hasEffect(ControlEffect.Confusion)) {
+            if (new Random().nextBoolean()) {
+                leftGesture = ValidationHelper.randomGesture();
+            } else {
+                rightGesture = ValidationHelper.randomGesture();
+            }
         }
 
         leftGestures.add(leftGesture);

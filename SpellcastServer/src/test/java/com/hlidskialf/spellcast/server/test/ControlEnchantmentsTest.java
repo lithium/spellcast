@@ -25,8 +25,24 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
         sendGestures("_","_","F","S");
 
-        assertNotBroadcastedStartingWith("331 "+server.getCurrentMatchId()+".4 second F S");
+        assertNotBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".4 second F S");
         assertBroadcasted("331 "+server.getCurrentMatchId()+".4 second S W");
+    }
 
+    @Test
+    public void shouldCastConfusion() {
+        authenticateAndStart();
+
+        //first: confusion at second
+        sendGestures("DSF","___",  "___","___");
+        sendFirst("ANSWER left second");
+        assertBroadcasted("351 first CASTS confusion AT second WITH left");
+
+        //next round of gestures
+        sendGestures("_","_","_","_");
+
+        //second did something random, but not nothing
+        assertNotBroadcastedStartingWith("331 " + server.getCurrentMatchId() + ".4 second _ _");
+        assertBroadcastedStartingWith("331 "+server.getCurrentMatchId()+".4 second ");
     }
 }

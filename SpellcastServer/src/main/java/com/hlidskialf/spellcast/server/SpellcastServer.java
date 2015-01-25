@@ -383,7 +383,9 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
         broadcast("330 :Gestures--");
         for (SpellcastClient client : players) {
-            broadcast("331 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" "+client.getLeftGesture()+" "+client.getRightGesture());
+            client.setReady(false);
+            client.performGestures();
+            broadcast("331 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" "+client.getLastLeftGesture()+" "+client.getLastRightGesture());
         }
         broadcast("332 :End of Gestures");
 
@@ -391,8 +393,6 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
         // ask each client their questions
         for (SpellcastClient client : players) {
-            client.setReady(false);
-            client.performGestures();
             client.askForMonsterAttacks();
             if (askClientQuestions(client)) {
                 anyQuestions = true;
