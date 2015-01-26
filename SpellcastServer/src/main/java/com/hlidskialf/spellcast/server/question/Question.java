@@ -1,4 +1,4 @@
-package com.hlidskialf.spellcast.server;
+package com.hlidskialf.spellcast.server.question;
 
 /**
  * Created by wiggins on 1/20/15.

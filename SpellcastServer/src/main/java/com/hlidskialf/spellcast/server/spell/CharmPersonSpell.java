@@ -1,5 +1,6 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
 
 /**
@@ -22,4 +23,5 @@ public class CharmPersonSpell extends ControlSpell {
     public CharmPersonSpell(String name, String gestures) {
         super(name, gestures, ControlEffect.CharmPerson, 2);
     }
+
 }

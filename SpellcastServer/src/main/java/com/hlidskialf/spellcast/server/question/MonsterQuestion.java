@@ -1,5 +1,6 @@
-package com.hlidskialf.spellcast.server;
+package com.hlidskialf.spellcast.server.question;
 
+import com.hlidskialf.spellcast.server.Monster;
 import com.hlidskialf.spellcast.server.spell.SpellList;
 import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
 

@@ -1,6 +1,7 @@
 package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.*;
+import com.hlidskialf.spellcast.server.question.MonsterQuestion;
 
 /**
  * Created by wiggins on 1/19/15.

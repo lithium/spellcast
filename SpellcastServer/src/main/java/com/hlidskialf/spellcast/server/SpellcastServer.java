@@ -5,6 +5,8 @@ import com.hlidskialf.spellcast.server.effect.ControlEffect;
 import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
+import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.SpellQuestion;
 import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
 import com.hlidskialf.spellcast.server.spell.MagicMirrorSpell;

@@ -2,6 +2,8 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
+import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.SpellQuestion;
 import com.hlidskialf.spellcast.server.spell.*;
 
 import java.util.ArrayList;

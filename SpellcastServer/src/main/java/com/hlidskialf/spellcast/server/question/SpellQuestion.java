@@ -1,4 +1,4 @@
-package com.hlidskialf.spellcast.server;
+package com.hlidskialf.spellcast.server.question;
 
 import com.hlidskialf.spellcast.server.spell.Spell;
 
