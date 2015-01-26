@@ -21,10 +21,10 @@ public class SpellQuestion extends Question {
     }
 
     @Override
-    public boolean hasTarget() {
+    public boolean hasAnswer() {
         if (!spell.hasTarget()) {
             return true;
         }
-        return super.hasTarget();
+        return super.hasAnswer();
     }
 }

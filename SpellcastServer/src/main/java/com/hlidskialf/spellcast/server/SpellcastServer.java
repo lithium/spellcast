@@ -404,17 +404,18 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
             Random r = new Random();
             final ArrayList<Target> allTargets = getAllTargets();
+
+            // if a monster is confused it does not ask a question of its controller and attacks a random target, but not itself, instead
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
                 if (mq.getMonster() != null && mq.getMonster().hasEffect(ControlEffect.Confusion)) {
-
                     int idx = -1;
                     while (idx == -1 || allTargets.get(idx).getNickname().equals(mq.getMonsterNickname())) {
                         idx = r.nextInt(allTargets.size());
                     }
-                    mq.setTarget(allTargets.get(idx).getNickname());
-
+                    mq.setAnswer(allTargets.get(idx).getNickname());
                 }
             }
+
             if (askClientQuestions(client)) {
                 anyQuestions = true;
             }
@@ -460,7 +461,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
             //monster attacks
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
-                Target target = getTargetByNickname(mq.getTarget());
+                Target target = getTargetByNickname(mq.getAnswer());
                 if (mq.getMonster() == null) {
                     resolvingAttacks.add(new ResolvingAttack(client, mq.getNickname(), target, mq.getDamage()));
                 } else {
@@ -622,7 +623,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void resolveSpells(SpellcastClient client, ArrayList<SpellQuestion> questions, Hand hand, ArrayList<ResolvingSpell> spellBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
-            Target target = getTargetByNickname(q.getTarget());
+            Target target = getTargetByNickname(q.getAnswer());
             if (!spell.getSlug().equals("stab")) {
 	            spellBuffer.add(new ResolvingSpell(spell, client, target, hand));
             }
@@ -631,7 +632,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     private void resolveStabs(SpellcastClient client, ArrayList<SpellQuestion> questions, Hand hand, ArrayList<ResolvingAttack> attackBuffer) {
         for (SpellQuestion q : questions) {
             Spell spell = q.getSpell();
-            Target target = getTargetByNickname(q.getTarget());
+            Target target = getTargetByNickname(q.getAnswer());
             if (spell.getSlug().equals("stab")) {
                 attackBuffer.add(new ResolvingAttack(client, target, 1));
             }
@@ -693,7 +694,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             sendToClient(client, "343 :End of spells");
         } else if (left > 0) { // one spell to resolve, needs a target
             SpellQuestion q = spellQuestions.get(0);
-            if (!q.hasTarget()) {
+            if (!q.hasAnswer()) {
                 sendToClient(client, "345 "+hand+" "+ q.getSpell().getSlug() + " :Which target for "+hand+" hand");
                 for (Target t : getVisibleTargets(client)) {
                    sendToClient(client, "346 "+hand+" "+t.getNickname()+" :"+t.getVisibleName());
@@ -706,7 +707,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     public void questions_monsters(SpellcastClient client, ArrayList<MonsterQuestion> monsterQuestions) {
         int remaining = 0;
         for (MonsterQuestion mq : monsterQuestions) {
-            if (!mq.hasTarget()) {
+            if (!mq.hasAnswer()) {
                 remaining++;
 
                 sendToClient(client, "335 "+mq.getMonsterNickname()+" :Which target should monster attack");

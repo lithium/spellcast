@@ -296,8 +296,6 @@ public class SpellcastClient extends Target {
         }
 
 
-
-
         leftGesture = null;
         rightGesture = null;
 
@@ -374,7 +372,7 @@ public class SpellcastClient extends Target {
         if (handString.contains("$")) {
             for (MonsterQuestion mq : monsterQuestions) {
                 if (mq.getNickname().equals(handString)) {
-                    mq.setTarget(answer);
+                    mq.setAnswer(answer);
                     return;
                 }
             }
@@ -395,14 +393,14 @@ public class SpellcastClient extends Target {
             }
         } else if (questions.size() == 1) { // should be specifying a target
             SpellQuestion q = questions.get(0);
-            q.setTarget(answer);
+            q.setAnswer(answer);
         }
     }
 
     public void answerMonsterQuestion(String monsterId, String answer) {
         for (MonsterQuestion mq : monsterQuestions) {
             if (mq.getMonsterNickname().equals(monsterId)) {
-                mq.setTarget(answer);
+                mq.setAnswer(answer);
                 return;
             }
         }
@@ -411,13 +409,13 @@ public class SpellcastClient extends Target {
     public boolean hasUnansweredQuestions() {
 
         for (MonsterQuestion mq : monsterQuestions) {
-            if (!mq.hasTarget()) {
+            if (!mq.hasAnswer()) {
                 return true;
             }
         }
 
         for (ArrayList<SpellQuestion> qs : spellQuestions.values()) {
-            if (qs.size() > 1 || (qs.size() == 1 && !qs.get(0).hasTarget())) {
+            if (qs.size() > 1 || (qs.size() == 1 && !qs.get(0).hasAnswer())) {
                 return true;
             }
         }
