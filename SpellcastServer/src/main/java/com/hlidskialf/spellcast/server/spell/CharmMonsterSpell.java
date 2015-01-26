@@ -3,6 +3,8 @@ package com.hlidskialf.spellcast.server.spell;
 import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
 
+import java.util.Iterator;
+
 /**
  * Created by wiggins on 1/21/15.
  *
@@ -18,8 +20,11 @@ import com.hlidskialf.spellcast.server.effect.ControlEffect;
  */
 public class CharmMonsterSpell extends ControlSpell {
 
+    public static final String Slug = "charmmonster";
+    private String monsterRef;
+
     public CharmMonsterSpell(String name, String gestures) {
-        super(name, gestures, ControlEffect.CharmMonster, 0);
+        super(name, Slug, gestures, ControlEffect.CharmMonster, 0);
     }
 
     @Override
@@ -27,10 +32,39 @@ public class CharmMonsterSpell extends ControlSpell {
 
         if (!isResolvingMultipleControlSpells(matchState, target)) {
             if (target instanceof Monster && !(target instanceof Elemental)) {
-                caster.takeControlOfMonster((Monster)target);
+                Monster monster = (Monster)target;
+                caster.takeControlOfMonster(monster);
+                if (monsterRef != null) {
+
+                    Iterator<ResolvingAttack> attackIterator = matchState.getResolvingAttacks().iterator();
+                    while (attackIterator.hasNext()) {
+                        ResolvingAttack ra = attackIterator.next();
+                        if (ra.getAttacker() != null && ra.getAttacker().getNickname().equals(monster.getNickname())) {
+
+                            //remove any attacks from the older controller
+                            attackIterator.remove();
+                        }
+                    }
+
+                    monster.setRef(monsterRef);
+                    for (MonsterQuestion mq : caster.getMonsterQuestions()) {
+                        if (mq.getNickname().equals(monsterRef)) {
+                            mq.setMonster(monster);
+                            break;
+                        }
+                    }
+                }
             }
 
         }
 
+    }
+
+    public String getMonsterRef() {
+        return monsterRef;
+    }
+
+    public void setMonsterRef(String monsterRef) {
+        this.monsterRef = monsterRef;
     }
 }

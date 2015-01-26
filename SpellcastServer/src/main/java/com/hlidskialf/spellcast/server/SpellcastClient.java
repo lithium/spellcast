@@ -2,10 +2,7 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
-import com.hlidskialf.spellcast.server.spell.Spell;
-import com.hlidskialf.spellcast.server.spell.SpellList;
-import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
-import com.hlidskialf.spellcast.server.spell.SummonMonsterSpell;
+import com.hlidskialf.spellcast.server.spell.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -221,18 +218,19 @@ public class SpellcastClient extends Target {
         if (questions.size() == 1) {
             SpellQuestion q = questions.get(0);
             if (q.getSpell() instanceof SummonMonsterSpell) {
+                // summon monster spell ask for target
                 SummonMonsterSpell summonSpell = (SummonMonsterSpell) q.getSpell();
-                if (summonSpell instanceof SummonElementalSpell) {
-                    // summon spell ask for element
-                    SummonElementalSpell summonElementalSpell = (SummonElementalSpell) summonSpell;
-                    //TODO: ask for element
-                } else {
-                    // monster spell ask for target
-                    String monsterRef = hand + "$" + summonSpell.getSlug();
-                    summonSpell.setMonsterRef(monsterRef);
-                    monsterQuestions.add(new MonsterQuestion(monsterRef));
-                }
+                String monsterRef = hand + "$" + summonSpell.getSlug();
+                summonSpell.setMonsterRef(monsterRef);
+                monsterQuestions.add(new MonsterQuestion(monsterRef));
             }
+            else if (q.getSpell() instanceof CharmMonsterSpell) {
+                CharmMonsterSpell charmSpell = (CharmMonsterSpell)q.getSpell();
+                String monsterRef = hand +"$"+CharmMonsterSpell.Slug;
+                charmSpell.setMonsterRef(monsterRef);
+                monsterQuestions.add(new MonsterQuestion(monsterRef));
+            }
+
         }
 
     }

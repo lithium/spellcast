@@ -140,13 +140,16 @@ public class SpellcastServerTest extends SpellcastTest {
         sendFirst("ANSWER left first");
         sendFirst("ANSWER left$summongoblin second");
 
+        assertTrue(first.getMonsters().iterator().hasNext());
+        String monsterNick = first.getMonsters().iterator().next().getNickname();
+
         // no answer errors
         assertNotBroadcastedStartingWith("403 ");
 
         assertBroadcastedStartingWith("351 first CASTS summongoblin AT first WITH left");
-        assertBroadcasted("352 mon1000 ATTACKS second");
+        assertBroadcasted("352 "+monsterNick+" ATTACKS second");
 
-        assertEquals(second.getMaxHitpoints()-1, second.getHitpoints());
+        assertEquals(second.getMaxHitpoints() - 1, second.getHitpoints());
 
     }
 

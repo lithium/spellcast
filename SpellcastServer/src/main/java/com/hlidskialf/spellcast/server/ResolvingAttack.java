@@ -33,6 +33,7 @@ public class ResolvingAttack {
             for (Monster m : caster.getMonsters()) {
                 if (m.getRef().equals(monsterRef)) {
                     attacker = m;
+                    damage = m.getDamage();
                     return;
                 }
             }
@@ -104,4 +105,11 @@ public class ResolvingAttack {
         this.damage = damage;
     }
 
+    public String getMonsterRef() {
+        return monsterRef;
+    }
+
+    public void setMonsterRef(String monsterRef) {
+        this.monsterRef = monsterRef;
+    }
 }

@@ -25,10 +25,10 @@ public class Spell {
     }
 
     public Spell(String name, String gestures, SpellType type) {
-        this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type, true);
+        this(name, null, gestures, type, true);
     }
 	public Spell(String name, String gestures, SpellType type, boolean hasTarget) {
-		this(name, name.replaceAll(" ", "").toLowerCase(), gestures, type, hasTarget);
+		this(name, null, gestures, type, hasTarget);
 	}
     public Spell(String name, String slug, String gestures, SpellType type) {
         this(name, slug, gestures, type, true);
@@ -38,7 +38,7 @@ public class Spell {
     }
     public Spell(String name, String slug, String gestures, SpellType type, boolean hasTarget) {
         this.name = name;
-	    this.slug = slug;
+        this.slug = slug != null ? slug : name.replaceAll(" ", "").toLowerCase();
         this.gestures = gestures;
         this.type = type;
         this.hasTarget = hasTarget;

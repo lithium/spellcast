@@ -16,7 +16,10 @@ public class ControlSpell extends Spell {
     protected int duration;
 
     public ControlSpell(String name, String gestures, String effectName, int duration) {
-        super(name, gestures, SpellType.Enchantment);
+        this(name, null, gestures, effectName, duration);
+    }
+    public ControlSpell(String name, String slug, String gestures, String effectName, int duration) {
+        super(name, slug, gestures, SpellType.Enchantment);
         this.effectName = effectName;
         this.duration = duration;
     }
