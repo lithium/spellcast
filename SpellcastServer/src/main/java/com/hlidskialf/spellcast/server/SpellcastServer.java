@@ -6,6 +6,7 @@ import com.hlidskialf.spellcast.server.effect.DeathEffect;
 import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
 import com.hlidskialf.spellcast.server.spell.CounterspellSpell;
 import com.hlidskialf.spellcast.server.spell.DispelMagicSpell;
@@ -14,12 +15,7 @@ import com.hlidskialf.spellcast.server.spell.RemoveEnchantmentSpell;
 import com.hlidskialf.spellcast.server.spell.Spell;
 import com.hlidskialf.spellcast.server.spell.SummonElementalSpell;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -176,7 +172,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                     }
                 }
 
-                if (client.hasUnansweredQuestions()) {
+                if (client.hasUnansweredQuestions() ) {
                     askClientQuestions(client);
                 } else {
                     //answered their last question
@@ -195,6 +191,29 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     private boolean answer_question(SpellcastClient client, String hand, String answer) {
+        int idx = hand.indexOf("$");
+        if (idx != -1) {
+            String spellPart = hand.substring(idx+1);
+            hand = hand.substring(0,idx);
+            int idIdx = spellPart.indexOf(".");
+            if (idIdx != -1) {
+                String spell = spellPart.substring(0,idIdx);
+                String id = spellPart.substring(idIdx + 1);
+
+                for (SpellQuestion sq : client.getSpellQuestions(Hand.valueOf(hand))) {
+                    if (sq.getIdentifier().equals(spell)) {
+                        for (Question subq : sq.getSubQuestions()) {
+                            if (subq.getIdentifier().equals(id)) {
+                                sq.getSpell().putAnswer(id, answer);
+                                subq.setAnswer(answer);
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
         if (ValidationHelper.isHandValid(hand) && (isTargetValid(answer) || ValidationHelper.isSpellValid(answer))) {
             client.answerQuestion(hand, answer);
             return true;
@@ -462,11 +481,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             //monster attacks
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
                 Target target = getTargetByNickname(mq.getAnswer());
-                if (mq.getMonster() == null) {
-                    resolvingAttacks.add(new ResolvingAttack(client, mq.getNickname(), target, mq.getDamage()));
-                } else {
-                    resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getDamage()));
-                }
+                resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getDamage()));
             }
 
         }
@@ -694,6 +709,19 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             sendToClient(client, "343 :End of spells");
         } else if (left > 0) { // one spell to resolve, needs a target
             SpellQuestion q = spellQuestions.get(0);
+            q.doSpellQuestions(this, client);
+            if (q.hasUnansweredSubQuestions()) {
+                for (Question subQ : q.getSubQuestions()) {
+                    if (!subQ.hasAnswer()) {
+                        String id = hand+"$"+q.getSpell().getSlug()+"."+subQ.getIdentifier();
+                        sendToClient(client, "XX1 "+id+" :answer sub question");
+                        for (String option : subQ.getOptions()) {
+                            sendToClient(client, "XX2 "+id+" "+option);
+                        }
+                        sendToClient(client, "XX3 :end of sub question ");
+                    }
+                }
+            }
             if (!q.hasAnswer()) {
                 sendToClient(client, "345 "+hand+" "+ q.getSpell().getSlug() + " :Which target for "+hand+" hand");
                 for (Target t : getVisibleTargets(client)) {

@@ -13,6 +13,8 @@ public interface SpellcastMatchState {
     public ArrayList<ResolvingAttack> getResolvingAttacks();
     public Iterable<Target> getAllTargets();
 
+    public Target getTargetByNickname(String nick);
+
     public void broadcast(String monster311);
 
     public Elemental getElemental();

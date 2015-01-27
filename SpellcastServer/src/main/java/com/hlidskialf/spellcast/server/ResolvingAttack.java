@@ -8,11 +8,9 @@ import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 public class ResolvingAttack {
 
 
-    private String monsterRef;
     private Target attacker;
     private Target target;
     private int damage;
-    private SpellcastClient caster;
 
     public ResolvingAttack(Target target, int damage) {
         this.target = target;
@@ -22,28 +20,8 @@ public class ResolvingAttack {
         this(target,damage);
         this.attacker = attacker;
     }
-    public ResolvingAttack(SpellcastClient caster, String monsterRef, Target target, int damage) {
-        this(target, damage);
-        this.caster = caster;
-        this.monsterRef = monsterRef;
-    }
-
-    private void resolveMonsterRef() {
-        if (attacker == null && monsterRef != null) {
-            for (Monster m : caster.getMonsters()) {
-                if (m.getRef().equals(monsterRef)) {
-                    attacker = m;
-                    damage = m.getDamage();
-                    return;
-                }
-            }
-
-        }
-    }
 
     public boolean resolveAttack(SpellcastMatchState matchState) {
-        resolveMonsterRef();
-
         if (target.hasEffect(ShieldEffect.Name)) {
             return false;
         }
@@ -105,11 +83,4 @@ public class ResolvingAttack {
         this.damage = damage;
     }
 
-    public String getMonsterRef() {
-        return monsterRef;
-    }
-
-    public void setMonsterRef(String monsterRef) {
-        this.monsterRef = monsterRef;
-    }
 }

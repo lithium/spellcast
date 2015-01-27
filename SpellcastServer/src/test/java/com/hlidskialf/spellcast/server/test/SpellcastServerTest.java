@@ -134,11 +134,11 @@ public class SpellcastServerTest extends SpellcastTest {
         assertContainsStartingWith("345 left summongoblin ", firstChannel);
 
         //asked which target we wanted newly summoned goblin to attack
-        assertContainsStartingWith("335 left$summongoblin ", firstChannel);
+        assertContainsStartingWith("XX1 left$summongoblin.target ", firstChannel);
 
         //cast it on first and have it attack second
         sendFirst("ANSWER left first");
-        sendFirst("ANSWER left$summongoblin second");
+        sendFirst("ANSWER left$summongoblin.target second");
 
         assertTrue(first.getMonsters().iterator().hasNext());
         String monsterNick = first.getMonsters().iterator().next().getNickname();
