@@ -1,6 +1,9 @@
 package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.*;
+import com.hlidskialf.spellcast.server.question.Question;
+
+import java.util.ArrayList;
 
 /**
  * Created by wiggins on 1/21/15.
@@ -39,6 +42,11 @@ public class SummonElementalSpell extends SummonMonsterSpell {
     public SummonElementalSpell(String name, String gestures, Element element) {
         super(name, gestures, 3);
         this.element = element;
+    }
+
+    @Override
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        return null;
     }
 
     @Override
