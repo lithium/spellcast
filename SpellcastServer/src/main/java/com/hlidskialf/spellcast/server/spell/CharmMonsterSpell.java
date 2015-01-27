@@ -3,7 +3,10 @@ package com.hlidskialf.spellcast.server.spell;
 import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
+import com.hlidskialf.spellcast.server.question.TargetQuestion;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -22,50 +25,45 @@ import java.util.Iterator;
 public class CharmMonsterSpell extends ControlSpell {
 
     public static final String Slug = "charmmonster";
-    private String monsterRef;
 
     public CharmMonsterSpell(String name, String gestures) {
         super(name, Slug, gestures, ControlEffect.CharmMonster, 0);
     }
 
     @Override
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        ArrayList<Question> ret = new ArrayList<Question>();
+        TargetQuestion q = new TargetQuestion(matchState);
+        q.setTargetOptions(matchState);
+        ret.add(q);
+        return ret;
+    }
+
+    @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
 
         if (!isResolvingMultipleControlSpells(matchState, target)) {
+
             if (target instanceof Monster && !(target instanceof Elemental)) {
-                Monster monster = (Monster)target;
+                Monster monster = (Monster) target;
                 caster.takeControlOfMonster(monster);
-                if (monsterRef != null) {
 
-                    Iterator<ResolvingAttack> attackIterator = matchState.getResolvingAttacks().iterator();
-                    while (attackIterator.hasNext()) {
-                        ResolvingAttack ra = attackIterator.next();
-                        if (ra.getAttacker() != null && ra.getAttacker().getNickname().equals(monster.getNickname())) {
-
-                            //remove any attacks from the older controller
-                            attackIterator.remove();
-                        }
-                    }
-
-                    monster.setRef(monsterRef);
-                    for (MonsterQuestion mq : caster.getMonsterQuestions()) {
-                        if (mq.getNickname().equals(monsterRef)) {
-                            mq.setMonster(monster);
-                            break;
-                        }
+                ArrayList<ResolvingAttack> resolvingAttacks = matchState.getResolvingAttacks();
+                Iterator<ResolvingAttack> attackIterator = resolvingAttacks.iterator();
+                while (attackIterator.hasNext()) {
+                    ResolvingAttack ra = attackIterator.next();
+                    if (ra.getAttacker() != null && ra.getAttacker().getNickname().equals(monster.getNickname())) {
+                        //remove any attacks from the older controller
+                        attackIterator.remove();
                     }
                 }
+                Target attackTarget = matchState.getTargetByNickname(answers.get("target"));
+                resolvingAttacks.add(new ResolvingAttack(monster, attackTarget, monster.getDamage()));
+
             }
 
         }
 
     }
-
-    public String getMonsterRef() {
-        return monsterRef;
-    }
-
-    public void setMonsterRef(String monsterRef) {
-        this.monsterRef = monsterRef;
-    }
 }
+

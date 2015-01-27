@@ -54,7 +54,7 @@ public class ControlEnchantmentsTest extends SpellcastTest {
         //second: summon goblin
         sendGestures("_DS","___", "SFW","___");
         sendSecond("ANSWER left second");
-        sendSecond("ANSWER left$summongoblin first");
+        sendSecond("ANSWER left$summongoblin.target first");
         assertBroadcasted("351 second CASTS summongoblin AT second WITH left");
         final Monster mob = second.getMonsters().iterator().next();
 
@@ -98,7 +98,7 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
         sendGestures("FW","___", "SD","_P"); // first: summon goblin
         sendFirst("ANSWER left first");
-        sendFirst("ANSWER left$summongoblin second");  //goblin: attack second
+        sendFirst("ANSWER left$summongoblin.target second");  //goblin: attack second
         sendSecond("ANSWER left first"); //second: missile at first
         sendSecond("ANSWER right second"); // second: shield at self
 
@@ -108,7 +108,7 @@ public class ControlEnchantmentsTest extends SpellcastTest {
         sendFirst("ANSWER " + mob.getNickname() + " second"); //first: have goblin attack second
 
         sendSecond("ANSWER left " + mob.getNickname());               //second: charm monster and have it attack first
-        sendSecond("ANSWER left$charmmonster first");
+        sendSecond("ANSWER left$charmmonster.target first");
 
         assertBroadcasted("351 second CASTS charmmonster AT "+mob.getNickname()+" WITH left");
         assertBroadcasted("352 "+mob.getNickname()+" ATTACKS first");

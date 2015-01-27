@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server.spell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
 
 import java.util.ArrayList;
@@ -114,7 +115,7 @@ public class Spell {
 
     }
 
-    public ArrayList<SpellQuestion> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
         return null;
     }
 }

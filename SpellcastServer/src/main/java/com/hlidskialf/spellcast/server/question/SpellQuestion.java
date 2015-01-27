@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class SpellQuestion extends Question {
     private Spell spell;
-    private ArrayList<SpellQuestion> subQuestions;
+    private ArrayList<Question> subQuestions;
     private boolean doneSpellQuestions;
 
     public SpellQuestion(Spell spell) {
@@ -49,7 +49,7 @@ public class SpellQuestion extends Question {
 
     public boolean hasUnansweredSubQuestions() {
         if (subQuestions != null) {
-            for (SpellQuestion q : subQuestions) {
+            for (Question q : subQuestions) {
                 if (!q.hasAnswer())
                     return true;
             }
@@ -57,7 +57,7 @@ public class SpellQuestion extends Question {
         return false;
     }
 
-    public ArrayList<SpellQuestion> getSubQuestions() {
+    public ArrayList<Question> getSubQuestions() {
         return subQuestions;
     }
 }

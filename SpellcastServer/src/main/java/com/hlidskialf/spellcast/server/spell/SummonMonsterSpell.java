@@ -2,6 +2,11 @@ package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
+import com.hlidskialf.spellcast.server.question.SpellQuestion;
+import com.hlidskialf.spellcast.server.question.TargetQuestion;
+
+import java.util.ArrayList;
 
 /**
  * Created by wiggins on 1/19/15.
@@ -23,7 +28,6 @@ import com.hlidskialf.spellcast.server.question.MonsterQuestion;
 public class SummonMonsterSpell extends Spell {
 
     private int damage;
-    private String monsterRef;
 
     public SummonMonsterSpell(String name, String gestures, int damage) {
         super(name, gestures, SpellType.Summon);
@@ -32,11 +36,19 @@ public class SummonMonsterSpell extends Spell {
 
     public String generateMonsterName() {
         StringBuilder sb = new StringBuilder("Joe the ");
-        switch(damage) {
-            case 1: sb.append("Goblin"); break;
-            case 2: sb.append("Ogre"); break;
-            case 3: sb.append("Troll"); break;
-            case 4: sb.append("Giant"); break;
+        switch (damage) {
+            case 1:
+                sb.append("Goblin");
+                break;
+            case 2:
+                sb.append("Ogre");
+                break;
+            case 3:
+                sb.append("Troll");
+                break;
+            case 4:
+                sb.append("Giant");
+                break;
         }
         return sb.toString();
     }
@@ -44,28 +56,29 @@ public class SummonMonsterSpell extends Spell {
     @Override
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         Monster monster = new Monster(generateMonsterName(), damage, damage);
-        monster.setRef(monsterRef);
         caster.takeControlOfMonster(monster);
         matchState.broadcast(monster.get311());
 
-        if (monsterRef != null) {
-            for (MonsterQuestion mq : caster.getMonsterQuestions()) {
-                if (mq.getNickname().equals(monsterRef)) {
-                    mq.setMonster(monster);
-                }
-            }
-        }
+        ArrayList<ResolvingAttack> resolvingAttacks = matchState.getResolvingAttacks();
+
+        String attackTargetName = answers.get("target");
+        Target attackTarget = matchState.getTargetByNickname(attackTargetName);
+        resolvingAttacks.add(new ResolvingAttack(monster, attackTarget, monster.getDamage()));
+    }
+
+    @Override
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        ArrayList<Question> ret = new ArrayList<Question>();
+        TargetQuestion q = new TargetQuestion(matchState);
+        q.setTargetOptions(matchState);
+        ret.add(q);
+        return ret;
     }
 
     public int getDamage() {
         return damage;
     }
 
-    public String getMonsterRef() {
-        return monsterRef;
-    }
-
-    public void setMonsterRef(String monsterRef) {
-        this.monsterRef = monsterRef;
-    }
 }
+
+

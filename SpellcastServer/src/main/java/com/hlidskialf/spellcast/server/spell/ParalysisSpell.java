@@ -49,8 +49,8 @@ public class ParalysisSpell extends ControlSpell {
     }
 
     @Override
-    public ArrayList<SpellQuestion> questions(SpellcastMatchState matchState, SpellcastClient caster) {
-        ArrayList<SpellQuestion> ret = new ArrayList<SpellQuestion>();
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        ArrayList<Question> ret = new ArrayList<Question>();
 
         ret.add(new HandQuestion("hand", this));
         return ret;

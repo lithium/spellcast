@@ -210,32 +210,7 @@ public class SpellcastClient extends Target {
                 monsterQuestions.add(new MonsterQuestion(monster));
             }
         }
-        checkForSummonSpellQuestion(Hand.both);
-        checkForSummonSpellQuestion(Hand.right);
-        checkForSummonSpellQuestion(Hand.left);
-
-    }
-    private void checkForSummonSpellQuestion(Hand hand) {
-        ArrayList<SpellQuestion> questions = spellQuestions.get(hand);
-        if (questions.size() == 1) {
-            SpellQuestion q = questions.get(0);
-            if (q.getSpell() instanceof SummonMonsterSpell) {
-                // summon monster spell ask for target
-                SummonMonsterSpell summonSpell = (SummonMonsterSpell) q.getSpell();
-                String monsterRef = hand + "$" + summonSpell.getSlug();
-                summonSpell.setMonsterRef(monsterRef);
-                monsterQuestions.add(new MonsterQuestion(monsterRef));
-            }
-            else if (q.getSpell() instanceof CharmMonsterSpell) {
-                CharmMonsterSpell charmSpell = (CharmMonsterSpell)q.getSpell();
-                String monsterRef = hand +"$"+CharmMonsterSpell.Slug;
-                charmSpell.setMonsterRef(monsterRef);
-                monsterQuestions.add(new MonsterQuestion(monsterRef));
-            }
-
-        }
-
-    }
+   }
 
     public void addGestures(String left, String right) {
         leftGestures.add(left);

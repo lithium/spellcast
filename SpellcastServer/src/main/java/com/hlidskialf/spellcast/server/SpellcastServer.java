@@ -202,7 +202,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
                 for (SpellQuestion sq : client.getSpellQuestions(Hand.valueOf(hand))) {
                     if (sq.getIdentifier().equals(spell)) {
-                        for (SpellQuestion subq : sq.getSubQuestions()) {
+                        for (Question subq : sq.getSubQuestions()) {
                             if (subq.getIdentifier().equals(id)) {
                                 sq.getSpell().putAnswer(id, answer);
                                 subq.setAnswer(answer);
@@ -481,11 +481,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             //monster attacks
             for (MonsterQuestion mq : client.getMonsterQuestions()) {
                 Target target = getTargetByNickname(mq.getAnswer());
-                if (mq.getMonster() == null) {
-                    resolvingAttacks.add(new ResolvingAttack(client, mq.getNickname(), target, mq.getDamage()));
-                } else {
-                    resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getDamage()));
-                }
+                resolvingAttacks.add(new ResolvingAttack(mq.getMonster(), target, mq.getDamage()));
             }
 
         }
@@ -715,7 +711,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             SpellQuestion q = spellQuestions.get(0);
             q.doSpellQuestions(this, client);
             if (q.hasUnansweredSubQuestions()) {
-                for (SpellQuestion subQ : q.getSubQuestions()) {
+                for (Question subQ : q.getSubQuestions()) {
                     if (!subQ.hasAnswer()) {
                         String id = hand+"$"+q.getSpell().getSlug()+"."+subQ.getIdentifier();
                         sendToClient(client, "XX1 "+id+" :answer sub question");
