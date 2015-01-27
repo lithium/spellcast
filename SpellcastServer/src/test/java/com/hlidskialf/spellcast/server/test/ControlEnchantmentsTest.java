@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server.test;
 import com.hlidskialf.spellcast.server.Monster;
 import com.hlidskialf.spellcast.server.test.helpers.SpellcastTest;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Created by wiggins on 1/24/15.
@@ -154,6 +155,41 @@ public class ControlEnchantmentsTest extends SpellcastTest {
         sendFirst("ANSWER left$paralysis.hand left");   //          on second's left hand
 
         assertBroadcasted("351 first CASTS paralysis AT second WITH left");
+
+        sendGestures("_","_","W","W"); //second: try to do anything
+
+        //second makes a snap with left
+        assertBroadcasted("331 "+server.getCurrentMatchId()+".4 second S W");
+    }
+
+    @Test
+    public void shouldCastParalysisOnMonster() {
+        authenticateAndStart();
+
+        sendGestures("_FF","___","SFW","___");
+
+        //second: summon goblin
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER left$summongoblin.target second");
+
+        String mob = second.getMonsters().iterator().next().getNickname();
+
+        //first: paralysis on monster
+        sendGestures("F","_","_","_");
+
+        assertTrue(secondChannel.matchingMessage("335 "+mob+" "));
+        secondChannel.setIndex();
+
+        sendFirst("ANSWER left "+mob);
+        sendFirst("ANSWER left$paralysis.hand left");
+        sendSecond("ANSWER "+mob+" second");
+
+        sendGestures("_","_","_","_");
+
+        //second was not asked who mob should attack during paralysis
+        assertFalse(secondChannel.matchingMessage("335 "+mob+" "));
+
+        assertBroadcastedStartingWith("251 "+server.getCurrentMatchId()+".6 "); // round 6 started
 
     }
 

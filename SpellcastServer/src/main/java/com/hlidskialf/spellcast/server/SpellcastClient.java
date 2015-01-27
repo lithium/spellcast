@@ -208,7 +208,7 @@ public class SpellcastClient extends Target {
 
     public void askForMonsterAttacks() {
         for (Monster monster : monsters) {
-            if (!(monster instanceof Elemental)) {
+            if (!(monster instanceof Elemental) && !monster.hasEffect(ControlEffect.Paralysis)) {
                 monsterQuestions.add(new MonsterQuestion(monster));
             }
         }
@@ -244,17 +244,15 @@ public class SpellcastClient extends Target {
             //TODO broadcast spell effect
         }
 
-        if (hasEffect(ControlEffect.CharmPerson)) {
-            try {
-                SpellEffect spellEffect = getEffect(ControlEffect.CharmPerson);
-                GestureEffect effect = (GestureEffect)spellEffect;
-                String gest = effect.getGesture();
-                switch (effect.getHand()) {
-                    case left: leftGesture = gest; break;
-                    case right: rightGesture = gest; break;
+        for (SpellEffect effect : effects) {
+            if (effect instanceof GestureEffect) {
+                GestureEffect gestureEffect = (GestureEffect)effect;
+                // if gesture is null repeat last (paralysis)
+                String gest = gestureEffect.getGesture();
+                switch (gestureEffect.getHand()) {
+                    case left: leftGesture = gest != null ? gest : leftGestures.get(leftGestures.size()-1); break;
+                    case right: rightGesture = gest != null ? gest : rightGestures.get(rightGestures.size()-1); break;
                 }
-            } catch (ClassCastException e) {
-                // ERROR
             }
         }
 

@@ -1,9 +1,8 @@
 package com.hlidskialf.spellcast.server.spell;
 
-import com.hlidskialf.spellcast.server.SpellcastClient;
-import com.hlidskialf.spellcast.server.SpellcastMatchState;
-import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
+import com.hlidskialf.spellcast.server.effect.GestureEffect;
 import com.hlidskialf.spellcast.server.question.HandQuestion;
 import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
@@ -40,18 +39,20 @@ public class ParalysisSpell extends ControlSpell {
     }
 
     @Override
-    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
-
-        String targetHand = answers.get("hand");
-
-        return;
-
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+        if (!isResolvingMultipleControlSpells(matchState, target)) {
+            if (target instanceof Monster) {
+                super.effects(matchState, caster, target);
+            } else {
+                Hand hand = Hand.valueOf(answers.get("hand"));
+                target.addEffect(new GestureEffect(hand, null, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, 2));
+            }
+        }
     }
 
     @Override
     public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
         ArrayList<Question> ret = new ArrayList<Question>();
-
         ret.add(new HandQuestion("hand"));
         return ret;
     }

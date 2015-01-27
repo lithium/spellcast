@@ -12,6 +12,11 @@ public class GestureEffect extends ControlEffect {
     private String gesture;
     private Hand hand;
 
+    public GestureEffect(Hand hand, String matchId, int roundCast, Target target, int duration) {
+        super(ControlEffect.CharmPerson, matchId, roundCast, target, duration);
+        this.hand = hand;
+        this.gesture = null;
+    }
     public GestureEffect(Hand hand, String gesture, String matchId, int roundCast, Target target, int duration) {
         super(ControlEffect.CharmPerson, matchId, roundCast, target, duration);
         this.hand = hand;

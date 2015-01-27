@@ -35,4 +35,13 @@ public class TestSpellcastChannel {
     public String lastMessage(int ofs) {
         return messages.get(messages.size()-1-Math.abs(ofs));
     }
+
+    public boolean matchingMessage(String msg) {
+        for (int i=index; i < messages.size(); i++) {
+            if (messages.get(i).startsWith(msg)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
