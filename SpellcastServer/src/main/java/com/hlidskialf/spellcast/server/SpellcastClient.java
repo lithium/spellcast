@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server;
 
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
 import com.hlidskialf.spellcast.server.spell.*;
 
@@ -14,7 +15,6 @@ import java.util.Random;
  * Created by wiggins on 1/11/15.
  */
 public class SpellcastClient extends Target {
-
 
 
     public enum ClientState {
@@ -36,6 +36,7 @@ public class SpellcastClient extends Target {
     private HashMap<Hand, ArrayList<SpellQuestion>> spellQuestions;
     private ArrayList<Monster> monsters;
     private ArrayList<MonsterQuestion> monsterQuestions;
+
 
 
     public SpellcastClient(Object channel) {
@@ -190,7 +191,6 @@ public class SpellcastClient extends Target {
         }
         return null;
     }
-
 
     public void resetHistory() {
         leftGestures.clear();
@@ -415,7 +415,7 @@ public class SpellcastClient extends Target {
         }
 
         for (ArrayList<SpellQuestion> qs : spellQuestions.values()) {
-            if (qs.size() > 1 || (qs.size() == 1 && !qs.get(0).hasAnswer())) {
+            if (qs.size() > 1 || (qs.size() == 1 && (!qs.get(0).hasAnswer() || qs.get(0).hasUnansweredSubQuestions()))) {
                 return true;
             }
         }

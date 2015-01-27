@@ -119,4 +119,34 @@ public class ControlEnchantmentsTest extends SpellcastTest {
 
 
     }
+
+    @Test
+    public void shouldCastCharmPerson() {
+        authenticateAndStart();
+
+        sendGestures("P","_","_","_");
+        sendFirst("ANSWER left first");  // first: shield on self
+
+        sendGestures("SD","__","__","__");
+        sendFirst("ANSWER left second");  // first: missile on second
+
+        sendGestures("F","_","_","_");
+        sendFirst("ANSWER left second");  // first: charm person on second
+
+        assertBroadcasted("351 first CASTS charmperson AT second WITH left");
+    }
+
+    @Test
+    public void shouldCastParalysis() {
+        authenticateAndStart();
+
+        sendGestures("FFF","___", "SSS","___");
+
+        sendFirst("ANSWER left second");                //first: paralysis on second
+        sendFirst("ANSWER left$paralysis.hand left");   //          on second's left hand
+
+        assertBroadcasted("351 first CASTS paralysis AT second WITH left");
+
+    }
+
 }

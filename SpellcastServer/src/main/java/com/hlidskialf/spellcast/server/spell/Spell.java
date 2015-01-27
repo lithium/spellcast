@@ -3,6 +3,10 @@ package com.hlidskialf.spellcast.server.spell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.question.SpellQuestion;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by wiggins on 1/11/15.
@@ -14,6 +18,7 @@ public class Spell {
     protected final String slug;
     protected final SpellType type;
     protected final boolean hasTarget;
+    protected HashMap<String,String> answers;
 
     public enum SpellType {
         None,
@@ -43,6 +48,7 @@ public class Spell {
         this.type = type;
         this.hasTarget = hasTarget;
         this.reverse = new StringBuilder(gestures).reverse().toString();
+        this.answers = new HashMap<String, String>();
     }
 
     public String getName() {
@@ -65,6 +71,13 @@ public class Spell {
 
     public boolean hasTarget() {
         return this.hasTarget;
+    }
+
+    public void putAnswer(String key, String answer) {
+        answers.put(key, answer);
+    }
+    public HashMap<String,String> getAnswers() {
+        return this.answers;
     }
 
     public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) { }
@@ -99,5 +112,9 @@ public class Spell {
 
     public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
 
+    }
+
+    public ArrayList<SpellQuestion> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        return null;
     }
 }

@@ -1,6 +1,14 @@
 package com.hlidskialf.spellcast.server.spell;
 
+import com.hlidskialf.spellcast.server.SpellcastClient;
+import com.hlidskialf.spellcast.server.SpellcastMatchState;
+import com.hlidskialf.spellcast.server.Target;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
+import com.hlidskialf.spellcast.server.question.HandQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
+import com.hlidskialf.spellcast.server.question.SpellQuestion;
+
+import java.util.ArrayList;
 
 /**
  * Created by wiggins on 1/21/15.
@@ -29,5 +37,22 @@ public class ParalysisSpell extends ControlSpell {
 
     public ParalysisSpell(String name, String gestures) {
         super(name, gestures, ControlEffect.Paralysis, 2);
+    }
+
+    @Override
+    public void fireSpell(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+
+        String targetHand = answers.get("hand");
+
+        return;
+
+    }
+
+    @Override
+    public ArrayList<SpellQuestion> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        ArrayList<SpellQuestion> ret = new ArrayList<SpellQuestion>();
+
+        ret.add(new HandQuestion("hand", this));
+        return ret;
     }
 }
