@@ -52,7 +52,7 @@ public class ParalysisSpell extends ControlSpell {
     public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
         ArrayList<Question> ret = new ArrayList<Question>();
 
-        ret.add(new HandQuestion("hand", this));
+        ret.add(new HandQuestion("hand"));
         return ret;
     }
 }

@@ -2,6 +2,8 @@ package com.hlidskialf.spellcast.server;
 
 
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
+import com.hlidskialf.spellcast.server.effect.GestureEffect;
+import com.hlidskialf.spellcast.server.effect.SpellEffect;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
 import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
@@ -222,6 +224,7 @@ public class SpellcastClient extends Target {
             return;
         }
 
+
         if (hasEffect(ControlEffect.Confusion)) {
             if (new Random().nextBoolean()) {
                 leftGesture = ValidationHelper.randomGesture();
@@ -239,6 +242,27 @@ public class SpellcastClient extends Target {
                 rightGesture = "_";
             }
             //TODO broadcast spell effect
+        }
+
+        if (hasEffect(ControlEffect.CharmPerson)) {
+            try {
+                SpellEffect spellEffect = getEffect(ControlEffect.CharmPerson);
+                GestureEffect effect = (GestureEffect)spellEffect;
+                String gest = effect.getGesture();
+                switch (effect.getHand()) {
+                    case left: leftGesture = gest; break;
+                    case right: rightGesture = gest; break;
+                }
+            } catch (ClassCastException e) {
+                // ERROR
+            }
+        }
+
+        leftGesture = leftGesture.toUpperCase();
+        rightGesture = rightGesture.toUpperCase();
+        if (leftGesture.equals(rightGesture)) {
+            leftGesture = leftGesture.toLowerCase();
+            rightGesture = leftGesture;
         }
 
         leftGestures.add(leftGesture);

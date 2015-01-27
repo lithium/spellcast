@@ -133,7 +133,15 @@ public class ControlEnchantmentsTest extends SpellcastTest {
         sendGestures("F","_","_","_");
         sendFirst("ANSWER left second");  // first: charm person on second
 
+        sendFirst("ANSWER left$charmperson.hand right");   //first: make second perform Snap with Right hand
+        sendFirst("ANSWER left$charmperson.gesture S");
+
         assertBroadcasted("351 first CASTS charmperson AT second WITH left");
+
+        sendGestures("_","_","W","W"); //second: try to do anything
+
+        //second makes a snap with right
+        assertBroadcasted("331 "+server.getCurrentMatchId()+".5 second W S");
     }
 
     @Test

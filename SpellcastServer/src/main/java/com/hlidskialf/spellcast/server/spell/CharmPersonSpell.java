@@ -2,6 +2,12 @@ package com.hlidskialf.spellcast.server.spell;
 
 import com.hlidskialf.spellcast.server.*;
 import com.hlidskialf.spellcast.server.effect.ControlEffect;
+import com.hlidskialf.spellcast.server.effect.GestureEffect;
+import com.hlidskialf.spellcast.server.question.GestureQuestion;
+import com.hlidskialf.spellcast.server.question.HandQuestion;
+import com.hlidskialf.spellcast.server.question.Question;
+
+import java.util.ArrayList;
 
 /**
  * Created by wiggins on 1/21/15.
@@ -24,4 +30,21 @@ public class CharmPersonSpell extends ControlSpell {
         super(name, gestures, ControlEffect.CharmPerson, 2);
     }
 
+
+    @Override
+    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
+        if (!isResolvingMultipleControlSpells(matchState, target) && target instanceof SpellcastClient) {
+            String gesture = answers.get("gesture");
+            Hand hand = Hand.valueOf(answers.get("hand"));
+            target.addEffect(new GestureEffect(hand, gesture, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, 2));
+        }
+    }
+
+    @Override
+    public ArrayList<Question> questions(SpellcastMatchState matchState, SpellcastClient caster) {
+        ArrayList<Question> ret = new ArrayList<Question>();
+        ret.add(new HandQuestion("hand"));
+        ret.add(new GestureQuestion("gesture"));
+        return ret;
+    }
 }
