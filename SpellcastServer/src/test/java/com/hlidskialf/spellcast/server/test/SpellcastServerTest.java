@@ -378,4 +378,52 @@ public class SpellcastServerTest extends SpellcastTest {
         assertTookNoDamage(second);
     }
 
+
+    @Test
+    public void shouldCastCureWounds() {
+        authenticateAndStart();
+        sendGestures("K","S","_","D");
+        sendFirst("ANSWER left second");
+
+        sendGestures("K","D","_","F");
+        sendFirst("ANSWER left second");
+        sendFirst("ANSWER right second");
+
+        assertTookDamage(second, 3);
+
+        sendGestures("_", "D", "_", "W");
+
+        //second: cure light wounds on self
+        sendSecond("ANSWER right second");
+        assertBroadcasted("351 second CASTS curelightwounds AT second WITH right");
+
+        sendGestures("__","FP","__","__");
+        sendFirst("ANSWER right first"); // first: shield
+
+        //first: cure heavy wounds on second
+        sendGestures("_","W","_","_");
+        sendFirst("ANSWER right second");
+        assertBroadcasted("351 first CASTS cureheavywounds AT second WITH right");
+
+        assertTookNoDamage(second);
+    }
+
+    @Test
+    public void shouldCastCauseWounds() {
+        authenticateAndStart();
+        sendGestures("WFP","___","___","___");
+        sendFirst("ANSWER left causelightwounds");
+        sendFirst("ANSWER left second");
+
+        assertTookDamage(second, 2);
+
+        sendGestures("WP","__","__","__");
+        sendFirst("ANSWER left first"); // shield
+
+        sendGestures("FD","__","__","__");
+        sendFirst("ANSWER left second");
+
+        assertTookDamage(second,5);
+
+    }
 }
