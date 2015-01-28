@@ -426,4 +426,32 @@ public class SpellcastServerTest extends SpellcastTest {
         assertTookDamage(second,5);
 
     }
+
+    @Test
+    public void shouldCastLightningBolt() {
+        authenticateAndStart();
+        sendGestures("WDDc","___c","DFFD","____");
+
+        assertTrue(firstChannel.matchingMessage("345 both lightningbolt"));
+        firstChannel.setIndex();
+
+        //first: short lightning bolt on second
+        sendFirst("ANSWER both second");
+        assertBroadcasted("351 first CASTS lightningbolt AT second WITH both");
+        assertTookDamage(second, 5);
+
+        //second: long lightning bolt at first
+        sendGestures("W","_","D","_");
+        sendSecond("ANSWER left first");
+        assertBroadcasted("351 second CASTS lightningbolt AT first WITH left");
+        assertTookDamage(first, 5);
+
+        //first: try short lightning bolt on second
+        sendGestures("DDc","__c", "FFD", "___");
+        assertFalse(firstChannel.matchingMessage("345 both lightningbolt"));
+
+        sendGestures("_","_", "D", "_");
+        sendSecond("ANSWER left first");
+        assertTookDamage(first, 10);
+    }
 }

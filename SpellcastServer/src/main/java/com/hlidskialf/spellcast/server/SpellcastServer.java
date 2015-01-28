@@ -371,7 +371,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         broadcast("250 "+currentMatchId+ " :Match start");
         for (SpellcastClient c : clients.values()) {
             if (c.getState().equals(SpellcastClient.ClientState.Watching)) {
-                c.resetHistory();
+                c.reset();
                 c.setReady(false);
                 c.setHitpoints(15);
                 c.setMaxHitpoints(15);
@@ -662,8 +662,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         winner.setReady(false);
         winner.setHitpoints(0);
         winner.setMaxHitpoints(0);
-        winner.resetHistory();
-        winner.resetQuestions();
+        winner.reset();
         winner.setState(SpellcastClient.ClientState.Watching);
         players.clear();
     }

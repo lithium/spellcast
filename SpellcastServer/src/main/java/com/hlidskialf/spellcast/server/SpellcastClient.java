@@ -39,6 +39,7 @@ public class SpellcastClient extends Target {
     private ArrayList<Monster> monsters;
     private ArrayList<MonsterQuestion> monsterQuestions;
 
+    private HashMap<String, Object> properties;
 
 
     public SpellcastClient(Object channel) {
@@ -47,6 +48,7 @@ public class SpellcastClient extends Target {
         this.ready = false;
         this.leftGestures = new ArrayList<String>();
         this.rightGestures = new ArrayList<String>();
+        properties = new HashMap<String, Object>();
         monsters = new ArrayList<Monster>();
         monsterQuestions = new ArrayList<MonsterQuestion>();
         spellQuestions = new HashMap<Hand, ArrayList<SpellQuestion>>();
@@ -194,6 +196,30 @@ public class SpellcastClient extends Target {
         return null;
     }
 
+
+    public void setProperty(String property, Object value) {
+        properties.put(property, value);
+    }
+    public Object getProperty(String property) {
+        return properties.get(property);
+    }
+    public boolean hasProperty(String property) {
+        return properties.containsKey(property);
+    }
+
+    public HashMap<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(HashMap<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public void reset() {
+        resetHistory();
+        resetQuestions();
+        properties.clear();
+    }
     public void resetHistory() {
         leftGestures.clear();
         rightGestures.clear();
@@ -316,6 +342,12 @@ public class SpellcastClient extends Target {
         int i;
         if (history.length() < l)
             return false;
+
+        // hack for short lightning bolt
+        if (spell == SpellList.LightningBolt2 && hasProperty(LightningBoltSpell.usedShortProp)) {
+            return false;
+        }
+
         for (i = 0; i < l; i++) {
             char h = history.charAt(i);
             char s = reverse.charAt(i);
@@ -333,6 +365,8 @@ public class SpellcastClient extends Target {
                 return false;
             }
         }
+
+
         return true;
     }
 

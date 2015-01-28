@@ -16,12 +16,20 @@ import com.hlidskialf.spellcast.server.Target;
  */
 public class LightningBoltSpell extends Spell {
 
+	public static final String usedShortProp = "usedShortLightningBolt";
+
 	public LightningBoltSpell(final String name, final String gestures) {
 		super(name, gestures, SpellType.Damage);
 	}
 
 	@Override
 	public void fireSpell(final SpellcastMatchState matchState, final SpellcastClient caster, final Target target) {
+		if (gestures.length() == 4) {
+			if (caster.hasProperty(usedShortProp)) {
+				return;
+			}
+			caster.setProperty(usedShortProp, true);
+		}
 		target.takeDamage(5);
 	}
 }
