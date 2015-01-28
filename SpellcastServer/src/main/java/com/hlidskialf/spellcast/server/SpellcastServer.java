@@ -396,6 +396,11 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
             }
         }
 
+        resolveDeaths();
+        if (checkForWinner()) {
+            return;
+        }
+
         broadcast_stats();
 
         //ask for gestures
@@ -532,12 +537,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 	    }
 
 	    // resolve death effects
-        for (Target t: getAllTargets()) {
-            if (t.hasEffect(DeathEffect.Name)) {
-                killTarget(t);
-            }
-        }
-        displayTombstones();
+        resolveDeaths();
 
 
         //resolve stabs/monster attacks
@@ -593,6 +593,15 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         if (!checkForWinner()) {
             startNewRound();
         }
+    }
+
+    private void resolveDeaths() {
+        for (Target t: getAllTargets()) {
+            if (t.hasEffect(DeathEffect.Name)) {
+                killTarget(t);
+            }
+        }
+        displayTombstones();
     }
 
     private void displayTombstones() {

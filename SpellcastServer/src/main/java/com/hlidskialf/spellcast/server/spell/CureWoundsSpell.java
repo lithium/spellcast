@@ -3,6 +3,7 @@ package com.hlidskialf.spellcast.server.spell;
 import com.hlidskialf.spellcast.server.SpellcastClient;
 import com.hlidskialf.spellcast.server.SpellcastMatchState;
 import com.hlidskialf.spellcast.server.Target;
+import com.hlidskialf.spellcast.server.effect.DiseaseEffect;
 
 /**
  * Created by wiggins on 1/19/15.
@@ -33,7 +34,9 @@ public class CureWoundsSpell extends Spell {
 
 		if (healAmount == 2) {
 			// Cure Heavy Wounds
-			// target.removeEffect(Disease)
+			if (target.hasEffect(DiseaseEffect.Name)) {
+				target.removeEffect(DiseaseEffect.Name);
+			}
 		}
 	}
 }

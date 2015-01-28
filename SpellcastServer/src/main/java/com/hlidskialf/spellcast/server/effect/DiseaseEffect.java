@@ -9,7 +9,7 @@ import com.hlidskialf.spellcast.server.spell.Spell;
  */
 public class DiseaseEffect extends SpellEffect {
 
-    private static final String Name = "disease";
+    public static final String Name = "disease";
 
     public DiseaseEffect(SpellcastMatchState matchState, Target target, int duration) {
         super(Name, Spell.SpellType.Enchantment, matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, duration);

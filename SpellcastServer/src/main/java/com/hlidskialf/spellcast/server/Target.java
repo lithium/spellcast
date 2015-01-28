@@ -86,16 +86,28 @@ public abstract class Target {
         }
         return false;
     }
+    public void removeEffect(String effectName) {
+        for (SpellEffect se : effects) {
+            if (se.getName().equals(effectName)) {
+                effects.remove(se);
+                return;
+            }
+        }
+    }
     public ArrayList<String> expireEffects(String matchId, int roundNumber) {
         ArrayList<String> expired = new ArrayList<String>();
+        ArrayList<SpellEffect> expiring = new ArrayList<SpellEffect>();
 
         Iterator<SpellEffect> iterator = effects.iterator();
         while (iterator.hasNext()) {
             SpellEffect se = iterator.next();
             if (se.getDuration() > 0 && roundNumber >= se.getRoundCast()+se.getDuration()) {
-                expired.add(se.expire());
                 iterator.remove();
+                expiring.add(se);
             }
+        }
+        for (SpellEffect se : expiring) {
+            expired.add(se.expire());
         }
         return expired;
     }

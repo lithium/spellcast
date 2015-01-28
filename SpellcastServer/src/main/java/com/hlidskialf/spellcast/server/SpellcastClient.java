@@ -375,15 +375,12 @@ public class SpellcastClient extends Target {
         return gestureHistory(gestures, 8);
     }
     private String gestureHistory(ArrayList<String> gestures, int howMany) {
-        howMany = Math.min(gestures.size(), howMany);
+        int l = gestures.size();
+        howMany = Math.min(l, howMany);
         StringBuffer sb = new StringBuffer(howMany);
-        int i=0;
-        for (String g : gestures) {
-            sb.insert(0,g.charAt(0));
-            i += 1;
-            if (i > howMany) {
-                break;
-            }
+        int i;
+        for (i=l-1; i >= 0; i--) {
+            sb.append(gestures.get(i).charAt(0));
         }
         return sb.toString();
     }

@@ -447,11 +447,97 @@ public class SpellcastServerTest extends SpellcastTest {
         assertTookDamage(first, 5);
 
         //first: try short lightning bolt on second
-        sendGestures("DDc","__c", "FFD", "___");
+        sendGestures("DDc", "__c", "FFD", "___");
         assertFalse(firstChannel.matchingMessage("345 both lightningbolt"));
 
-        sendGestures("_","_", "D", "_");
+        sendGestures("_", "_", "D", "_");
         sendSecond("ANSWER left first");
         assertTookDamage(first, 10);
+    }
+
+
+    private void castDiseaseOnSecond() {
+
+        //confusion
+        sendGestures("DSF","___","___","___");
+        sendFirst("ANSWER left second");
+
+        //paralysis
+        sendGestures("FF","__","__","__");
+        sendFirst("ANSWER left second");
+        sendFirst("ANSWER left$paralysis.hand left");
+
+        //disease
+        sendGestures("c","c","_","_");
+        sendFirst("ANSWER both second");
+
+        assertBroadcasted("351 first CASTS disease AT second WITH both");
+    }
+
+    @Test
+    public void shouldDieFromDisease() {
+        authenticateAndStart();
+        castDiseaseOnSecond();
+
+        //wait 6 turns
+        sendGestures("_____","_____","_____","_____");
+
+        assertBroadcasted("355 m1001.12 second :second keels over and dies from a disease");
+        assertBroadcastedStartingWith("380 second "); // second dies
+        assertBroadcastedStartingWith("390 "+server.getCurrentMatchId()+" first "); // first wins
+    }
+
+    @Test
+    public void shouldCureDiseaseWithCureWounds() {
+        authenticateAndStart();
+        castDiseaseOnSecond();
+
+        sendGestures("___","___","DFP","___");
+        sendSecond("ANSWER left second");
+        sendGestures("_","_","W","_");
+        sendSecond("ANSWER left second");
+        assertBroadcasted("351 second CASTS cureheavywounds AT second WITH left");
+
+        //wait 6 turns
+        sendGestures("_____","_____","_____","_____");
+        assertNotBroadcastedStartingWith("380 second "); // second shouldn't die from disease
+    }
+
+    @Test
+    public void shouldCureDiseaseWithRemoveEnchantment() {
+        authenticateAndStart();
+        castDiseaseOnSecond();
+
+
+        sendGestures("_","_","P","_");
+        sendSecond("ANSWER left second");
+
+        sendGestures("___","___","DWP","___");
+        sendSecond("ANSWER left removeenchantment");
+        sendSecond("ANSWER left second");
+
+        assertBroadcasted("351 second CASTS removeenchantment AT second WITH left");
+
+        //wait 6 turns
+        sendGestures("_____","_____","_____","_____");
+        assertNotBroadcastedStartingWith("380 second "); // second shouldn't die from disease
+    }
+
+    @Test
+    public void shouldCureDiseaseWithDispelMagic() {
+        authenticateAndStart();
+        castDiseaseOnSecond();
+
+
+        sendGestures("___","___","CDP","___");
+        sendSecond("ANSWER left second");
+        sendGestures("_","_","W","_");
+        sendSecond("ANSWER left second");
+
+        assertBroadcasted("351 second CASTS dispelmagic AT second WITH left");
+
+        //wait 6 turns
+        sendGestures("_____","_____","_____","_____");
+        assertNotBroadcastedStartingWith("380 second "); // second shouldn't die from disease
     }
 }
