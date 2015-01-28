@@ -8,7 +8,7 @@ import com.hlidskialf.spellcast.server.spell.Spell;
  */
 public class TimeStopEffect extends SpellEffect {
 
-    private static final String Name = "timestop";
+    public static final String Name = "timestop";
 
     public TimeStopEffect(String matchId, int roundCast, Target target, int duration) {
         super(Name, Spell.SpellType.Enchantment, matchId, roundCast, target, duration);

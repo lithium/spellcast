@@ -67,9 +67,9 @@ public class SpellList {
     public static final Spell Blindness = new BlindnessSpell("Blindness", "DWFFd");
     public static final Spell Invisibility = new InvisibilitySpell("Invisibility", "PPws");
     public static final Spell Haste = new HasteSpell("Haste", "PWPWWc");
-    public static final Spell TimeStop = new TimeStopSpell("Time Stop", "SPPC");
+    public static final Spell TimeStop = new TimeStopSpell("Time Stop", "SPPc");
     public static final Spell DelayedEffect = new Spell("Delayed Effect", "DWSSSP", Spell.SpellType.Enchantment);
-    public static final Spell Permanency = new Spell("Permanancy", "SPFPSDW", Spell.SpellType.Enchantment);
+    public static final Spell Permanency = new Spell("Permanency", "SPFPSDW", Spell.SpellType.Enchantment);
 
     // non spells
     public static final Spell Surrender = new Spell("Surrender", "p", Spell.SpellType.None);
@@ -81,7 +81,7 @@ public class SpellList {
             Surrender,
             Permanency,
             DelayedEffect,
-            TimeStop,
+//            TimeStop,
             Haste,
             Invisibility,
             Blindness,

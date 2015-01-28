@@ -17,7 +17,7 @@ import com.hlidskialf.spellcast.server.effect.TimeStopEffect;
 
  */
 public class TimeStopSpell extends Spell {
-    private static final String Slug = "timestop";
+    public static final String Slug = "timestop";
 
     public TimeStopSpell(String name, String gestures) {
         super(name, Slug, gestures, SpellType.Enchantment);

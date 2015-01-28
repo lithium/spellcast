@@ -1,10 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
 
-import com.hlidskialf.spellcast.server.effect.ControlEffect;
-import com.hlidskialf.spellcast.server.effect.DeathEffect;
-import com.hlidskialf.spellcast.server.effect.ResistElementEffect;
-import com.hlidskialf.spellcast.server.effect.ShieldEffect;
+import com.hlidskialf.spellcast.server.effect.*;
 import com.hlidskialf.spellcast.server.question.MonsterQuestion;
 import com.hlidskialf.spellcast.server.question.Question;
 import com.hlidskialf.spellcast.server.question.SpellQuestion;
@@ -383,6 +380,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
     }
 
     private void startNewRound() {
+
         currentRoundNumber += 1;
         currentRoundState = RoundState.WaitingForGestures;
         broadcast("251 "+currentMatchId+"."+currentRoundNumber+" :Round start");
