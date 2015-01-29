@@ -31,8 +31,10 @@ public class BlindnessSpell extends Spell {
    public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
       if (target instanceof Monster) {
          target.addEffect(new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
+         broadcastFizzle(matchState, caster, target, "Blindness destroys monsters");
       } else {
          target.addEffect(new BlindnessEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, 4));
+         broadcastSuccess(matchState, caster, target, target.getNickname()+" is now blind");
       }
    }
 }

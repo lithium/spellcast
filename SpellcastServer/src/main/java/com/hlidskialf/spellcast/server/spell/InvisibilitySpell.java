@@ -32,8 +32,10 @@ public class InvisibilitySpell extends Spell {
     public void effects(SpellcastMatchState matchState, SpellcastClient caster, Target target) {
         if (target instanceof Monster) {
             target.addEffect(new DeathEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target));
+            broadcastFizzle(matchState, caster, target, "Blindness destroys monsters");
         } else {
             target.addEffect(new InvisibilityEffect(matchState.getCurrentMatchId(), matchState.getCurrentRoundNumber(), target, 4));
+            broadcastSuccess(matchState, caster, target, "is now invisible");
         }
     }
 }

@@ -462,8 +462,13 @@ public class SpellcastServerTest extends SpellcastTest {
         sendGestures("DSF","___","___","___");
         sendFirst("ANSWER left second");
 
+        //confusion may have made second do P so send answers just in case
+        sendGestures("F","_","_","_");
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER right second");
+
         //paralysis
-        sendGestures("FF","__","__","__");
+        sendGestures("F","_","_","_");
         sendFirst("ANSWER left second");
         sendFirst("ANSWER left$paralysis.hand left");
 
@@ -609,4 +614,46 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcastedStartingWith("390 " + server.getCurrentMatchId() + " first "); // first wins
     }
 
+
+    @Test
+    public void shouldKillMonsterWithBlindness() {
+        authenticateAndStart();
+
+        //second: summon goblin
+        sendGestures("DWFF","___P", "_SFW","____");
+        sendFirst("ANSWER right first"); // shield on first
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER left$summongoblin.target first");
+        String mob = second.getMonsters().iterator().next().getNickname();
+
+        //first: blindness on monster
+        sendGestures("d","d", "_","_");
+        sendFirst("ANSWER both "+mob);
+        sendSecond("ANSWER "+mob+" first");
+
+        assertBroadcasted("351 first CASTS blindness AT "+mob+" WITH both");
+        assertBroadcastedStartingWith("380 "+mob+" ");
+
+        assertTookNoDamage(first);
+    }
+
+    @Test
+    public void shouldCastBlindness() {
+        authenticateAndStart();
+
+        sendGestures("DWFFd","____d","_____","____S");
+        sendFirst("ANSWER both second");
+
+        assertBroadcasted("351 first CASTS blindness AT second WITH both");
+
+        sendGestures("_","_","K","D");
+        sendSecond("ANSWER left first"); // stab first
+        sendSecond("ANSWER right first"); // missile first
+
+        assertBroadcastedStartingWith("353 first BLOCKS second "); //attack missed
+        assertTookDamage(first, 1); // but missile still connected
+
+        //second should not see the results through the blindness though
+//        assertDoesNotContainStartingWith("357 second missile first ", secondChannel);
+    }
 }

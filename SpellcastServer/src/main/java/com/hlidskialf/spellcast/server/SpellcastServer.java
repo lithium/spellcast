@@ -540,6 +540,10 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
 
         //resolve stabs/monster attacks
         for (ResolvingAttack rAttack : resolvingAttacks) {
+            if (rAttack.getAttacker() == null || rAttack.getAttacker().hasEffect(DeathEffect.Name)) {
+                continue;
+            }
+
             if (rAttack.getTarget() == null) { // elemental attack on everyone
                 elemental = (Elemental)getElemental();
                 if (elemental != null && elemental.getNickname().equals(rAttack.getAttacker().getNickname())) {
@@ -559,11 +563,8 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
                     }
                 }
             }
-            else
-            if (rAttack.resolveAttack(this)) {
-                broadcast(rAttack.get352());
-            } else {
-                broadcast(rAttack.get353("slides off shield"));
+            else {
+                broadcast(rAttack.resolveAttack(this));
             }
         }
 
@@ -629,6 +630,7 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         } else if (t instanceof Monster) {
             Monster monster = (Monster) t;
             monster.getController().loseControlOfMonster(monster);
+            broadcast("380 "+monster.getNickname()+" :dies");
         }
     }
 

@@ -1,5 +1,7 @@
 package com.hlidskialf.spellcast.server;
 
+import com.hlidskialf.spellcast.server.effect.BlindnessEffect;
+import com.hlidskialf.spellcast.server.effect.InvisibilityEffect;
 import com.hlidskialf.spellcast.server.effect.ShieldEffect;
 
 /**
@@ -21,12 +23,20 @@ public class ResolvingAttack {
         this.attacker = attacker;
     }
 
-    public boolean resolveAttack(SpellcastMatchState matchState) {
+    public String resolveAttack(SpellcastMatchState matchState) {
+        if (attacker.hasEffect(BlindnessEffect.Name)) {
+            return get353("attacks blindly and misses");
+        }
+        else
+        if (target.hasEffect(InvisibilityEffect.Name)) {
+            return get353("can not see the invisible");
+        }
+
         if (target.hasEffect(ShieldEffect.Name)) {
-            return false;
+            return get353("the attack slides off a shield");
         }
         target.takeDamage(damage);
-        return true;
+        return get352();
     }
 
     public String get352() {

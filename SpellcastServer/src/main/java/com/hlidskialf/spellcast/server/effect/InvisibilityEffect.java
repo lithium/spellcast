@@ -8,7 +8,7 @@ import com.hlidskialf.spellcast.server.spell.Spell;
  */
 public class InvisibilityEffect extends SpellEffect {
 
-    private static final String Name = "invisibility";
+    public static final String Name = "invisibility";
 
     public InvisibilityEffect(String matchId, int roundCast, Target target, int duration) {
         super(Name, Spell.SpellType.Enchantment, matchId, roundCast, target, duration);
