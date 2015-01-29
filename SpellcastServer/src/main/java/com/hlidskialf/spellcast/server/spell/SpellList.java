@@ -68,7 +68,7 @@ public class SpellList {
     public static final Spell Invisibility = new InvisibilitySpell("Invisibility", "PPws");
     public static final Spell Haste = new HasteSpell("Haste", "PWPWWc");
     public static final Spell TimeStop = new TimeStopSpell("Time Stop", "SPPc");
-    public static final Spell DelayedEffect = new Spell("Delayed Effect", "DWSSSP", Spell.SpellType.Enchantment);
+    public static final Spell DelayedEffect = new DelayedEffectSpell("Delayed Effect", "DWSSSP");
     public static final Spell Permanency = new Spell("Permanency", "SPFPSDW", Spell.SpellType.Enchantment);
 
     // non spells
