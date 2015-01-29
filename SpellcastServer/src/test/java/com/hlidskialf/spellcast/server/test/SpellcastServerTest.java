@@ -628,11 +628,11 @@ public class SpellcastServerTest extends SpellcastTest {
 
         //first: blindness on monster
         sendGestures("d","d", "_","_");
-        sendFirst("ANSWER both "+mob);
+        sendFirst("ANSWER both " + mob);
         sendSecond("ANSWER "+mob+" first");
 
         assertBroadcasted("351 first CASTS blindness AT "+mob+" WITH both");
-        assertBroadcastedStartingWith("380 "+mob+" ");
+        assertBroadcastedStartingWith("380 " + mob + " ");
 
         assertTookNoDamage(first);
     }
@@ -653,7 +653,60 @@ public class SpellcastServerTest extends SpellcastTest {
         assertBroadcastedStartingWith("353 first BLOCKS second "); //attack missed
         assertTookDamage(first, 1); // but missile still connected
 
-        //second should not see the results through the blindness though
+        //TODO: second should not see the results through the blindness though
 //        assertDoesNotContainStartingWith("357 second missile first ", secondChannel);
+    }
+
+    @Test
+    public void shouldCastInvisibility() {
+        authenticateAndStart();
+
+        //first: invisibility on self
+        sendGestures("P","_","_","_");
+        sendFirst("ANSWER left first");
+        sendGestures("P","_","_","_");
+        sendFirst("ANSWER left first");
+        sendGestures("ws","ws","__","_K");
+
+        sendFirst("ANSWER both first");
+        sendSecond("ANSWER right first"); // second attack first
+
+        assertBroadcastedStartingWith("353 first BLOCKS second "); //attack missed
+        assertTookNoDamage(first);
+
+        sendGestures("WWWW","SSSS","____","____");
+
+        //second can not see firsts gestures for the next 3 rounds
+        for (int i=5; i<8; i++) {
+            assertChannelContains("331 "+server.getCurrentMatchId()+"."+i+" first * *", secondChannel);
+        }
+        assertChannelContains("331 "+server.getCurrentMatchId()+".8 first W S", secondChannel);
+    }
+
+    @Test
+    public void shouldDestroyMonsterWithInvisibility() {
+        authenticateAndStart();
+
+        //second summon goblin
+        sendGestures("P","_","S","_");
+        sendFirst("ANSWER left first");
+        sendGestures("P","_","F","_");
+        sendFirst("ANSWER left first");
+        sendGestures("w","w","W","_");
+        sendSecond("ANSWER left second");
+        sendSecond("ANSWER left$summongoblin.target first");
+
+        String mob = second.getMonsters().iterator().next().getNickname();
+
+        //first: invisibility on monser
+        sendGestures("s","s","_","_");
+        sendFirst("ANSWER both "+mob);
+        sendSecond("ANSWER "+mob+" first");
+
+        assertBroadcasted("351 first CASTS invisibility AT "+mob+" WITH both");
+        assertBroadcastedStartingWith("380 "+mob);
+
+        assertTookDamage(first,1);
+
     }
 }

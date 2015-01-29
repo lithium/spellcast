@@ -414,7 +414,13 @@ public abstract class SpellcastServer<ChannelType> implements SpellcastMatchStat
         for (SpellcastClient client : players) {
             client.setReady(false);
             client.performGestures();
-            broadcast("331 "+currentMatchId+"."+currentRoundNumber+" "+client.getNickname()+" "+client.getLastLeftGesture()+" "+client.getLastRightGesture());
+            if (client.hasEffect(InvisibilityEffect.Name)) {
+                broadcast("331 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " * *", client);
+                sendToClient(client, "331 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " " + client.getLastLeftGesture() + " " + client.getLastRightGesture());
+            }
+            else {
+                broadcast("331 " + currentMatchId + "." + currentRoundNumber + " " + client.getNickname() + " " + client.getLastLeftGesture() + " " + client.getLastRightGesture());
+            }
         }
         broadcast("332 :End of Gestures");
 
